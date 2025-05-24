@@ -45,5 +45,5 @@ class EditMemberForm(QDialog):
             name = self.ui.lineEdit_1.text().strip() #assume
             email = self.ui.lineEdit_2.text().strip() #assume
 
+            # ga pass kag tuple instead of a dictionary (not sure if this is correct)
             updateMember(originalID, (member_id, name, email))
-

@@ -1,7 +1,7 @@
 from config.db_config import getConnection
 
 #Create
-def addMember(member):
+def addMember(member:tuple) -> None:
     conn = getConnection()
     cursor = conn.cursor()
 
@@ -13,7 +13,7 @@ def addMember(member):
     conn.close()
 
 #Update
-def updateMember(originalID, updatedMember):
+def updateMember(originalID: str, updatedMember: dict) -> None:
     conn = getConnection()
     cursor = conn.cursor()
 
@@ -31,7 +31,7 @@ def updateMember(originalID, updatedMember):
     conn.close()
 
 #Delete
-def deleteMember(memberID):
+def deleteMember(memberID: str) -> None:
     conn = getConnection()
     cursor = conn.cursor()
 
@@ -42,10 +42,12 @@ def deleteMember(memberID):
     conn.close()
 
 #List
-def getAllMembers():
+def getAllMembers() -> list[tuple]:
     conn = getConnection()
     cursor = conn.cursor()
+    
     sql = "SELECT * FROM members"
+    
     cursor.execute(sql)
     members = cursor.fetchall()
     cursor.close()
@@ -65,9 +67,39 @@ def getMemberByID(memberID: str) -> dict | None:
 
     if member:
         return {
-            "memberID": member[0],
-            "fullname": member[1],
-            "email": member[2]
+            "memberID": member["memberID"],
+            "fullname": member["fullname"],
+            "email": member["email"]
         }
     return None
 
+def memberExists(memberID: str) -> bool:
+    conn = getConnection()
+    cursor = conn.cursor()
+    
+    sql = "SELECT 1 FROM members WHERE memberID = %s"
+    
+    cursor.execute(sql, (memberID,))
+    exists = cursor.fetchone() is not None
+    cursor.close()
+    conn.close()
+    
+    return exists
+
+def searchMembers(keyword: str) -> list[dict]:
+    conn = getConnection()
+    cursor = conn.cursor(dictionary=True)
+    
+    sql = """
+        SELECT * FROM members
+        WHERE memberID LIKE %s OR fullname LIKE %s OR email LIKE %s
+    """
+    
+    like = f"%{keyword}%"
+    
+    cursor.execute(sql, (like, like, like))
+    results = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    return results
