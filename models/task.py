@@ -1,5 +1,4 @@
-from dataclasses import dataclass
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QLabel
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QScrollArea, QLabel
 
 from controllers.task_controller import getAllTasks
 from widgets.task_widget import TaskWidget
@@ -11,7 +10,7 @@ def loadTasks(parent=None) -> QWidget:
     main_layout = QHBoxLayout(container)
     
     # Define status columns
-    statuses = ["Unassigned", "Pending", "In Progress", "Completed"]
+    statuses = ["Completed", "In Progress", "Pending", "Unassigned"]
     
     # Get all tasks
     tasks = getAllTasks()
@@ -24,6 +23,8 @@ def loadTasks(parent=None) -> QWidget:
         
         # Add header
         header = QLabel(status)
+        
+        #Example rani I don't know what this looks like hahahaa
         header.setStyleSheet("""
             QLabel {
                 font-size: 16px;
