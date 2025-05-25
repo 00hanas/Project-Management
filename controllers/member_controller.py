@@ -31,7 +31,7 @@ def updateMember(originalID, updatedMember):
     conn.close()
 
 #Delete
-def deleteMember(memberID):
+def deleteMemberbyID(memberID):
     conn = getConnection()
     cursor = conn.cursor()
 
@@ -45,7 +45,8 @@ def deleteMember(memberID):
 def getAllMembers():
     conn = getConnection()
     cursor = conn.cursor()
-    sql = "SELECT * FROM members"
+    #sql = "SELECT * FROM members"
+    sql = "SELECT m.memberID, m.fullname, m.email, COUNT(DISTINCT COALESCE(pm.projectID, tp.projectID)) AS projectCount, COUNT(DISTINCT tm.taskID) AS taskCount FROM members m LEFT JOIN projectMember pm ON m.memberID = pm.memberID LEFT JOIN taskMember tm ON m.memberID = tm.memberID LEFT JOIN task t ON tm.taskID = t.taskID LEFT JOIN project tp ON t.projectID = tp.projectID GROUP BY m.memberID, m.fullname, m.email"
     cursor.execute(sql)
     members = cursor.fetchall()
     cursor.close()
@@ -71,3 +72,28 @@ def getMemberByID(memberID: str) -> dict | None:
         }
     return None
 
+def getProjectsTasksandDateByMemberID(memberID: str) -> dict:
+    conn = getConnection()
+    cursor = conn.cursor(dictionary=True)
+    
+    sql = """
+        SELECT 
+    t.taskName, 
+    p.projectName,
+    date_format(tm.dateAssigned, '%M %e, %Y, %l:%i%p') AS formattedDate
+FROM 
+    task t
+INNER JOIN 
+    project p ON t.projectID = p.projectID
+INNER JOIN 
+    taskMember tm ON t.taskID = tm.taskID
+WHERE 
+    tm.memberID = %s;
+    """
+    cursor.execute(sql, (memberID,))
+    tasks = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return tasks
+    
+    
