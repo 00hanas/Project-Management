@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1167, 733)
+        MainWindow.resize(1167, 765)
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("QMainWindow {\n"
 "    background-color: #edf4fa;\n"
@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
 "    border-radius: 8px;\n"
 "}\n"
 "\n"
-"QLabel {\n"
+"#planado_title, #view_projects_label {\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: bold;\n"
 "    font-size: 20pt;\n"
@@ -70,7 +70,7 @@ class Ui_MainWindow(object):
 "QCalendarWidget QToolButton {\n"
 "    background-color: #e2091e;\n"
 "    color: #FFFFFF;\n"
-"    font-famaily: \"Poppins\", sans-serif;\n"
+"    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: bold;\n"
 "    border: none;\n"
 "    margin: 2px;\n"
@@ -249,16 +249,6 @@ class Ui_MainWindow(object):
 "    text-align: center;\n"
 "}\n"
 "\n"
-"#addtask_button {\n"
-"    background-color: #fe9137;\n"
-"    border: 1px solid #fe9137;\n"
-"    font-family: \"Poppins\", sans-serif;\n"
-"    font-weight: bold;\n"
-"    font-size: 10pt;\n"
-"    color: #FFFFFF;\n"
-"    text-align: center;\n"
-"}\n"
-"\n"
 "#project_details_label {\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: bold;\n"
@@ -273,14 +263,14 @@ class Ui_MainWindow(object):
 "    color: #fe9137;\n"
 "}\n"
 "\n"
-"#project_name, #project_id, #project_startDate, #project_endDate, #project_teamMembers, #project_totalTasks, #task_name, #task_id, #task_project, #task_status, #task_dueDate, #task_dateAccomplished {\n"
+"#project_name, #project_id, #project_startDate, #project_endDate, #project_totalMembers, #project_totalTasks, #task_name, #task_id, #task_project, #task_status, #task_dueDate, #task_totalMembers {\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: bold;\n"
 "    font-size: 9pt;\n"
 "    color: #000000;\n"
 "}\n"
 "\n"
-"#project_name_info,#project_id_info, #project_startDate_info, #project_endDate_info, #project_teamMembers_info, #project_totalTasks_info, #task_name_info, #task_id_info, #task_project_info, #task_status_info, #task_dueDate_info, #task_dateAccomplished_info {\n"
+"#project_name_info,#project_id_info, #project_startDate_info, #project_endDate_info, #project_totalMembers_info, #project_totalTasks_info, #task_name_info, #task_id_info, #task_project_info, #task_status_info, #task_dueDate_info, #task_totalMembers_info {\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: normal;\n"
 "    font-size: 9pt;\n"
@@ -301,14 +291,14 @@ class Ui_MainWindow(object):
 "    padding-left: 30px; /* Space for the icon */\n"
 "}\n"
 "\n"
-"#project_startDate, #project_endDate, #task_dueDate, #task_dateAccomplished {\n"
+"#project_startDate, #project_endDate, #task_dueDate {\n"
 "    background-image: url(:/icons/icons/calendar_black.svg);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
 "    padding-left: 30px; /* Space for the icon */\n"
 "}\n"
 "\n"
-"#project_teamMembers {\n"
+"#project_totalMembers, #task_totalMembers  {\n"
 "    background-image: url(:/icons/icons/users_black.svg);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
@@ -335,6 +325,16 @@ class Ui_MainWindow(object):
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: bold;\n"
 "    font-size: 9pt;\n"
+"    color: #FFFFFF;\n"
+"    text-align: center;\n"
+"}\n"
+"\n"
+"#addtask_button {\n"
+"    background-color: #fe9137;\n"
+"    border: 1px solid #fe9137;\n"
+"    font-family: \"Poppins\", sans-serif;\n"
+"    font-weight: bold;\n"
+"    font-size: 10pt;\n"
 "    color: #FFFFFF;\n"
 "    text-align: center;\n"
 "}\n"
@@ -563,7 +563,7 @@ class Ui_MainWindow(object):
         self.vProjects_scrollArea.setWidgetResizable(True)
         self.vProjects_scrollArea.setObjectName("vProjects_scrollArea")
         self.vProjectSA_widget = QtWidgets.QWidget()
-        self.vProjectSA_widget.setGeometry(QtCore.QRect(0, 0, 450, 337))
+        self.vProjectSA_widget.setGeometry(QtCore.QRect(0, 0, 450, 369))
         self.vProjectSA_widget.setObjectName("vProjectSA_widget")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.vProjectSA_widget)
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -643,14 +643,13 @@ class Ui_MainWindow(object):
         self.projects_scrollarea.setWidgetResizable(True)
         self.projects_scrollarea.setObjectName("projects_scrollarea")
         self.projects_contents = QtWidgets.QWidget()
-        self.projects_contents.setGeometry(QtCore.QRect(0, 0, 655, 531))
+        self.projects_contents.setGeometry(QtCore.QRect(0, 0, 655, 563))
         self.projects_contents.setObjectName("projects_contents")
-        self.gridLayoutWidget = QtWidgets.QWidget(parent=self.projects_contents)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(-1, -1, 661, 681))
-        self.gridLayoutWidget.setObjectName("gridLayoutWidget")
-        self.projects_gridlayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
-        self.projects_gridlayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout_11 = QtWidgets.QGridLayout(self.projects_contents)
+        self.gridLayout_11.setObjectName("gridLayout_11")
+        self.projects_gridlayout = QtWidgets.QGridLayout()
         self.projects_gridlayout.setObjectName("projects_gridlayout")
+        self.gridLayout_11.addLayout(self.projects_gridlayout, 0, 0, 1, 1)
         self.projects_scrollarea.setWidget(self.projects_contents)
         self.horizontalLayout_7.addWidget(self.projects_scrollarea)
         self.gridLayout_5.addWidget(self.projects_container, 1, 0, 1, 1)
@@ -662,6 +661,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.project_details)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.project_details_label = QtWidgets.QLabel(parent=self.project_details)
+        self.project_details_label.setMaximumSize(QtCore.QSize(16777215, 38))
         self.project_details_label.setObjectName("project_details_label")
         self.verticalLayout_4.addWidget(self.project_details_label)
         self.project_details_frame = QtWidgets.QFrame(parent=self.project_details)
@@ -698,13 +698,6 @@ class Ui_MainWindow(object):
         self.project_endDate_info.setText("")
         self.project_endDate_info.setObjectName("project_endDate_info")
         self.verticalLayout_3.addWidget(self.project_endDate_info)
-        self.project_teamMembers = QtWidgets.QLabel(parent=self.project_details_frame)
-        self.project_teamMembers.setObjectName("project_teamMembers")
-        self.verticalLayout_3.addWidget(self.project_teamMembers)
-        self.project_teamMembers_info = QtWidgets.QLabel(parent=self.project_details_frame)
-        self.project_teamMembers_info.setText("")
-        self.project_teamMembers_info.setObjectName("project_teamMembers_info")
-        self.verticalLayout_3.addWidget(self.project_teamMembers_info)
         self.project_totalTasks = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_totalTasks.setObjectName("project_totalTasks")
         self.verticalLayout_3.addWidget(self.project_totalTasks)
@@ -712,6 +705,13 @@ class Ui_MainWindow(object):
         self.project_totalTasks_info.setText("")
         self.project_totalTasks_info.setObjectName("project_totalTasks_info")
         self.verticalLayout_3.addWidget(self.project_totalTasks_info)
+        self.project_totalMembers = QtWidgets.QLabel(parent=self.project_details_frame)
+        self.project_totalMembers.setObjectName("project_totalMembers")
+        self.verticalLayout_3.addWidget(self.project_totalMembers)
+        self.project_totalMembers_info = QtWidgets.QLabel(parent=self.project_details_frame)
+        self.project_totalMembers_info.setText("")
+        self.project_totalMembers_info.setObjectName("project_totalMembers_info")
+        self.verticalLayout_3.addWidget(self.project_totalMembers_info)
         self.verticalLayout_4.addWidget(self.project_details_frame)
         self.project_expand_button = QtWidgets.QPushButton(parent=self.project_details)
         icon7 = QtGui.QIcon()
@@ -782,14 +782,13 @@ class Ui_MainWindow(object):
         self.tasks_scrollArea.setWidgetResizable(True)
         self.tasks_scrollArea.setObjectName("tasks_scrollArea")
         self.tasks_contents = QtWidgets.QWidget()
-        self.tasks_contents.setGeometry(QtCore.QRect(0, 0, 655, 531))
+        self.tasks_contents.setGeometry(QtCore.QRect(0, 0, 655, 563))
         self.tasks_contents.setObjectName("tasks_contents")
-        self.gridLayoutWidget_3 = QtWidgets.QWidget(parent=self.tasks_contents)
-        self.gridLayoutWidget_3.setGeometry(QtCore.QRect(-1, -1, 661, 681))
-        self.gridLayoutWidget_3.setObjectName("gridLayoutWidget_3")
-        self.tasks_gridlayout = QtWidgets.QGridLayout(self.gridLayoutWidget_3)
-        self.tasks_gridlayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.tasks_contents)
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.tasks_gridlayout = QtWidgets.QGridLayout()
         self.tasks_gridlayout.setObjectName("tasks_gridlayout")
+        self.horizontalLayout_5.addLayout(self.tasks_gridlayout)
         self.tasks_scrollArea.setWidget(self.tasks_contents)
         self.horizontalLayout_14.addWidget(self.tasks_scrollArea)
         self.gridLayout_10.addWidget(self.tasks_container, 1, 0, 1, 1)
@@ -801,6 +800,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.task_details)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
         self.task_details_label = QtWidgets.QLabel(parent=self.task_details)
+        self.task_details_label.setMaximumSize(QtCore.QSize(16777215, 38))
         self.task_details_label.setObjectName("task_details_label")
         self.verticalLayout_7.addWidget(self.task_details_label)
         self.task_details_frame = QtWidgets.QFrame(parent=self.task_details)
@@ -844,13 +844,13 @@ class Ui_MainWindow(object):
         self.task_dueDate_info.setText("")
         self.task_dueDate_info.setObjectName("task_dueDate_info")
         self.verticalLayout_8.addWidget(self.task_dueDate_info)
-        self.task_dateAccomplished = QtWidgets.QLabel(parent=self.task_details_frame)
-        self.task_dateAccomplished.setObjectName("task_dateAccomplished")
-        self.verticalLayout_8.addWidget(self.task_dateAccomplished)
-        self.task_dateAccomplished_info = QtWidgets.QLabel(parent=self.task_details_frame)
-        self.task_dateAccomplished_info.setText("")
-        self.task_dateAccomplished_info.setObjectName("task_dateAccomplished_info")
-        self.verticalLayout_8.addWidget(self.task_dateAccomplished_info)
+        self.task_totalMembers = QtWidgets.QLabel(parent=self.task_details_frame)
+        self.task_totalMembers.setObjectName("task_totalMembers")
+        self.verticalLayout_8.addWidget(self.task_totalMembers)
+        self.task_totalMembers_info = QtWidgets.QLabel(parent=self.task_details_frame)
+        self.task_totalMembers_info.setText("")
+        self.task_totalMembers_info.setObjectName("task_totalMembers_info")
+        self.verticalLayout_8.addWidget(self.task_totalMembers_info)
         self.verticalLayout_7.addWidget(self.task_details_frame)
         self.task_expand_button = QtWidgets.QPushButton(parent=self.task_details)
         self.task_expand_button.setIcon(icon7)
@@ -910,7 +910,9 @@ class Ui_MainWindow(object):
         self.members_table_frame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.members_table_frame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.members_table_frame.setObjectName("members_table_frame")
-        self.verticalLayout_11 = QtWidgets.QVBoxLayout(self.members_table_frame)
+        self.gridLayout_12 = QtWidgets.QGridLayout(self.members_table_frame)
+        self.gridLayout_12.setObjectName("gridLayout_12")
+        self.verticalLayout_11 = QtWidgets.QVBoxLayout()
         self.verticalLayout_11.setObjectName("verticalLayout_11")
         self.members_table = QtWidgets.QTableWidget(parent=self.members_table_frame)
         self.members_table.setAlternatingRowColors(True)
@@ -928,13 +930,14 @@ class Ui_MainWindow(object):
         item = QtWidgets.QTableWidgetItem()
         self.members_table.setHorizontalHeaderItem(4, item)
         self.verticalLayout_11.addWidget(self.members_table)
+        self.gridLayout_12.addLayout(self.verticalLayout_11, 0, 0, 1, 1)
         self.verticalLayout_10.addWidget(self.members_table_frame)
         self.stackedWidget.addWidget(self.members_page)
         self.gridLayout.addWidget(self.stackedWidget, 1, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -976,9 +979,9 @@ class Ui_MainWindow(object):
         self.project_name.setText(_translate("MainWindow", "Project Name:"))
         self.project_id.setText(_translate("MainWindow", "Project ID:"))
         self.project_startDate.setText(_translate("MainWindow", "Start Date:"))
-        self.project_endDate.setText(_translate("MainWindow", "Deadline:"))
-        self.project_teamMembers.setText(_translate("MainWindow", "Team Members:"))
+        self.project_endDate.setText(_translate("MainWindow", "End Date:"))
         self.project_totalTasks.setText(_translate("MainWindow", "Total Tasks:"))
+        self.project_totalMembers.setText(_translate("MainWindow", "Total Members:"))
         self.project_expand_button.setText(_translate("MainWindow", "Expand"))
         self.tasks_search.setPlaceholderText(_translate("MainWindow", "Type to search..."))
         self.tasks_searchby.setItemText(0, _translate("MainWindow", "Search by"))
@@ -1002,7 +1005,7 @@ class Ui_MainWindow(object):
         self.task_project.setText(_translate("MainWindow", "Project:"))
         self.task_status.setText(_translate("MainWindow", "Status:"))
         self.task_dueDate.setText(_translate("MainWindow", "Due Date:"))
-        self.task_dateAccomplished.setText(_translate("MainWindow", "Date Accomplished:"))
+        self.task_totalMembers.setText(_translate("MainWindow", "Total Members:"))
         self.task_expand_button.setText(_translate("MainWindow", "Expand"))
         self.members_search.setPlaceholderText(_translate("MainWindow", "Type to search..."))
         self.members_searchby.setItemText(0, _translate("MainWindow", "Search by"))
