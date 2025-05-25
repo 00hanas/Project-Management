@@ -313,7 +313,7 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "#task_status {\n"
-"    background-image: url(:/icons/icons/check-circle_black.svg);\n"
+"    background-image: url(:/icons/icons/circle_black.svg);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
 "    padding-left: 30px; /* Space for the icon */\n"
@@ -937,7 +937,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -1031,3 +1031,4 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Projects"))
         item = self.members_table.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "Tasks"))
+        
