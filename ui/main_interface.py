@@ -13,7 +13,7 @@ from utils.clickableLabel import ClickableLabel
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1167, 765)
+        MainWindow.resize(1167, 733)
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("QMainWindow {\n"
 "    background-color: #edf4fa;\n"
@@ -114,10 +114,10 @@ class Ui_MainWindow(object):
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
 "    padding-left: 28px;\n"
-"    color: black;\n"
+"    color: #000000;\n"
 "}\n"
 "\n"
-"#home_searchby, #projects_searchby, #projects_sortby, #tasks_searchby, #tasks_sortby, #members_searchby, #members_sortby {\n"
+"#home_searchby, #projects_searchby, #projects_sortby, #tasks_searchby, #tasks_sortby, #members_searchby {\n"
 "    background-color: #edf4fa;\n"
 "    border: 1px solid #edf4fa;\n"
 "    border-radius: 8px;\n"
@@ -125,7 +125,7 @@ class Ui_MainWindow(object):
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: normal;\n"
 "    font-size: 9pt;\n"
-"    color: black;\n"
+"    color: #000000;\n"
 "}\n"
 "\n"
 """
@@ -629,7 +629,7 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.vProjects_scrollArea.setWidgetResizable(True)
         self.vProjects_scrollArea.setObjectName("vProjects_scrollArea")
         self.vProjectSA_widget = QtWidgets.QWidget()
-        self.vProjectSA_widget.setGeometry(QtCore.QRect(0, 0, 450, 369))
+        self.vProjectSA_widget.setGeometry(QtCore.QRect(0, 0, 98, 28))
         self.vProjectSA_widget.setObjectName("vProjectSA_widget")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.vProjectSA_widget)
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -709,7 +709,7 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.projects_scrollarea.setWidgetResizable(True)
         self.projects_scrollarea.setObjectName("projects_scrollarea")
         self.projects_contents = QtWidgets.QWidget()
-        self.projects_contents.setGeometry(QtCore.QRect(0, 0, 655, 563))
+        self.projects_contents.setGeometry(QtCore.QRect(0, 0, 655, 531))
         self.projects_contents.setObjectName("projects_contents")
         self.gridLayout_11 = QtWidgets.QGridLayout(self.projects_contents)
         self.gridLayout_11.setObjectName("gridLayout_11")
@@ -848,7 +848,7 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.tasks_scrollArea.setWidgetResizable(True)
         self.tasks_scrollArea.setObjectName("tasks_scrollArea")
         self.tasks_contents = QtWidgets.QWidget()
-        self.tasks_contents.setGeometry(QtCore.QRect(0, 0, 655, 563))
+        self.tasks_contents.setGeometry(QtCore.QRect(0, 0, 655, 531))
         self.tasks_contents.setObjectName("tasks_contents")
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.tasks_contents)
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
@@ -953,16 +953,6 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.members_searchby.addItem("")
         self.members_searchby.addItem("")
         self.horizontalLayout_15.addWidget(self.members_searchby)
-        self.members_sortby = QtWidgets.QComboBox(parent=self.members_bar)
-        self.members_sortby.setMinimumSize(QtCore.QSize(141, 40))
-        self.members_sortby.setObjectName("members_sortby")
-        self.members_sortby.addItem(icon5, "")
-        self.members_sortby.addItem("")
-        self.members_sortby.addItem("")
-        self.members_sortby.addItem("")
-        self.members_sortby.addItem("")
-        self.members_sortby.addItem("")
-        self.horizontalLayout_15.addWidget(self.members_sortby)
         self.addmember_button = QtWidgets.QPushButton(parent=self.members_bar)
         self.addmember_button.setMinimumSize(QtCore.QSize(261, 0))
         self.addmember_button.setMaximumSize(QtCore.QSize(16777215, 40))
@@ -1089,12 +1079,6 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.members_searchby.setItemText(3, _translate("MainWindow", "Email"))
         self.members_searchby.setItemText(4, _translate("MainWindow", "Project"))
         self.members_searchby.setItemText(5, _translate("MainWindow", "Task"))
-        self.members_sortby.setItemText(0, _translate("MainWindow", "Sort by"))
-        self.members_sortby.setItemText(1, _translate("MainWindow", "Member ID"))
-        self.members_sortby.setItemText(2, _translate("MainWindow", "Name"))
-        self.members_sortby.setItemText(3, _translate("MainWindow", "Email"))
-        self.members_sortby.setItemText(4, _translate("MainWindow", "Project"))
-        self.members_sortby.setItemText(5, _translate("MainWindow", "Task"))
         self.addmember_button.setText(_translate("MainWindow", "Add Member"))
         item = self.members_table.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Member ID"))
@@ -1106,4 +1090,3 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         item.setText(_translate("MainWindow", "Projects"))
         item = self.members_table.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "Tasks"))
-        

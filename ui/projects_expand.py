@@ -66,7 +66,7 @@ class Ui_projects_expand(object):
 "    border: none;\n"
 "}\n"
 "\n"
-"#project_id_info, #project_startDate_info, #project_endDate_info{\n"
+"#project_id_info, #project_startDate_info, #project_endDate_info {\n"
 "    font-weight: normal;\n"
 "    color: #000000;\n"
 "}")

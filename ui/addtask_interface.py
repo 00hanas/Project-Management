@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_addtask_dialog(object):
     def setupUi(self, addtask_dialog):
         addtask_dialog.setObjectName("addtask_dialog")
-        addtask_dialog.resize(616, 581)
+        addtask_dialog.resize(616, 543)
         addtask_dialog.setStyleSheet("QDialog{\n"
 "    background-color: #edf4fa;\n"
 "}\n"
@@ -39,7 +39,7 @@ class Ui_addtask_dialog(object):
 "    font-weight: normal;\n"
 "    font-size: 10pt;\n"
 "    background-color: #edf4fa;\n"
-"    color: #333;\n"
+"    color: #000000;\n"
 "}\n"
 "\n"
 "QLineEdit:focus, QTextEdit:focus, QDateTimeEdit:focus, QComboBox:focus {\n"

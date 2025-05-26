@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QCalendarWidget, QMainWindow, QAbstractItemView, QMessageBox, QTableWidgetItem
-from ui.main_interface2 import Ui_MainWindow
+from ui.main_interface import Ui_MainWindow
 from models.member import loadMember
 from views.member_view import expandRow
 from controllers.dashboard_controller import getTotalProjectCount, getTotalTaskCount, getTotalMemberCount, getCalendarEvents

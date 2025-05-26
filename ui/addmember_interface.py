@@ -39,7 +39,7 @@ class Ui_addmember_dialog(object):
 "    font-weight: normal;\n"
 "    font-size: 10pt;\n"
 "    background-color: #edf4fa;\n"
-"    color: #333;\n"
+"    color: #000000;\n"
 "}\n"
 "\n"
 "QLineEdit:focus, QListWidget:focus {\n"
