@@ -7,6 +7,7 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from utils.clickableLabel import ClickableLabel
 
 
 class Ui_MainWindow(object):
@@ -36,7 +37,7 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QComboBox::down-arrow {\n"
-"    image: url(:/icons/icons/chevron-down_black.svg);\n"
+"    image: url(icons/chevron-down_black.svg);\n"
 "    width: 20px;\n"
 "    height: 20px;\n"
 "}\n"
@@ -52,61 +53,8 @@ class Ui_MainWindow(object):
 "    font-size: 15px;\n"
 "}\n"
 "\n"
-"/* calendar stylesheet */\n"
-"\n"
-"QCalendarWidget {\n"
-"    background-color: #FFFFFF;\n"
-"    border: 1px solid #FFFFFF;\n"
-"    border-bottom-left-radius: 8px;\n"
-"    border-bottom-right-radius: 8px;\n"
-"    padding: 5px;\n"
-"    font-family: \"Poppins\", sans-serif;\n"
-"    font-weight: normal;\n"
-"    font-size: 14px;\n"
-"    color: black;\n"
-"}\n"
-"\n"
-"/* Navigation bar (month/year header) */\n"
-"QCalendarWidget QToolButton {\n"
-"    background-color: #e2091e;\n"
-"    color: #FFFFFF;\n"
-"    font-family: \"Poppins\", sans-serif;\n"
-"    font-weight: bold;\n"
-"    border: none;\n"
-"    margin: 2px;\n"
-"    padding: 4px 8px;\n"
-"    border-radius: 8px;\n"
-"}\n"
-"\n"
-"QCalendarWidget QWidget#qt_calendar_navigationbar {\n"
-"    background-color: #e2091e;\n"
-"    border-top-left-radius: 8px;\n"
-"    border-top-right-radius: 8px;\n"
-"}\n"
-"\n"
-"/* Highlight the current day (today) */\n"
-"QCalendarWidget QWidget#qt_calendar_today {\n"
-"    background-color: #e2091e;\n"
-"    border: 1px solid #e2091e;\n"
-"    border-radius: 10px;\n"
-"    color: #FFFFFF;\n"
-"}\n"
-"\n"
-"/* Left arrow */\n"
-"QCalendarWidget QToolButton#qt_calendar_prevmonth {\n"
-"    qproperty-icon: url(:/icons/icons/arrow-left-circle.svg);\n"
-"    qproperty-iconSize: 25px 25px;\n"
-"    background-color: transparent;\n"
-"    border: none;\n"
-"}\n"
-"\n"
-"/* Right arrow */\n"
-"QCalendarWidget QToolButton#qt_calendar_nextmonth {\n"
-"    qproperty-icon: url(:/icons/icons/arrow-right-circle.svg);\n"
-"    qproperty-iconSize: 25px 25px;\n"
-"    background-color: transparent;\n"
-"    border: none;\n"
-"}\n"
+"/* calendar stylesheet */\n" #calendar stylesheet
+
 "\n"
 "QScrollBar:vertical {\n"
 "    background-color: #878787;\n"
@@ -162,7 +110,7 @@ class Ui_MainWindow(object):
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: normal;\n"
 "    font-size: 9pt;\n"
-"    background-image: url(:/icons/icons/search_gray.svg);\n"
+"    background-image: url(icons/search_gray.svg);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
 "    padding-left: 28px;\n"
@@ -280,42 +228,42 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "#project_name, #task_project {\n"
-"    background-image: url(:/icons/icons/folder_black.svg);\n"
+"    background-image: url(icons/folder_black.svg);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
 "    padding-left: 30px; /* Space for the icon */\n"
 "}\n"
 "\n"
 "#project_id, #task_id {\n"
-"    background-image: url(:/icons/icons/key_black.svg);\n"
+"    background-image: url(icons/key_black.svg);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
 "    padding-left: 30px; /* Space for the icon */\n"
 "}\n"
 "\n"
 "#project_startDate, #project_endDate, #task_dueDate {\n"
-"    background-image: url(:/icons/icons/calendar_black.svg);\n"
+"    background-image: url(icons/calendar_black.svg);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
 "    padding-left: 30px; /* Space for the icon */\n"
 "}\n"
 "\n"
 "#project_totalMembers, #task_totalMembers  {\n"
-"    background-image: url(:/icons/icons/users_black.svg);\n"
+"    background-image: url(icons/users_black.svg);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
 "    padding-left: 30px; /* Space for the icon */\n"
 "}\n"
 "\n"
 "#project_totalTasks, #task_name {\n"
-"    background-image: url(:/icons/icons/clipboard_black.svg);\n"
+"    background-image: url(icons/clipboard_black.svg);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
 "    padding-left: 30px; /* Space for the icon */\n"
 "}\n"
 "\n"
 "#task_status {\n"
-"    background-image: url(:/icons/icons/circle_black.svg);\n"
+"    background-image: url(icons/circle_black.svg);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
 "    padding-left: 30px; /* Space for the icon */\n"
@@ -387,7 +335,7 @@ class Ui_MainWindow(object):
         self.planado_icon.setMaximumSize(QtCore.QSize(31, 16777215))
         self.planado_icon.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/icons/chevron-down_black.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("icons/chevron-down_black.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.planado_icon.setIcon(icon)
         self.planado_icon.setObjectName("planado_icon")
         self.horizontalLayout.addWidget(self.planado_icon)
@@ -416,25 +364,25 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.home_button = QtWidgets.QPushButton(parent=self.menu_buttons)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icons/icons/home_black.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon1.addPixmap(QtGui.QPixmap("icons/home_black.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.home_button.setIcon(icon1)
         self.home_button.setObjectName("home_button")
         self.verticalLayout.addWidget(self.home_button)
         self.projects_button = QtWidgets.QPushButton(parent=self.menu_buttons)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/icons/icons/folder_black.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon2.addPixmap(QtGui.QPixmap("icons/folder_black.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.projects_button.setIcon(icon2)
         self.projects_button.setObjectName("projects_button")
         self.verticalLayout.addWidget(self.projects_button)
         self.tasks_button = QtWidgets.QPushButton(parent=self.menu_buttons)
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":/icons/icons/clipboard_black.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon3.addPixmap(QtGui.QPixmap("icons/clipboard_black.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.tasks_button.setIcon(icon3)
         self.tasks_button.setObjectName("tasks_button")
         self.verticalLayout.addWidget(self.tasks_button)
         self.members_button = QtWidgets.QPushButton(parent=self.menu_buttons)
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(":/icons/icons/users_black.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon4.addPixmap(QtGui.QPixmap("icons/users_black.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.members_button.setIcon(icon4)
         self.members_button.setObjectName("members_button")
         self.verticalLayout.addWidget(self.members_button)
@@ -477,7 +425,7 @@ class Ui_MainWindow(object):
         self.projects_total_label = QtWidgets.QLabel(parent=self.projects_total_design)
         self.projects_total_label.setGeometry(QtCore.QRect(0, 10, 171, 41))
         self.projects_total_label.setObjectName("projects_total_label")
-        self.projects_total_count = QtWidgets.QLabel(parent=self.projects_total)
+        self.projects_total_count = ClickableLabel(parent=self.projects_total)
         self.projects_total_count.setGeometry(QtCore.QRect(150, 20, 151, 101))
         self.projects_total_count.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTop|QtCore.Qt.AlignmentFlag.AlignTrailing)
         self.projects_total_count.setObjectName("projects_total_count")
@@ -497,7 +445,7 @@ class Ui_MainWindow(object):
         self.tasks_total_label = QtWidgets.QLabel(parent=self.tasks_total_design)
         self.tasks_total_label.setGeometry(QtCore.QRect(0, 10, 171, 41))
         self.tasks_total_label.setObjectName("tasks_total_label")
-        self.tasks_total_count = QtWidgets.QLabel(parent=self.tasks_total)
+        self.tasks_total_count = ClickableLabel(parent=self.tasks_total)
         self.tasks_total_count.setGeometry(QtCore.QRect(150, 20, 151, 101))
         self.tasks_total_count.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTop|QtCore.Qt.AlignmentFlag.AlignTrailing)
         self.tasks_total_count.setObjectName("tasks_total_count")
@@ -517,7 +465,7 @@ class Ui_MainWindow(object):
         self.members_total_label = QtWidgets.QLabel(parent=self.members_total_design)
         self.members_total_label.setGeometry(QtCore.QRect(0, 10, 171, 41))
         self.members_total_label.setObjectName("members_total_label")
-        self.members_total_count = QtWidgets.QLabel(parent=self.members_total)
+        self.members_total_count = ClickableLabel(parent=self.members_total)
         self.members_total_count.setGeometry(QtCore.QRect(150, 20, 151, 101))
         self.members_total_count.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTop|QtCore.Qt.AlignmentFlag.AlignTrailing)
         self.members_total_count.setObjectName("members_total_count")
@@ -545,9 +493,79 @@ class Ui_MainWindow(object):
         self.home_searchby.addItem("")
         self.horizontalLayout_4.addWidget(self.home_searchby)
         self.gridLayout_2.addWidget(self.home_bar, 0, 0, 1, 2)
+
+        #Calendar Section
         self.home_calendar = QtWidgets.QCalendarWidget(parent=self.home_page)
         self.home_calendar.setMinimumSize(QtCore.QSize(441, 411))
         self.home_calendar.setObjectName("home_calendar")
+        self.home_calendar.setStyleSheet("""
+QCalendarWidget {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    padding: 5px;
+    font-family: "Poppins", sans-serif;
+    font-weight: normal;
+    font-size: 14px;
+    background-color: white;
+}
+
+/* Navigation bar (month/year header) */
+QCalendarWidget QToolButton {
+    background-color: #e2091e;
+    color: #FFFFFF;
+    font-family: "Poppins", sans-serif;
+    font-weight: bold;
+    border: none;
+    margin: 2px;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+QCalendarWidget QWidget#qt_calendar_navigationbar {
+    background-color: #e2091e;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    color: white;
+}
+
+/* Date text */
+QCalendarWidget QAbstractItemView {
+    color: black;  /* Make sure dates are visible */
+    selection-background-color: #e2091e;
+    selection-color: white;
+}
+
+/* Highlight the current day (today) */
+QCalendarWidget QWidget#qt_calendar_today {
+    background-color: #e2091e;
+    border: 1px solid #e2091e;
+    border-radius: 10px;
+    color: white;
+}
+
+/* Left arrow */
+QCalendarWidget QToolButton#qt_calendar_prevmonth {
+    qproperty-icon: url(icons/arrow-left-circle.svg);
+    qproperty-iconSize: 25px 25px;
+    background-color: transparent;
+    border: none;
+}
+
+/* Right arrow */
+QCalendarWidget QToolButton#qt_calendar_nextmonth {
+    qproperty-icon: url(icons/arrow-right-circle.svg);
+    qproperty-iconSize: 25px 25px;
+    background-color: transparent;
+    border: none;
+}
+
+/* Month dropdown menu */
+QCalendarWidget QMenu {
+    background-color: white;
+    color: black;
+}
+""")
+        
         self.gridLayout_2.addWidget(self.home_calendar, 2, 1, 1, 1)
         self.view_projects = QtWidgets.QFrame(parent=self.home_page)
         self.view_projects.setEnabled(True)
@@ -616,7 +634,7 @@ class Ui_MainWindow(object):
         self.projects_sortby.setMinimumSize(QtCore.QSize(141, 40))
         self.projects_sortby.setObjectName("projects_sortby")
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap(":/icons/icons/filter_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon5.addPixmap(QtGui.QPixmap("icons/filter_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.projects_sortby.addItem(icon5, "")
         self.projects_sortby.addItem("")
         self.projects_sortby.addItem("")
@@ -627,7 +645,7 @@ class Ui_MainWindow(object):
         self.addproject_button.setMinimumSize(QtCore.QSize(261, 0))
         self.addproject_button.setMaximumSize(QtCore.QSize(16777215, 40))
         icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(":/icons/icons/plus-circle.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon6.addPixmap(QtGui.QPixmap("icons/plus-circle.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.addproject_button.setIcon(icon6)
         self.addproject_button.setIconSize(QtCore.QSize(20, 20))
         self.addproject_button.setAutoRepeat(False)
@@ -717,7 +735,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.project_details_frame)
         self.project_expand_button = QtWidgets.QPushButton(parent=self.project_details)
         icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap(":/icons/icons/maximize.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon7.addPixmap(QtGui.QPixmap("icons/maximize.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_expand_button.setIcon(icon7)
         self.project_expand_button.setObjectName("project_expand_button")
         self.verticalLayout_4.addWidget(self.project_expand_button)
@@ -911,6 +929,13 @@ class Ui_MainWindow(object):
         self.members_table.setObjectName("members_table")
         self.members_table.setColumnCount(5)
         self.members_table.setRowCount(0)
+
+
+        #added lines to expand the table horizontally
+        self.members_table.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.members_table.horizontalHeader().setStretchLastSection(True)
+        self.members_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
+
         item = QtWidgets.QTableWidgetItem()
         self.members_table.setHorizontalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
