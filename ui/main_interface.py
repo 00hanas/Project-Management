@@ -109,7 +109,7 @@ class Ui_MainWindow(object):
 "    border-radius: 8px;\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: normal;\n"
-"    font-size: 9pt;\n"
+"    font-size: 15px;\n"
 "    background-image: url(icons/search_gray.svg);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
@@ -124,7 +124,7 @@ class Ui_MainWindow(object):
 "    padding: 5px 15px 5px 5px; \n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: normal;\n"
-"    font-size: 9pt;\n"
+"    font-size: 15px;\n"
 "    color: #000000;\n"
 "}\n"
 "\n"
@@ -140,7 +140,7 @@ class Ui_MainWindow(object):
     border-radius: 8px;
     padding: 3px;
     font-family: "Poppins", sans-serif;
-    font-size: 9pt;
+    font-size: 15px;
     margin-top: 5px;  /* Spacing from the combo box */
 }
 
