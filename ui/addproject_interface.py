@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_addproject_dialog(object):
     def setupUi(self, addproject_dialog):
         addproject_dialog.setObjectName("addproject_dialog")
-        addproject_dialog.resize(616, 502)
+        addproject_dialog.resize(616, 464)
         addproject_dialog.setStyleSheet("QDialog{\n"
 "    background-color: #edf4fa;\n"
 "}\n"
@@ -39,7 +39,7 @@ class Ui_addproject_dialog(object):
 "    font-weight: normal;\n"
 "    font-size: 10pt;\n"
 "    background-color: #edf4fa;\n"
-"    color: #333;\n"
+"    color: #000000;\n"
 "}\n"
 "\n"
 "QLineEdit:focus, QTextEdit:focus, QDateTimeEdit:focus {\n"

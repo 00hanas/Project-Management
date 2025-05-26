@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_tasks_expand(object):
     def setupUi(self, tasks_expand):
         tasks_expand.setObjectName("tasks_expand")
-        tasks_expand.resize(643, 615)
+        tasks_expand.resize(643, 602)
         tasks_expand.setStyleSheet("QDialog{\n"
 "    background-color: #edf4fa;\n"
 "}\n"
