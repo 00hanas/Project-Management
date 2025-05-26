@@ -6,18 +6,20 @@ from PyQt6.QtCore import QPropertyAnimation, QEasingCurve, Qt, QObject, pyqtProp
 from PyQt6.QtGui import QPixmap, QIcon
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QSizePolicy
+from ui.addmember_interface import Ui_addmember_dialog
 
 class AddMemberForm(QDialog):
     def __init__(self, main_window):
         super().__init__()
         self.main_window = main_window
-        self.ui = Ui_MemberForm() #change this to the actual UI class name
+        self.ui = Ui_addmember_dialog()
         self.ui.setupUi(self)
 
         self.main_window = main_window
 
-        
-        self.ui.pushButton.clicked.connect(self.saveMember)
+        self.ui.member_save_button.clicked.connect(self.saveMember)
+        self.ui.member_clear_button.clicked.connect(self.clearMember)
+        self.ui.member_cancel_button.clicked.connect(self.cancelMember)
 
     def saveMember(self):
         member_id = self.ui.lineEdit.text().strip() #assume
@@ -27,12 +29,28 @@ class AddMemberForm(QDialog):
         addMember((member_id, name, email))
         from models.member import loadMember
         loadMember(self.main_window.ui.members_table)
-        
+
+    def clearMember(self):
+        self.ui.member_name_info.clear()
+        self.ui.member_id_info.clear()
+        self.ui.member_email_info.clear()
+
+        for i in range(self.ui.member_project_info.count()):
+            item = self.ui.member_project_info.item(i)
+            item.setCheckState(QtCore.Qt.CheckState.Unchecked)
+
+        for i in range(self.ui.member_task_info.count()):
+            item = self.ui.member_task_info.item(i)
+            item.setCheckState(QtCore.Qt.CheckState.Unchecked)
+
+    def cancelMember(self):
+        self.close()
+
 class EditMemberForm(QDialog):
     def __init__(self, main_window, originalID):
         super().__init__()
         self.main_window = main_window
-        self.ui = Ui_MemberForm() #change this to the actual UI class name
+        self.ui = Ui_addmember_dialog() #change this to the actual UI class name
         self.ui.setupUi(self)
 
         self.main_window = main_window

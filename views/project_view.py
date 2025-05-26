@@ -1,17 +1,21 @@
 from config.db_config import getConnection
 from PyQt6.QtWidgets import QDialog, QWidget, QScrollArea, QGridLayout, QVBoxLayout
+from PyQt6.QtCore import QDateTime
 from models.project import loadProject
 from controllers.project_controller import addProject, getProjectByID, updateProject, getAllProjects
 from widgets.project_widget import ProjectWidget
+from ui.addproject_interface import Ui_addproject_dialog
 
 class AddProjectForm(QDialog):
     def __init__(self, main_window):
         super().__init__()
         self.main_window = main_window
-        self.ui = Ui_ProjectForm()  # Replace with your actual UI class
+        self.ui = Ui_addproject_dialog()  # Replace with your actual UI class
         self.ui.setupUi(self)
 
-        self.ui.pushButton.clicked.connect(self.saveProject)
+        self.ui.project_save_button.clicked.connect(self.saveProject)
+        self.ui.project_clear_button.clicked.connect(self.clearProject)
+        self.ui.project_cancel_button.clicked.connect(self.cancelProject)
 
     def saveProject(self):
         project_id = self.ui.lineEdit.text().strip()      # Assume
@@ -28,11 +32,21 @@ class AddProjectForm(QDialog):
             "endDate": end
         })
 
+    def clearProject(self):
+        self.ui.project_name_info.clear()
+        self.ui.project_id_info.clear()
+        self.ui.project_shortDescrip_info.clear()
+        self.ui.project_startDate_info.setDateTime(QDateTime(2000, 1, 1, 0, 0))
+        self.ui.project_endDate_info.setDateTime(QDateTime(2000, 1, 1, 0, 0))
+
+    def cancelProject(self):
+        self.close()
+
 class EditProjectForm(QDialog):
     def __init__(self, main_window, originalID):
         super().__init__()
         self.main_window = main_window
-        self.ui = Ui_ProjectForm()  # Replace with your actual UI class
+        self.ui = Ui_addproject_dialog()  # Replace with your actual UI class
         self.ui.setupUi(self)
 
         # Load existing data into the form
