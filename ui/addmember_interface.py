@@ -48,13 +48,13 @@ class Ui_addmember_dialog(object):
 "}\n"
 "\n"
 "QDateTimeEdit::down-arrow {\n"
-"    image: url(:/icons/icons/chevron-down_black.svg);\n"
+"    image: url(icons/chevron-down_black.svg);\n"
 "    width: 10px;\n"
 "    height: 10px;\n"
 "}\n"
 "\n"
 "QDateTimeEdit::up-arrow {\n"
-"    image: url(:/icons/icons/chevron-up_black.svg);\n"
+"    image: url(icons/chevron-up_black.svg);\n"
 "    width: 10px;\n"
 "    height: 10px;\n"
 "}\n"
@@ -75,7 +75,7 @@ class Ui_addmember_dialog(object):
 "}\n"
 "\n"
 "QComboBox::down-arrow {\n"
-"    image: url(:/icons/icons/chevron-down_black.svg);\n"
+"    image: url(icons/chevron-down_black.svg);\n"
 "    width: 20px;\n"
 "    height: 20px;\n"
 "}\n"
@@ -190,22 +190,25 @@ class Ui_addmember_dialog(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.member_save_button = QtWidgets.QPushButton(parent=self.frame)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/icons/save.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("icons/save.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.member_save_button.setIcon(icon)
         self.member_save_button.setObjectName("member_save_button")
+        self.member_save_button.setMinimumHeight(30)
         self.horizontalLayout.addWidget(self.member_save_button)
         self.member_clear_button = QtWidgets.QPushButton(parent=self.frame)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icons/icons/delete.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon1.addPixmap(QtGui.QPixmap("icons/delete.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.member_clear_button.setIcon(icon1)
         self.member_clear_button.setObjectName("member_clear_button")
+        self.member_clear_button.setMinimumHeight(30)
         self.horizontalLayout.addWidget(self.member_clear_button)
         self.member_cancel_button = QtWidgets.QPushButton(parent=self.frame)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/icons/icons/x-square.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon2.addPixmap(QtGui.QPixmap("icons/x-square.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.member_cancel_button.setIcon(icon2)
         self.member_cancel_button.setObjectName("member_cancel_button")
         self.horizontalLayout.addWidget(self.member_cancel_button)
+        self.member_cancel_button.setMinimumHeight(30)
         self.verticalLayout_11.addWidget(self.frame)
 
         self.retranslateUi(addmember_dialog)

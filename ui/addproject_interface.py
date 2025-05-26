@@ -48,13 +48,13 @@ class Ui_addproject_dialog(object):
 "}\n"
 "\n"
 "QDateTimeEdit::down-arrow {\n"
-"    image: url(:/icons/icons/chevron-down_black.svg);\n"
+"    image: url(icons/chevron-down_black.svg);\n"
 "    width: 10px;\n"
 "    height: 10px;\n"
 "}\n"
 "\n"
 "QDateTimeEdit::up-arrow {\n"
-"    image: url(:/icons/icons/chevron-up_black.svg);\n"
+"    image: url(icons/chevron-up_black.svg);\n"
 "    width: 10px;\n"
 "    height: 10px;\n"
 "}\n"
@@ -183,21 +183,24 @@ class Ui_addproject_dialog(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.project_save_button = QtWidgets.QPushButton(parent=self.frame)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/icons/save.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("icons/save.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_save_button.setIcon(icon)
         self.project_save_button.setObjectName("project_save_button")
+        self.project_save_button.setMinimumHeight(30)
         self.horizontalLayout.addWidget(self.project_save_button)
         self.project_clear_button = QtWidgets.QPushButton(parent=self.frame)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icons/icons/delete.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon1.addPixmap(QtGui.QPixmap("icons/delete.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_clear_button.setIcon(icon1)
         self.project_clear_button.setObjectName("project_clear_button")
+        self.project_clear_button.setMinimumHeight(30)
         self.horizontalLayout.addWidget(self.project_clear_button)
         self.project_cancel_button = QtWidgets.QPushButton(parent=self.frame)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/icons/icons/x-square.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon2.addPixmap(QtGui.QPixmap("icons/x-square.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_cancel_button.setIcon(icon2)
         self.project_cancel_button.setObjectName("project_cancel_button")
+        self.project_cancel_button.setMinimumHeight(30)
         self.horizontalLayout.addWidget(self.project_cancel_button)
         self.verticalLayout_6.addWidget(self.frame)
 
