@@ -48,13 +48,13 @@ class Ui_addtask_dialog(object):
 "}\n"
 "\n"
 "QDateTimeEdit::down-arrow {\n"
-"    image: url(:/icons/icons/chevron-down_black.svg);\n"
+"    image: url(icons/chevron-down_black.svg);\n"
 "    width: 10px;\n"
 "    height: 10px;\n"
 "}\n"
 "\n"
 "QDateTimeEdit::up-arrow {\n"
-"    image: url(:/icons/icons/chevron-up_black.svg);\n"
+"    image: url(icons/chevron-up_black.svg);\n"
 "    width: 10px;\n"
 "    height: 10px;\n"
 "}\n"
@@ -75,7 +75,7 @@ class Ui_addtask_dialog(object):
 "}\n"
 "\n"
 "QComboBox::down-arrow {\n"
-"    image: url(:/icons/icons/chevron-down_black.svg);\n"
+"    image: url(icons/chevron-down_black.svg);\n"
 "    width: 20px;\n"
 "    height: 20px;\n"
 "}\n"
@@ -120,7 +120,7 @@ class Ui_addtask_dialog(object):
         self.task_status_info = QtWidgets.QComboBox(parent=self.task_status_frame)
         self.task_status_info.setObjectName("task_status_info")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/icons/check-circle_orange.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("icons/check-circle_orange.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_status_info.addItem(icon, "")
         self.task_status_info.addItem("")
         self.task_status_info.addItem("")
@@ -142,7 +142,7 @@ class Ui_addtask_dialog(object):
         self.task_project_info = QtWidgets.QComboBox(parent=self.task_project_frame)
         self.task_project_info.setObjectName("task_project_info")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icons/icons/folder_orange.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon1.addPixmap(QtGui.QPixmap("icons/folder_orange.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_project_info.addItem(icon1, "")
         self.verticalLayout.addWidget(self.task_project_info)
         self.gridLayout.addWidget(self.task_project_frame, 1, 0, 1, 1)
@@ -211,26 +211,47 @@ class Ui_addtask_dialog(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.task_save_button = QtWidgets.QPushButton(parent=self.frame)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/icons/icons/save.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon2.addPixmap(QtGui.QPixmap("icons/save.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_save_button.setIcon(icon2)
         self.task_save_button.setObjectName("task_save_button")
+        self.task_save_button.setMinimumHeight(30)
         self.horizontalLayout.addWidget(self.task_save_button)
         self.task_clear_button = QtWidgets.QPushButton(parent=self.frame)
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":/icons/icons/delete.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon3.addPixmap(QtGui.QPixmap("icons/delete.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_clear_button.setIcon(icon3)
         self.task_clear_button.setObjectName("task_clear_button")
+        self.task_clear_button.setMinimumHeight(30)
         self.horizontalLayout.addWidget(self.task_clear_button)
         self.task_cancel_button = QtWidgets.QPushButton(parent=self.frame)
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(":/icons/icons/x-square.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon4.addPixmap(QtGui.QPixmap("icons/x-square.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_cancel_button.setIcon(icon4)
         self.task_cancel_button.setObjectName("task_cancel_button")
+        self.task_cancel_button.setMinimumHeight(30)
         self.horizontalLayout.addWidget(self.task_cancel_button)
         self.verticalLayout_6.addWidget(self.frame)
 
         self.retranslateUi(addtask_dialog)
         QtCore.QMetaObject.connectSlotsByName(addtask_dialog)
+
+        self.task_project_info.setStyleSheet("""
+            QComboBox {
+                color: #000000;
+            }
+            QComboBox QAbstractItemView {
+                color: #000000;
+            }
+        """)
+
+        self.task_status_info.setStyleSheet("""
+            QComboBox {
+                color: #000000;
+            }
+            QComboBox QAbstractItemView {
+                color: #000000;
+            }
+        """)
 
     def retranslateUi(self, addtask_dialog):
         _translate = QtCore.QCoreApplication.translate

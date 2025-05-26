@@ -15,7 +15,7 @@ class AddMemberForm(QDialog):
     def __init__(self, main_window):
         super().__init__()
         self.main_window = main_window
-        self.ui = Ui_addmember_dialog() #change this to the actual UI class name
+        self.ui = Ui_addmember_dialog()
         self.ui.setupUi(self)
 
         self.main_window = main_window
@@ -27,6 +27,8 @@ class AddMemberForm(QDialog):
         populateTaskList(self.ui.member_task_info)
         
         self.ui.member_save_button.clicked.connect(self.saveMember)
+        self.ui.member_clear_button.clicked.connect(self.clearMember)
+        self.ui.member_cancel_button.clicked.connect(self.cancelMember)
 
     def saveMember(self):
         member_id = self.ui.member_id_info.text().strip() 
@@ -66,6 +68,22 @@ class AddMemberForm(QDialog):
         QMessageBox.information(self, "Success", "Member saved successfully.")
         self.close()
         
+    def clearMember(self):
+        self.ui.member_name_info.clear()
+        self.ui.member_id_info.clear()
+        self.ui.member_email_info.clear()
+
+        for i in range(self.ui.member_project_info.count()):
+            item = self.ui.member_project_info.item(i)
+            item.setCheckState(QtCore.Qt.CheckState.Unchecked)
+
+        for i in range(self.ui.member_task_info.count()):
+            item = self.ui.member_task_info.item(i)
+            item.setCheckState(QtCore.Qt.CheckState.Unchecked)
+
+    def cancelMember(self):
+        self.close()
+
 class EditMemberForm(QDialog):
     def __init__(self, main_window, originalID):
         super().__init__()

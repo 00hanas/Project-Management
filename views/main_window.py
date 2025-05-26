@@ -1,6 +1,8 @@
 from PyQt6.QtWidgets import QCalendarWidget, QMainWindow, QAbstractItemView, QMessageBox, QTableWidgetItem
 from ui.main_interface import Ui_MainWindow
 from models.member import loadMember
+from views.project_view import AddProjectForm
+from views.task_view import AddTaskForm
 from views.member_view import expandRow, EditMemberForm, AddMemberForm
 from controllers.dashboard_controller import getTotalProjectCount, getTotalTaskCount, getTotalMemberCount, getCalendarEvents
 from controllers.member_controller import searchMembers, getAllMembersForSearch
@@ -15,7 +17,7 @@ class MainApp(QMainWindow):
 
         # Default navigation to home page
         self.ui.stackedWidget.setCurrentIndex(0)
-
+        
         # Total project count, task count, and member count
         self.ui.projects_total_count.setText(str(getTotalProjectCount()))
         self.ui.tasks_total_count.setText(str(getTotalTaskCount()))
@@ -25,11 +27,16 @@ class MainApp(QMainWindow):
         self.ui.tasks_total_count.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
         self.ui.members_total_count.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3))
 
-        # Navigation to member's page
+        # Navigation to pages
+        self.ui.home_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
+        self.ui.projects_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
+        self.ui.tasks_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
         self.ui.members_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3)) 
 
-        # Navigation to home's page
-        self.ui.home_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0)) 
+        # Handling add buttons
+        self.ui.addproject_button.clicked.connect(lambda: AddProjectForm(self).exec())
+        self.ui.addtask_button.clicked.connect(lambda: AddTaskForm(self).exec())
+        self.ui.addmember_button.clicked.connect(lambda: AddMemberForm(self).exec())
 
         # Handling calendar controls
         self.calendar = self.ui.home_calendar
@@ -38,6 +45,7 @@ class MainApp(QMainWindow):
         self.calendar.style().polish(self.calendar)
         self.highlightEvents()
         
+
         # Configure calendar selection behavior
         self.calendar.setSelectionMode(QCalendarWidget.SelectionMode.SingleSelection)
         
