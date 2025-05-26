@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_projects_expand(object):
     def setupUi(self, projects_expand):
         projects_expand.setObjectName("projects_expand")
-        projects_expand.resize(643, 615)
+        projects_expand.resize(643, 506)
         projects_expand.setStyleSheet("QDialog{\n"
 "    background-color: #edf4fa;\n"
 "}\n"
@@ -363,11 +363,11 @@ class Ui_projects_expand(object):
         self.frame_6.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.frame_6.setObjectName("frame_6")
         self.gridLayout_3.addWidget(self.frame_6, 1, 0, 1, 1)
-        self.project_members_infp = QtWidgets.QListWidget(parent=self.project_members_frame)
-        self.project_members_infp.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.project_members_infp.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
-        self.project_members_infp.setObjectName("project_members_infp")
-        self.gridLayout_3.addWidget(self.project_members_infp, 1, 1, 1, 2)
+        self.project_members_info = QtWidgets.QListWidget(parent=self.project_members_frame)
+        self.project_members_info.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.project_members_info.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
+        self.project_members_info.setObjectName("project_members_info")
+        self.gridLayout_3.addWidget(self.project_members_info, 1, 1, 1, 2)
         self.gridLayout_6.addWidget(self.project_members_frame, 6, 1, 1, 1)
         self.gridLayout.addWidget(self.projects_expand_frame, 0, 0, 1, 1)
 
