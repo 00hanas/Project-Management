@@ -1,9 +1,11 @@
-from PyQt6.QtWidgets import QMainWindow, QAbstractItemView, QMessageBox
-from ui.main_interface import Ui_MainWindow
+from PyQt6.QtWidgets import QCalendarWidget, QMainWindow, QAbstractItemView, QMessageBox, QTableWidgetItem
+from ui.main_interface2 import Ui_MainWindow
 from models.member import loadMember
 from views.member_view import expandRow
 from controllers.dashboard_controller import getTotalProjectCount, getTotalTaskCount, getTotalMemberCount, getCalendarEvents
+from controllers.member_controller import searchMembers, getAllMembersForSearch
 from PyQt6.QtGui import QTextCharFormat, QColor, QFont
+from PyQt6.QtCore import QDate
 
 class MainApp(QMainWindow):
     def __init__(self):
@@ -29,11 +31,18 @@ class MainApp(QMainWindow):
         # Navigation to home's page
         self.ui.home_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0)) 
 
-        #handling calendar navigation
+        # Handling calendar controls
         self.calendar = self.ui.home_calendar
         self.date_tooltip_map = {}
-
+        self.calendar.style().unpolish(self.calendar)
+        self.calendar.style().polish(self.calendar)
         self.highlightEvents()
+        # Configure calendar selection behavior
+        self.calendar.setSelectionMode(QCalendarWidget.SelectionMode.SingleSelection)
+        
+        # Search functionality in members' page
+        self.ui.members_search.textChanged.connect(self.performSearch)
+        self.ui.members_searchby.currentIndexChanged.connect(self.performSearch)
 
 
         #Load members into the table
@@ -45,6 +54,8 @@ class MainApp(QMainWindow):
             #Functions for the members' table
             self.setupTableInteractions()
             loadMember(self.ui.members_table)
+
+        self.ui.members_table.horizontalHeader().sectionClicked.connect(self.sortTableByColumn)
 
     def setupTableInteractions(self):
         table = self.ui.members_table
@@ -131,3 +142,39 @@ class MainApp(QMainWindow):
             fmt.setToolTip("\n".join(tooltips))
             self.calendar.setDateTextFormat(date, fmt)
 
+        fmt = QTextCharFormat()
+        fmt.setBackground(QColor("#e2091e"))
+        fmt.setForeground(QColor("white"))
+        fmt.setFontWeight(QFont.Weight.Bold)
+        self.calendar.setDateTextFormat(QDate.currentDate(), fmt)
+
+        self.calendar.setDateTextFormat(QDate.currentDate(), fmt)
+
+    def performSearch(self):
+        keyword = self.ui.members_search.text()
+        search_by = self.ui.members_searchby.currentText()
+
+        # Handle default combo text like "Search By"
+        if search_by == "Search By":
+            search_by = ""  # Triggers search across all fields
+
+        results = searchMembers(keyword, search_by)
+        self.updateTable(results)
+
+    def updateTable(self, member_ids: list[str]):
+        self.ui.members_table.setRowCount(0)
+
+        for row_num, member_id in enumerate(member_ids):
+            data = getAllMembersForSearch(member_id)
+
+            self.ui.members_table.insertRow(row_num)
+            self.ui.members_table.setItem(row_num, 0, QTableWidgetItem(data['memberID']))
+            self.ui.members_table.setItem(row_num, 1, QTableWidgetItem(data['fullname']))
+            self.ui.members_table.setItem(row_num, 2, QTableWidgetItem(data['email']))
+            self.ui.members_table.setItem(row_num, 3, QTableWidgetItem(str(data['projectCount'])))
+            self.ui.members_table.setItem(row_num, 4, QTableWidgetItem(str(data['taskCount'])))
+
+
+    def sortTableByColumn(self, column):
+        current_order = self.ui.members_table.horizontalHeader().sortIndicatorOrder()
+        self.ui.members_table.sortItems(column, current_order)

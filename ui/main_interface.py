@@ -114,6 +114,7 @@ class Ui_MainWindow(object):
 "    background-repeat: no-repeat;\n"
 "    background-position: left center;\n"
 "    padding-left: 28px;\n"
+"    color: black;\n"
 "}\n"
 "\n"
 "#home_searchby, #projects_searchby, #projects_sortby, #tasks_searchby, #tasks_sortby, #members_searchby, #members_sortby {\n"
@@ -124,8 +125,62 @@ class Ui_MainWindow(object):
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: normal;\n"
 "    font-size: 9pt;\n"
+"    color: black;\n"
 "}\n"
 "\n"
+"""
+#home_searchby QAbstractItemView, 
+#projects_searchby QAbstractItemView, 
+#projects_sortby QAbstractItemView, 
+#tasks_searchby QAbstractItemView, 
+#tasks_sortby QAbstractItemView, 
+#members_searchby QAbstractItemView, 
+#members_sortby QAbstractItemView {
+    background-color: #edf4fa;  /* Match the combo box bg */  
+    border-radius: 8px;
+    padding: 3px;
+    font-family: "Poppins", sans-serif;
+    font-size: 9pt;
+    margin-top: 5px;  /* Spacing from the combo box */
+}
+
+/* Default item style (applies always) */
+#home_searchby QAbstractItemView::item, 
+#projects_searchby QAbstractItemView::item, 
+#projects_sortby QAbstractItemView::item, 
+#tasks_searchby QAbstractItemView::item, 
+#tasks_sortby QAbstractItemView::item, 
+#members_searchby QAbstractItemView::item, 
+#members_sortby QAbstractItemView::item {
+    background-color: #edf4fa;  /* Same as dropdown */
+    color: black;
+    height: 25px;
+    
+}
+
+/* Hover state (optional - can remove if you want no hover effect) */
+#home_searchby QAbstractItemView::item:hover, 
+#projects_searchby QAbstractItemView::item:hover, 
+#projects_sortby QAbstractItemView::item:hover, 
+#tasks_searchby QAbstractItemView::item:hover, 
+#tasks_sortby QAbstractItemView::item:hover, 
+#members_searchby QAbstractItemView::item:hover, 
+#members_sortby QAbstractItemView::item:hover {
+    background-color: #d0e3f7;  /* Slightly darker on hover */
+}
+
+/* Selected item state (keep visible selection) */
+#home_searchby QAbstractItemView::item:selected, 
+#projects_searchby QAbstractItemView::item:selected, 
+#projects_sortby QAbstractItemView::item:selected, 
+#tasks_searchby QAbstractItemView::item:selected, 
+#tasks_sortby QAbstractItemView::item:selected, 
+#members_searchby QAbstractItemView::item:selected, 
+#members_sortby QAbstractItemView::item:selected {
+    background-color: #a8c9eb;  /* Even darker for selection */
+    color: black;
+}
+"""
 "/* menu buttons stylesheet */\n"
 "\n"
 "#home_button:hover, #projects_button:hover, #tasks_button:hover, #members_button:hover {\n"
@@ -495,30 +550,22 @@ class Ui_MainWindow(object):
         #Calendar Section
         self.home_calendar = QtWidgets.QCalendarWidget(parent=self.home_page)
         self.home_calendar.setMinimumSize(QtCore.QSize(441, 411))
+        self.home_calendar.setVerticalHeaderFormat(
+    QtWidgets.QCalendarWidget.VerticalHeaderFormat.NoVerticalHeader
+)
         self.home_calendar.setObjectName("home_calendar")
         self.home_calendar.setStyleSheet("""
+/* Base Calendar Styling */
 QCalendarWidget {
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     padding: 5px;
     font-family: "Poppins", sans-serif;
-    font-weight: normal;
     font-size: 14px;
     background-color: white;
 }
 
-/* Navigation bar (month/year header) */
-QCalendarWidget QToolButton {
-    background-color: #e2091e;
-    color: #FFFFFF;
-    font-family: "Poppins", sans-serif;
-    font-weight: bold;
-    border: none;
-    margin: 2px;
-    padding: 4px 8px;
-    border-radius: 8px;
-}
-
+/* Navigation Bar */
 QCalendarWidget QWidget#qt_calendar_navigationbar {
     background-color: #e2091e;
     border-top-left-radius: 8px;
@@ -526,41 +573,42 @@ QCalendarWidget QWidget#qt_calendar_navigationbar {
     color: white;
 }
 
-/* Date text */
+/* Date Cells */
 QCalendarWidget QAbstractItemView {
-    color: black;  /* Make sure dates are visible */
-    selection-background-color: #e2091e;
-    selection-color: white;
-}
-
-/* Highlight the current day (today) */
-QCalendarWidget QWidget#qt_calendar_today {
-    background-color: #e2091e;
-    border: 1px solid #e2091e;
-    border-radius: 10px;
-    color: white;
-}
-
-/* Left arrow */
-QCalendarWidget QToolButton#qt_calendar_prevmonth {
-    qproperty-icon: url(icons/arrow-left-circle.svg);
-    qproperty-iconSize: 25px 25px;
-    background-color: transparent;
-    border: none;
-}
-
-/* Right arrow */
-QCalendarWidget QToolButton#qt_calendar_nextmonth {
-    qproperty-icon: url(icons/arrow-right-circle.svg);
-    qproperty-iconSize: 25px 25px;
-    background-color: transparent;
-    border: none;
-}
-
-/* Month dropdown menu */
-QCalendarWidget QMenu {
-    background-color: white;
     color: black;
+    selection-background-color: transparent;  /* No fill for selection */
+}
+
+/* TODAY'S DATE - Always has red border */
+QCalendarWidget QWidget#qt_calendar_today {
+    border: 2px solid #e2091e;
+    border-radius: 10px;
+    background-color: transparent;
+}
+
+/* SELECTED DATE - Gets red border when clicked */
+QCalendarWidget QAbstractItemView:selected {
+    border: 2px solid #e2091e;
+    border-radius: 10px;
+    background-color: transparent;
+}
+
+/* Navigation Buttons */
+QCalendarWidget QToolButton {
+    background-color: #e2091e;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 8px;
+    margin: 2px;
+}
+
+/* Arrow Buttons */
+QCalendarWidget QToolButton#qt_calendar_prevmonth,
+QCalendarWidget QToolButton#qt_calendar_nextmonth {
+    background-color: transparent;
+    border: none;
 }
 """)
         
@@ -943,6 +991,8 @@ QCalendarWidget QMenu {
         self.members_table.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.members_table.horizontalHeader().setStretchLastSection(True)
         self.members_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
+        self.members_table.verticalHeader().setVisible(False)
+        self.members_table.verticalHeader().setDefaultSectionSize(0)  # Remove leftover space
 
         item = QtWidgets.QTableWidgetItem()
         self.members_table.setHorizontalHeaderItem(0, item)

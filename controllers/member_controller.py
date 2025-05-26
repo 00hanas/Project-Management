@@ -46,8 +46,14 @@ def getAllMembers() -> list[tuple]:
     conn = getConnection()
     cursor = conn.cursor()
     
-    sql = "SELECT m.memberID, m.fullname, m.email, COUNT(DISTINCT COALESCE(pm.projectID, tp.projectID)) AS projectCount, COUNT(DISTINCT tm.taskID) AS taskCount FROM members m LEFT JOIN projectMember pm ON m.memberID = pm.memberID LEFT JOIN taskMember tm ON m.memberID = tm.memberID LEFT JOIN task t ON tm.taskID = t.taskID LEFT JOIN project tp ON t.projectID = tp.projectID GROUP BY m.memberID, m.fullname, m.email"
-    
+    sql = """
+    SELECT m.memberID, m.fullname, m.email, 
+    COUNT(DISTINCT COALESCE(pm.projectID, tp.projectID)) AS projectCount, 
+    COUNT(DISTINCT tm.taskID) AS taskCount 
+    FROM members m LEFT JOIN projectMember pm ON m.memberID = pm.memberID 
+    LEFT JOIN taskMember tm ON m.memberID = tm.memberID LEFT JOIN task t ON tm.taskID = t.taskID 
+    LEFT JOIN project tp ON t.projectID = tp.projectID GROUP BY m.memberID, m.fullname, m.email
+    """
     cursor.execute(sql)
     members = cursor.fetchall()
     cursor.close()
@@ -86,23 +92,48 @@ def memberExists(memberID: str) -> bool:
     
     return exists
 
-def searchMembers(keyword: str) -> list[dict]:
+def searchMembers(keyword: str, search_by: str) -> list[str]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)
-    
-    sql = """
-        SELECT * FROM members
-        WHERE memberID LIKE %s OR fullname LIKE %s OR email LIKE %s
+    cursor = conn.cursor()
+
+    keyword_like = f"%{keyword}%"
+
+    sql_base = """
+        SELECT DISTINCT m.memberID
+        FROM members m
+        LEFT JOIN projectMember pm ON m.memberID = pm.memberID
+        LEFT JOIN project p ON pm.projectID = p.projectID
+        LEFT JOIN taskMember tm ON m.memberID = tm.memberID
+        LEFT JOIN task t ON tm.taskID = t.taskID
     """
-    
-    like = f"%{keyword}%"
-    
-    cursor.execute(sql, (like, like, like))
-    results = cursor.fetchall()
+
+    if search_by == "MemberID":
+        sql = sql_base + " WHERE m.memberID LIKE %s"
+        cursor.execute(sql, (keyword_like,))
+    elif search_by == "Name":
+        sql = sql_base + " WHERE m.fullname LIKE %s"
+        cursor.execute(sql, (keyword_like,))
+    elif search_by == "Email":
+        sql = sql_base + " WHERE m.email LIKE %s"
+        cursor.execute(sql, (keyword_like,))
+    elif search_by == "ProjectName":
+        sql = sql_base + " WHERE p.projectName LIKE %s"
+        cursor.execute(sql, (keyword_like,))
+    elif search_by == "TaskName":
+        sql = sql_base + " WHERE t.taskName LIKE %s"
+        cursor.execute(sql, (keyword_like,))
+    else:
+        sql = sql_base + """
+            WHERE m.memberID LIKE %s OR m.fullname LIKE %s OR m.email LIKE %s
+               OR p.projectName LIKE %s OR t.taskName LIKE %s
+        """
+        cursor.execute(sql, (keyword_like, keyword_like, keyword_like, keyword_like, keyword_like))
+
+    member_ids = [row[0] for row in cursor.fetchall()]
     cursor.close()
     conn.close()
-    
-    return results
+    return member_ids #returns only member IDs
+
 
 def getProjectsTasksandDateByMemberID(memberID: str) -> dict:
     conn = getConnection()
@@ -144,3 +175,29 @@ def getProjectsByMemberID(memberID: str) -> list[dict]:
     conn.close()
     return projects
 
+def getAllMembersForSearch(memberID) -> list[tuple]:
+    conn = getConnection()
+    cursor = conn.cursor(dictionary=True)
+    
+    sql = """
+    SELECT 
+        m.memberID, 
+        m.fullname, 
+        m.email, 
+        COUNT(DISTINCT COALESCE(pm.projectID, tp.projectID)) AS projectCount, 
+        COUNT(DISTINCT tm.taskID) AS taskCount 
+    FROM members m 
+    LEFT JOIN projectMember pm ON m.memberID = pm.memberID 
+    LEFT JOIN taskMember tm ON m.memberID = tm.memberID 
+    LEFT JOIN task t ON tm.taskID = t.taskID 
+    LEFT JOIN project tp ON t.projectID = tp.projectID 
+    WHERE m.memberID = %s
+    GROUP BY m.memberID, m.fullname, m.email
+    """
+
+    cursor.execute(sql, (memberID,))
+    members = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    return members
