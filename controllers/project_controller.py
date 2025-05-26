@@ -170,4 +170,3 @@ def getProjectsForMember(memberID: str) -> list[dict]:
     conn.close()
     
     return projects
-

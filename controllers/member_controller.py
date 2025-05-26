@@ -12,6 +12,28 @@ def addMember(member:tuple) -> None:
     cursor.close()
     conn.close()
 
+def assignTasktoMember(member:tuple) -> None:
+    conn = getConnection()
+    cursor = conn.cursor()
+
+    sql = "INSERT INTO taskMember (taskID, memberID, dateAssigned) VALUES (%s, %s, %s)"
+
+    cursor.execute(sql, member)
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def assignProjecttoMember(member:tuple) -> None:
+    conn = getConnection()
+    cursor = conn.cursor()
+
+    sql = "INSERT INTO projectMember (projectID, memberID) VALUES (%s, %s)"
+
+    cursor.execute(sql, member)
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 #Update
 def updateMember(originalID: str, updatedMember: dict) -> None:
     conn = getConnection()
@@ -20,9 +42,9 @@ def updateMember(originalID: str, updatedMember: dict) -> None:
     sql = "UPDATE members SET memberID = %s, fullname = %s, email = %s WHERE memberID = %s"
 
     values = (
-        updatedMember["memberID"],
-        updatedMember["fullname"],
-        updatedMember["email"],
+        updatedMember[0],
+        updatedMember[1],
+        updatedMember[2],
         originalID
     )
     cursor.execute(sql, values)
@@ -134,13 +156,14 @@ def searchMembers(keyword: str, search_by: str) -> list[str]:
     conn.close()
     return member_ids #returns only member IDs
 
-
+#inner table sa expanded row
 def getProjectsTasksandDateByMemberID(memberID: str) -> dict:
     conn = getConnection()
     cursor = conn.cursor(dictionary=True)
     
     sql = """
-        SELECT 
+        SELECT
+    p.projectID, 
     p.projectName,
     t.taskName,
     date_format(tm.dateAssigned, '%M %e, %Y, %l:%i%p') AS formattedDate
@@ -164,7 +187,7 @@ def getProjectsByMemberID(memberID: str) -> list[dict]:
     cursor = conn.cursor(dictionary=True)
     
     sql = """
-        SELECT DISTINCT p.projectName
+        SELECT DISTINCT p.projectID, p.projectName
         FROM project p
         LEFT JOIN projectMember pm ON p.projectID = pm.projectID
         WHERE pm.memberID = %s;
@@ -201,3 +224,65 @@ def getAllMembersForSearch(memberID) -> list[tuple]:
     conn.close()
 
     return members
+
+def getProjectIDbyTaskID(taskID: str) -> str | None:
+    conn = getConnection()
+    cursor = conn.cursor(dictionary=True)
+    
+    sql = "SELECT projectID FROM task WHERE taskID = %s"
+    cursor.execute(sql, (taskID,))
+    result = cursor.fetchone()
+    
+    cursor.close()
+    conn.close()
+    
+    return result['projectID'] if result else None
+
+def getProjectIDbyMemberID(memberID: str) -> list[str]:
+    conn = getConnection()
+    cursor = conn.cursor()
+    
+    sql = "SELECT projectID FROM projectMember WHERE memberID = %s"
+    cursor.execute(sql, (memberID,))
+    project_ids = [row[0] for row in cursor.fetchall()]
+    
+    cursor.close()
+    conn.close()
+    
+    return project_ids
+
+def getTaskIDbyMemberID(memberID: str) -> list[str]:
+    conn = getConnection()
+    cursor = conn.cursor()
+    
+    sql = "SELECT taskID FROM taskMember WHERE memberID = %s"
+    cursor.execute(sql, (memberID,))
+    task_ids = [row[0] for row in cursor.fetchall()]
+    
+    cursor.close()
+    conn.close()
+    
+    return task_ids
+
+def clearProjectMember(memberID: str) -> None:
+    conn = getConnection()
+    cursor = conn.cursor()
+
+    sql = "DELETE FROM projectMember WHERE memberID = %s"
+    cursor.execute(sql, (memberID,))
+    conn.commit()
+    
+    cursor.close()
+    conn.close()
+
+def clearTaskMember(memberID: str) -> None:
+    conn = getConnection()
+    cursor = conn.cursor()
+
+    sql = "DELETE FROM taskMember WHERE memberID = %s"
+    cursor.execute(sql, (memberID,))
+    conn.commit()
+    
+    cursor.close()
+    conn.close()
+

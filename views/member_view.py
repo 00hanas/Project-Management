@@ -1,61 +1,157 @@
-from PyQt6.QtWidgets import QDialog
+from PyQt6.QtWidgets import QDialog, QListWidgetItem, QMessageBox
 from controllers.member_controller import addMember, getMemberByID, updateMember
-from controllers.member_controller import addMember, getMemberByID, updateMember, getProjectsTasksandDateByMemberID, getAllMembers, getProjectsByMemberID
-from PyQt6.QtWidgets import QTableWidgetItem, QWidget, QLabel, QVBoxLayout, QTableWidget, QHBoxLayout, QAbstractItemView, QHeaderView, QPushButton, QMessageBox
-from PyQt6.QtCore import QPropertyAnimation, QEasingCurve, Qt, QObject, pyqtProperty
-from PyQt6.QtGui import QPixmap, QIcon
+from controllers.member_controller import addMember, getMemberByID, updateMember, getProjectsTasksandDateByMemberID, getAllMembers, getProjectsByMemberID, assignTasktoMember, assignProjecttoMember, getProjectIDbyTaskID, getTaskIDbyMemberID, getProjectIDbyMemberID, clearProjectMember, clearTaskMember
+from PyQt6.QtWidgets import QTableWidgetItem, QWidget, QLabel, QVBoxLayout, QTableWidget, QHBoxLayout, QAbstractItemView, QHeaderView, QPushButton
+from PyQt6.QtCore import QPropertyAnimation, QEasingCurve, Qt, QObject, pyqtProperty, QRegularExpression, QSize
+from PyQt6.QtGui import QPixmap, QIcon, QRegularExpressionValidator
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QSizePolicy
+from ui.addmember_interface import Ui_addmember_dialog
+from controllers.project_controller import getAllProjects
+from controllers.task_controller import getAllTasks
+from datetime import datetime
 
 class AddMemberForm(QDialog):
     def __init__(self, main_window):
         super().__init__()
         self.main_window = main_window
-        self.ui = Ui_MemberForm() #change this to the actual UI class name
+        self.ui = Ui_addmember_dialog() #change this to the actual UI class name
         self.ui.setupUi(self)
 
         self.main_window = main_window
 
+        id_validator = QRegularExpressionValidator(QRegularExpression(r"^\d{4}-\d{4}$"))
+        self.ui.member_id_info.setValidator(id_validator)
+
+        populateProjectList(self.ui.member_project_info)
+        populateTaskList(self.ui.member_task_info)
         
-        self.ui.pushButton.clicked.connect(self.saveMember)
+        self.ui.member_save_button.clicked.connect(self.saveMember)
 
     def saveMember(self):
-        member_id = self.ui.lineEdit.text().strip() #assume
-        name = self.ui.lineEdit_1.text().strip() #assume
-        email = self.ui.lineEdit_2.text().strip() #assume
+        member_id = self.ui.member_id_info.text().strip() 
+        name = self.ui.member_name_info.text().strip() 
+        email = self.ui.member_email_info.text().strip() 
 
-        addMember((member_id, name, email))
+        member = (member_id, name, email)
+        addMember(member)
+
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        assigned_project_ids = set()
+
+        for i in range(self.ui.member_project_info.count()):
+            item = self.ui.member_project_info.item(i)
+            if item.checkState() == Qt.CheckState.Checked:
+                project_id = item.data(Qt.ItemDataRole.UserRole)
+                assignProjecttoMember((project_id, member_id))
+                assigned_project_ids.add(project_id)
+
+
+        for i in range(self.ui.member_task_info.count()):
+            item = self.ui.member_task_info.item(i)
+            if item.checkState() == Qt.CheckState.Checked:
+                task_id = item.data(Qt.ItemDataRole.UserRole)
+                assignTasktoMember((task_id, member_id, now))
+
+                project_id = getProjectIDbyTaskID(task_id)
+                if project_id and project_id not in assigned_project_ids:
+                    assignProjecttoMember((project_id, member_id))
+                    assigned_project_ids.add(project_id)
+                
+
         from models.member import loadMember
         loadMember(self.main_window.ui.members_table)
+
+        QMessageBox.information(self, "Success", "Member saved successfully.")
+        self.close()
         
 class EditMemberForm(QDialog):
     def __init__(self, main_window, originalID):
         super().__init__()
         self.main_window = main_window
-        self.ui = Ui_MemberForm() #change this to the actual UI class name
+        self.ui = Ui_addmember_dialog() 
         self.ui.setupUi(self)
 
         self.main_window = main_window
+        self.originalID = originalID
+
+
+        id_validator = QRegularExpressionValidator(QRegularExpression(r"^\d{4}-\d{4}$"))
+        self.ui.member_id_info.setValidator(id_validator)
 
         #Load existing data into the form
         data = getMemberByID(originalID)
         if data:
-            self.ui.lineEdit.setText(data["memberID"]) #assume
-            self.ui.lineEdit_1.setText(data["fullname"]) #assume
-            self.ui.lineEdit_2.setText(data["email"]) #assume
+            self.ui.member_id_info.setText(data["memberID"]) 
+            self.ui.member_name_info.setText(data["fullname"]) 
+            self.ui.member_email_info.setText(data["email"]) 
+
+        populateProjectList(self.ui.member_project_info)
+        populateTaskList(self.ui.member_task_info)
+
+        assigned_projects = set(getProjectIDbyMemberID(originalID))  # should return list of projectIDs
+        assigned_tasks = set(getTaskIDbyMemberID(originalID))
+
+        for i in range(self.ui.member_project_info.count()):
+            item = self.ui.member_project_info.item(i)
+            if item.data(Qt.ItemDataRole.UserRole) in assigned_projects:
+                item.setCheckState(Qt.CheckState.Checked)
+
+        for i in range(self.ui.member_task_info.count()):
+            item = self.ui.member_task_info.item(i)
+            if item.data(Qt.ItemDataRole.UserRole) in assigned_tasks:
+                item.setCheckState(Qt.CheckState.Checked)
         
-        self.ui.pushButton.clicked.connect(self.saveMember)
+        self.ui.member_save_button.clicked.connect(self.saveMember)
         
     def saveMember(self):
-        member_id = self.ui.lineEdit.text().strip() #assume
-        name = self.ui.lineEdit_1.text().strip() #assume
-        email = self.ui.lineEdit_2.text().strip() #assume
+        member_id = self.ui.member_id_info.text().strip() #assume
+        name = self.ui.member_name_info.text().strip() #assume
+        email = self.ui.member_email_info.text().strip() #assume
 
-        # ga pass kag tuple instead of a dictionary (not sure if this is correct)
-        updateMember(self.originalID, (member_id, name, email))
+        member = (member_id, name, email)
+        updateMember(self.originalID, member)
+
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        current_project_ids = set(getProjectIDbyMemberID(self.originalID))
+        current_task_ids = set(getTaskIDbyMemberID(self.originalID))
+
+        new_project_ids = {
+            self.ui.member_project_info.item(i).data(Qt.ItemDataRole.UserRole)
+            for i in range(self.ui.member_project_info.count())
+            if self.ui.member_project_info.item(i).checkState() == Qt.CheckState.Checked
+        }
+
+        new_task_ids = {
+            self.ui.member_task_info.item(i).data(Qt.ItemDataRole.UserRole)
+            for i in range(self.ui.member_task_info.count())
+            if self.ui.member_task_info.item(i).checkState() == Qt.CheckState.Checked
+        }
+
+        if new_project_ids != current_project_ids:
+            clearProjectMember(self.originalID)
+            for project_id in new_project_ids:
+                assignProjecttoMember((project_id, member_id))
+
+        if new_task_ids != current_task_ids:
+            clearTaskMember(self.originalID)
+            for task_id in new_task_ids:
+                assignTasktoMember((task_id, member_id, now))
+                project_id = getProjectIDbyTaskID(task_id)
+                if project_id and project_id not in new_project_ids:
+                    assignProjecttoMember((project_id, member_id))
+                    new_project_ids.add(project_id)
 
         from models.member import loadMember
+        self.main_window.refreshTable()  
         loadMember(self.main_window.ui.members_table)
+
+
+        QMessageBox.information(self, "Success", "Member updated successfully.")
+        self.close()
+
 
 def expandRow(main_window, row):
     table = main_window.ui.members_table
@@ -89,18 +185,18 @@ def expandRow(main_window, row):
         table.setRowHeight(prev_row, main_window.default_row_height)
         main_window.expanded_row = None
 
-
     # Backup original row items
     main_window.original_items[row] = [
         table.item(row, col).clone() if table.item(row, col) else QTableWidgetItem("")
         for col in range(table.columnCount())
     ]
 
-
     # Clear cells and span one for widget
     for col in range(table.columnCount()):
         table.setItem(row, col, QTableWidgetItem(""))
-    table.setSpan(row, 0, 1, table.columnCount())
+    col_span = table.columnCount()
+    if col_span > 1:
+        table.setSpan(row, 0, 1, col_span)
 
     # Fetch member and task data
     members = getAllMembers()
@@ -167,12 +263,14 @@ def expandRow(main_window, row):
     edit_button.setToolTip("Edit Member")
 
     delete_button = QPushButton()
-    delete_button.setIcon(QIcon("icons/delete.svg")) #assume
+    delete_button.setIcon(QIcon("icons/delete_black.svg")) #assume
     delete_button.setFixedSize(20, 20)
     delete_button.setToolTip("Delete Member")
+
+    icon_size = QSize(20, 20)
     
     for btn in [minimize_button, edit_button, delete_button]:
-        btn.setStyleSheet("border: none;")
+        btn.setIconSize(icon_size)
         btn.setCursor(Qt.CursorShape.PointingHandCursor)
         button_layout.addWidget(btn, alignment=Qt.AlignmentFlag.AlignVCenter)
 
@@ -195,6 +293,7 @@ QPushButton {
     border: 1px solid #aaa;
     border-radius: 4px;
     padding: 2px 6px;
+    text-align: center;
 }
 QPushButton:hover {
     background-color: #c0c0c0;
@@ -266,23 +365,39 @@ QPushButton:pressed {
     total_rows = task_table.rowCount()
     total_height = header_height + (row_height * total_rows) + spacing
 
-    if tasks:
-        for i, t in enumerate(tasks):
-            task_table.setItem(i, 0, QTableWidgetItem(t["projectName"]))
-            task_table.setItem(i, 1, QTableWidgetItem(t["taskName"]))
-            task_table.setItem(i, 2, QTableWidgetItem(t["formattedDate"]))
-    else:
-        projects = getProjectsByMemberID(member_id)
-        if not projects:
-            task_table.setItem(0, 0, QTableWidgetItem("No Projects Assigned"))
-            task_table.setItem(0, 1, QTableWidgetItem("No Tasks Assigned"))
-            task_table.setItem(0, 2, QTableWidgetItem("N/A"))
+    projects = getProjectsByMemberID(member_id)
+    project_task_map = {}
+
+    # Map all projects first
+    for p in projects:
+        project_task_map[p["projectID"]] = {
+            "projectName": p["projectName"],
+            "tasks": []
+        }
+
+    # Add tasks to their corresponding project
+    for t in tasks:
+        pid = t["projectID"]
+        if pid in project_task_map:
+            project_task_map[pid]["tasks"].append(t)
+
+    # Flatten into table rows
+    rows = []
+    for project_data in project_task_map.values():
+        if project_data["tasks"]:
+            for t in project_data["tasks"]:
+                rows.append((project_data["projectName"], t["taskName"], t["formattedDate"]))
         else:
-            task_table.setRowCount(len(projects))
-            for i, project in enumerate(projects):
-                task_table.setItem(i, 0, QTableWidgetItem(project["projectName"]))
-                task_table.setItem(i, 1, QTableWidgetItem("No Tasks Assigned"))
-                task_table.setItem(i, 2, QTableWidgetItem("N/A"))
+            rows.append((project_data["projectName"], "No Tasks Assigned", "N/A"))
+
+    if not projects and not tasks:
+        rows.append(("No Projects Assigned", "No Tasks Assigned", "N/A"))
+
+    # Fill table
+    task_table.setRowCount(len(rows))
+    for i, row_data in enumerate(rows):
+        for j, cell in enumerate(row_data):
+            task_table.setItem(i, j, QTableWidgetItem(cell))
 
 
     layout.addWidget(task_table, stretch=1)
@@ -327,6 +442,7 @@ class DummyObject(QObject):
     height = pyqtProperty(int, fget=getHeight, fset=setHeight)
 
 def collapseRow(main_window, row):
+
     table = main_window.ui.members_table
     if main_window.expanded_row != row:
         return
@@ -357,3 +473,22 @@ def collapseRow(main_window, row):
     animation.start()
 
     main_window.current_animation = animation 
+
+def populateProjectList(member_project_info):
+    member_project_info.clear()
+    for project in getAllProjects():
+        item = QListWidgetItem(f"{project[0]}: {project[1]}")
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+        item.setCheckState(Qt.CheckState.Unchecked)
+        item.setData(Qt.ItemDataRole.UserRole, project[0])
+        member_project_info.addItem(item)
+
+def populateTaskList(member_task_info):
+    member_task_info.clear()
+    for task in getAllTasks():
+        item = QListWidgetItem(f"{task['projectID']}: {task['taskName']}")
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+        item.setCheckState(Qt.CheckState.Unchecked)
+        item.setData(Qt.ItemDataRole.UserRole, task["taskID"])
+        member_task_info.addItem(item)
+    

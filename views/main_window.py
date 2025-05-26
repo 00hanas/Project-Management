@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QCalendarWidget, QMainWindow, QAbstractItemView, QMessageBox, QTableWidgetItem
 from ui.main_interface import Ui_MainWindow
 from models.member import loadMember
-from views.member_view import expandRow
+from views.member_view import expandRow, EditMemberForm, AddMemberForm
 from controllers.dashboard_controller import getTotalProjectCount, getTotalTaskCount, getTotalMemberCount, getCalendarEvents
 from controllers.member_controller import searchMembers, getAllMembersForSearch
 from PyQt6.QtGui import QTextCharFormat, QColor, QFont
@@ -37,12 +37,14 @@ class MainApp(QMainWindow):
         self.calendar.style().unpolish(self.calendar)
         self.calendar.style().polish(self.calendar)
         self.highlightEvents()
+        
         # Configure calendar selection behavior
         self.calendar.setSelectionMode(QCalendarWidget.SelectionMode.SingleSelection)
         
-        # Search functionality in members' page
+        # Functionality in members' page
         self.ui.members_search.textChanged.connect(self.performSearch)
         self.ui.members_searchby.currentIndexChanged.connect(self.performSearch)
+        self.ui.addmember_button.clicked.connect(self.showAddMember)
 
 
         #Load members into the table
@@ -67,23 +69,26 @@ class MainApp(QMainWindow):
     def handlingDoubleClicked(self, row, column):
         expandRow(self, row)
 
+    def showAddMember(self):
+        add_form = AddMemberForm(self)
+        add_form.show()
+        add_form.exec()
+
+        from models.member import loadMember
+        loadMember(self.ui.members_table)
+
     def editMemberFromWidget(self, widget):
         member_id = widget.property("member_id")
         if not member_id:
             print("[DEBUG] No member_id found in widget")
             return
         
-
-        from views.member_view import EditMemberForm
         edit_form = EditMemberForm(self, member_id)
         edit_form.exec()
         from models.member import loadMember
         loadMember(self.ui.members_table)
 
     def deleteMemberFromWidget(self, widget):
-
-
-
         member_id = widget.property("member_id")
         if not member_id:
             print("[DEBUG] No member_id found in widget")
@@ -156,7 +161,7 @@ class MainApp(QMainWindow):
 
         # Handle default combo text like "Search By"
         if search_by == "Search By":
-            search_by = ""  # Triggers search across all fields
+            search_by = ""  
 
         results = searchMembers(keyword, search_by)
         self.updateTable(results)
@@ -174,7 +179,15 @@ class MainApp(QMainWindow):
             self.ui.members_table.setItem(row_num, 3, QTableWidgetItem(str(data['projectCount'])))
             self.ui.members_table.setItem(row_num, 4, QTableWidgetItem(str(data['taskCount'])))
 
-
     def sortTableByColumn(self, column):
         current_order = self.ui.members_table.horizontalHeader().sortIndicatorOrder()
         self.ui.members_table.sortItems(column, current_order)
+
+    def refreshTable(self):
+        from models.member import loadMember # Adjust import if needed
+        loadMember(self.ui.members_table)
+        self.expanded_row = None
+        self.original_items = {}
+
+        for row in range(self.ui.members_table.rowCount()):
+            self.ui.members_table.setRowHeight(row, self.default_row_height)
