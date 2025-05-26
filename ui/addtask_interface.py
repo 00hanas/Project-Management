@@ -7,7 +7,8 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
-
+from PyQt6.QtWidgets import QGraphicsDropShadowEffect
+from PyQt6.QtGui import QColor
 
 class Ui_addtask_dialog(object):
     def setupUi(self, addtask_dialog):
@@ -231,6 +232,14 @@ class Ui_addtask_dialog(object):
         self.task_cancel_button.setMinimumHeight(30)
         self.horizontalLayout.addWidget(self.task_cancel_button)
         self.verticalLayout_6.addWidget(self.frame)
+
+        frames = [self.task_info, self.frame]
+        for frame in frames:
+            shadow = QGraphicsDropShadowEffect(frame)
+            shadow.setBlurRadius(20)
+            shadow.setOffset(0, 0)
+            shadow.setColor(QColor(0, 0, 0, 80))
+            frame.setGraphicsEffect(shadow)
 
         self.retranslateUi(addtask_dialog)
         QtCore.QMetaObject.connectSlotsByName(addtask_dialog)
