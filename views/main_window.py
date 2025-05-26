@@ -10,19 +10,22 @@ class MainApp(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        #For the members' table
-        self.expanded_row = None
-        self.default_row_height = 30
-        self.original_items = {}
-        #Functions for the members' table
-        self.setupTableInteractions()
+        # Navigation to member's page
+        self.ui.members_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3)) 
+
 
         #Load members into the table
-        if hasattr(self.ui, 'tableWidget'):
-            loadMember(self.ui.tableWidget)
+        if hasattr(self.ui, 'members_table'):
+            #For the members' table
+            self.expanded_row = None
+            self.default_row_height = 30
+            self.original_items = {}
+            #Functions for the members' table
+            self.setupTableInteractions()
+            loadMember(self.ui.members_table)
 
     def setupTableInteractions(self):
-        table = self.ui.tableWidget
+        table = self.ui.members_table
         table.setEditTriggers(table.EditTrigger.NoEditTriggers)
         table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
@@ -42,7 +45,7 @@ class MainApp(QMainWindow):
         edit_form = EditMemberForm(self, member_id)
         edit_form.exec()
         from models.member import loadMember
-        loadMember(self.ui.tableWidget)
+        loadMember(self.ui.members_table)
 
 
     def deleteMemberFromWidget(self, widget):
@@ -62,7 +65,7 @@ class MainApp(QMainWindow):
         if reply == QMessageBox.StandardButton.Yes:
             from controllers.member_controller import deleteMemberbyID
             deleteMemberbyID(member_id)
-            loadMember(self.ui.tableWidget)
+            loadMember(self.ui.members_table)
 
 
 if __name__ == "__main__":

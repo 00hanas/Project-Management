@@ -110,13 +110,13 @@ def getProjectsTasksandDateByMemberID(memberID: str) -> dict:
     
     sql = """
         SELECT 
-    t.taskName, 
     p.projectName,
+    t.taskName,
     date_format(tm.dateAssigned, '%M %e, %Y, %l:%i%p') AS formattedDate
 FROM 
-    task t
+    project p
 INNER JOIN 
-    project p ON t.projectID = p.projectID
+    task t ON p.projectID = t.projectID
 INNER JOIN 
     taskMember tm ON t.taskID = tm.taskID
 WHERE 
@@ -127,3 +127,20 @@ WHERE
     cursor.close()
     conn.close()
     return tasks
+
+def getProjectsByMemberID(memberID: str) -> list[dict]:
+    conn = getConnection()
+    cursor = conn.cursor(dictionary=True)
+    
+    sql = """
+        SELECT DISTINCT p.projectName
+        FROM project p
+        LEFT JOIN projectMember pm ON p.projectID = pm.projectID
+        WHERE pm.memberID = %s;
+    """
+    cursor.execute(sql, (memberID,))
+    projects = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return projects
+
