@@ -7,6 +7,8 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtWidgets import QGraphicsDropShadowEffect
+from PyQt6.QtGui import QColor
 from utils.clickableLabel import ClickableLabel
 
 
@@ -34,6 +36,7 @@ class Ui_MainWindow(object):
 "    font-weight: bold;\n"
 "    font-size: 20pt;\n"
 "    color: #7f00ff;\n"
+"    background-color: transparent;\n"
 "}\n"
 "\n"
 "QComboBox::down-arrow {\n"
@@ -247,7 +250,7 @@ class Ui_MainWindow(object):
 "    border: 1px solid #2b70ff;\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: bold;\n"
-"    font-size: 10pt;\n"
+"    font-size: 15px;\n"
 "    color: #FFFFFF;\n"
 "    text-align: center;\n"
 "}\n"
@@ -269,14 +272,14 @@ class Ui_MainWindow(object):
 "#project_name, #project_id, #project_startDate, #project_endDate, #project_totalMembers, #project_totalTasks, #task_name, #task_id, #task_project, #task_status, #task_dueDate, #task_totalMembers {\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: bold;\n"
-"    font-size: 9pt;\n"
+"    font-size: 15px;\n"
 "    color: #000000;\n"
 "}\n"
 "\n"
 "#project_name_info,#project_id_info, #project_startDate_info, #project_endDate_info, #project_totalMembers_info, #project_totalTasks_info, #task_name_info, #task_id_info, #task_project_info, #task_status_info, #task_dueDate_info, #task_totalMembers_info {\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: normal;\n"
-"    font-size: 9pt;\n"
+"    font-size: 12px;\n"
 "    color: #000000;\n"
 "}\n"
 "\n"
@@ -327,7 +330,7 @@ class Ui_MainWindow(object):
 "    border: 1px solid #2b70ff;\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: bold;\n"
-"    font-size: 9pt;\n"
+"    font-size: 15px;\n"
 "    color: #FFFFFF;\n"
 "    text-align: center;\n"
 "}\n"
@@ -337,7 +340,7 @@ class Ui_MainWindow(object):
 "    border: 1px solid #fe9137;\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: bold;\n"
-"    font-size: 10pt;\n"
+"    font-size: 15px;\n"
 "    color: #FFFFFF;\n"
 "    text-align: center;\n"
 "}\n"
@@ -347,7 +350,7 @@ class Ui_MainWindow(object):
 "    border: 1px solid #fe9137;\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: bold;\n"
-"    font-size: 9pt;\n"
+"    font-size: 15px;\n"
 "    color: #FFFFFF;\n"
 "    text-align: center;\n"
 "}\n"
@@ -463,12 +466,23 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_2.setSpacing(10)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.total_frame = QtWidgets.QFrame(parent=self.home_page)
+        self.total_frame.setMinimumSize(QtCore.QSize(0, 131))
+        self.total_frame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.total_frame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.total_frame.setObjectName("total_frame")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.total_frame)
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_2.setSpacing(10)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.projects_total = QtWidgets.QFrame(parent=self.total_frame)
         self.projects_total.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.projects_total.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.projects_total.setObjectName("projects_total")
+        self.gridLayout_6 = QtWidgets.QGridLayout(self.projects_total)
+        self.gridLayout_6.setObjectName("gridLayout_6")
         self.projects_total_design = QtWidgets.QFrame(parent=self.projects_total)
-        self.projects_total_design.setGeometry(QtCore.QRect(10, 10, 251, 80))
+        self.projects_total_design.setMinimumSize(QtCore.QSize(270, 0))
         self.projects_total_design.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.projects_total_design.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.projects_total_design.setObjectName("projects_total_design")
@@ -478,17 +492,35 @@ class Ui_MainWindow(object):
         self.projects_total_label = QtWidgets.QLabel(parent=self.projects_total_design)
         self.projects_total_label.setGeometry(QtCore.QRect(0, 10, 171, 41))
         self.projects_total_label.setObjectName("projects_total_label")
+        self.gridLayout_6.addWidget(self.projects_total_design, 0, 0, 2, 2)
+        self.frame_3 = QtWidgets.QFrame(parent=self.projects_total)
+        self.frame_3.setStyleSheet("background-color: transparent;\n"
+"border: none;")
+        self.frame_3.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_3.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_3.setObjectName("frame_3")
+        self.gridLayout_6.addWidget(self.frame_3, 0, 2, 1, 1)
         self.projects_total_count = ClickableLabel(parent=self.projects_total)
-        self.projects_total_count.setGeometry(QtCore.QRect(150, 20, 151, 101))
+        self.projects_total_count.setMinimumSize(QtCore.QSize(0, 100))
         self.projects_total_count.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTop|QtCore.Qt.AlignmentFlag.AlignTrailing)
         self.projects_total_count.setObjectName("projects_total_count")
+        self.gridLayout_6.addWidget(self.projects_total_count, 1, 1, 1, 2)
+        self.frame_2 = QtWidgets.QFrame(parent=self.projects_total)
+        self.frame_2.setStyleSheet("background-color: transparent;\n"
+"border: none;")
+        self.frame_2.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_2.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_2.setObjectName("frame_2")
+        self.gridLayout_6.addWidget(self.frame_2, 2, 0, 1, 2)
         self.horizontalLayout_2.addWidget(self.projects_total)
         self.tasks_total = QtWidgets.QFrame(parent=self.total_frame)
         self.tasks_total.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.tasks_total.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.tasks_total.setObjectName("tasks_total")
+        self.gridLayout_7 = QtWidgets.QGridLayout(self.tasks_total)
+        self.gridLayout_7.setObjectName("gridLayout_7")
         self.tasks_total_design = QtWidgets.QFrame(parent=self.tasks_total)
-        self.tasks_total_design.setGeometry(QtCore.QRect(10, 10, 251, 80))
+        self.tasks_total_design.setMinimumSize(QtCore.QSize(270, 0))
         self.tasks_total_design.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.tasks_total_design.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.tasks_total_design.setObjectName("tasks_total_design")
@@ -498,17 +530,49 @@ class Ui_MainWindow(object):
         self.tasks_total_label = QtWidgets.QLabel(parent=self.tasks_total_design)
         self.tasks_total_label.setGeometry(QtCore.QRect(0, 10, 171, 41))
         self.tasks_total_label.setObjectName("tasks_total_label")
+        self.gridLayout_7.addWidget(self.tasks_total_design, 0, 0, 2, 2)
+        self.frame_5 = QtWidgets.QFrame(parent=self.tasks_total)
+        self.frame_5.setStyleSheet("background-color: transparent;\n"
+"border: none;")
+        self.frame_5.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_5.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_5.setObjectName("frame_5")
+        self.gridLayout_7.addWidget(self.frame_5, 0, 2, 1, 1)
         self.tasks_total_count = ClickableLabel(parent=self.tasks_total)
-        self.tasks_total_count.setGeometry(QtCore.QRect(150, 20, 151, 101))
+        self.tasks_total_count.setMinimumSize(QtCore.QSize(0, 100))
         self.tasks_total_count.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTop|QtCore.Qt.AlignmentFlag.AlignTrailing)
         self.tasks_total_count.setObjectName("tasks_total_count")
+        self.gridLayout_7.addWidget(self.tasks_total_count, 1, 1, 1, 2)
+        self.frame_4 = QtWidgets.QFrame(parent=self.tasks_total)
+        self.frame_4.setStyleSheet("background-color: transparent;\n"
+"border: none;")
+        self.frame_4.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_4.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_4.setObjectName("frame_4")
+        self.gridLayout_7.addWidget(self.frame_4, 2, 0, 1, 2)
         self.horizontalLayout_2.addWidget(self.tasks_total)
         self.members_total = QtWidgets.QFrame(parent=self.total_frame)
         self.members_total.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.members_total.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.members_total.setObjectName("members_total")
+        self.gridLayout_8 = QtWidgets.QGridLayout(self.members_total)
+        self.gridLayout_8.setObjectName("gridLayout_8")
+        self.frame_6 = QtWidgets.QFrame(parent=self.members_total)
+        self.frame_6.setStyleSheet("background-color: transparent;\n"
+"border: none;")
+        self.frame_6.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_6.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_6.setObjectName("frame_6")
+        self.gridLayout_8.addWidget(self.frame_6, 2, 0, 1, 2)
+        self.frame_7 = QtWidgets.QFrame(parent=self.members_total)
+        self.frame_7.setStyleSheet("background-color: transparent;\n"
+"border: none;")
+        self.frame_7.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_7.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_7.setObjectName("frame_7")
+        self.gridLayout_8.addWidget(self.frame_7, 0, 2, 1, 1)
         self.members_total_design = QtWidgets.QFrame(parent=self.members_total)
-        self.members_total_design.setGeometry(QtCore.QRect(10, 10, 281, 80))
+        self.members_total_design.setMinimumSize(QtCore.QSize(270, 0))
         self.members_total_design.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.members_total_design.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.members_total_design.setObjectName("members_total_design")
@@ -518,10 +582,12 @@ class Ui_MainWindow(object):
         self.members_total_label = QtWidgets.QLabel(parent=self.members_total_design)
         self.members_total_label.setGeometry(QtCore.QRect(0, 10, 171, 41))
         self.members_total_label.setObjectName("members_total_label")
+        self.gridLayout_8.addWidget(self.members_total_design, 0, 0, 2, 2)
         self.members_total_count = ClickableLabel(parent=self.members_total)
-        self.members_total_count.setGeometry(QtCore.QRect(150, 20, 151, 101))
+        self.members_total_count.setMinimumSize(QtCore.QSize(0, 100))
         self.members_total_count.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTop|QtCore.Qt.AlignmentFlag.AlignTrailing)
         self.members_total_count.setObjectName("members_total_count")
+        self.gridLayout_8.addWidget(self.members_total_count, 1, 2, 1, 1)
         self.horizontalLayout_2.addWidget(self.members_total)
         self.gridLayout_2.addWidget(self.total_frame, 1, 0, 1, 2)
         self.home_bar = QtWidgets.QFrame(parent=self.home_page)
@@ -576,32 +642,39 @@ QCalendarWidget QWidget#qt_calendar_navigationbar {
 /* Date Cells */
 QCalendarWidget QAbstractItemView {
     color: black;
-    selection-background-color: transparent;  /* No fill for selection */
-}
-
-/* TODAY'S DATE - Always has red border */
-QCalendarWidget QWidget#qt_calendar_today {
-    border: 2px solid #e2091e;
-    border-radius: 10px;
-    background-color: transparent;
+    selection-background-color: #e2091e;  /* No fill for selection */
 }
 
 /* SELECTED DATE - Gets red border when clicked */
 QCalendarWidget QAbstractItemView:selected {
     border: 2px solid #e2091e;
     border-radius: 10px;
-    background-color: transparent;
+    background-color: #e2091e;
 }
 
 /* Navigation Buttons */
 QCalendarWidget QToolButton {
     background-color: #e2091e;
     color: white;
+    font-family: "Poppins", sans-serif;
     font-weight: bold;
     border: none;
     border-radius: 8px;
     padding: 4px 8px;
     margin: 2px;
+}
+                                         
+QCalendarWidget QToolButton QMenu {
+    background-color: #e2091e;
+    color: #FFFFFF;
+    font-family: "Poppins", sans-serif;
+    font-weight: normal;
+    border-radius: 8px;
+    padding: 4px;
+}
+                                        
+QCalendarWidget QToolButton QMenu::item:selected {
+    background-color: #b50817;
 }
 
 /* Arrow Buttons */
@@ -610,8 +683,19 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
     background-color: transparent;
     border: none;
 }
+                                         
+/* Left arrow */
+QCalendarWidget QToolButton#qt_calendar_prevmonth {
+    qproperty-icon: url(icons/arrow-left-circle.svg);
+    qproperty-iconSize: 25px 25px;
+}
+                                         
+/* Right arrow */
+QCalendarWidget QToolButton#qt_calendar_nextmonth {
+    qproperty-icon: url(icons/arrow-right-circle.svg);
+    qproperty-iconSize: 25px 25px;
+}
 """)
-        
         self.gridLayout_2.addWidget(self.home_calendar, 2, 1, 1, 1)
         self.view_projects = QtWidgets.QFrame(parent=self.home_page)
         self.view_projects.setEnabled(True)
@@ -1000,6 +1084,18 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.stackedWidget.addWidget(self.members_page)
         self.gridLayout.addWidget(self.stackedWidget, 1, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
+
+        frames = [self.topbar, self.menu_board, self.home_bar,
+                  self.view_projects, self.home_calendar,
+                  self.projects_bar, self.projects_container, self.project_details,
+                  self.tasks_bar, self.tasks_container, self.task_details,
+                  self.members_bar, self.members_table_frame]
+        for frame in frames:
+            shadow = QGraphicsDropShadowEffect(frame)
+            shadow.setBlurRadius(20)
+            shadow.setOffset(0, 0)
+            shadow.setColor(QColor(0, 0, 0, 80))
+            frame.setGraphicsEffect(shadow)
 
         self.retranslateUi(MainWindow)
         self.stackedWidget.setCurrentIndex(1)
