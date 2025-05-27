@@ -39,8 +39,8 @@ class MainApp(QMainWindow):
         self.ui.addmember_button.clicked.connect(lambda: AddMemberForm(self).exec())
 
         # Handling expand buttons
-        #self.ui.project_expand_button.clicked.connect(self.showProjectExpand) # placeholder for a function that opens a detailed project view for the selected project
-        #self.ui.task_expand_button.clicked.connect(self.showTaskExpand)  # placeholder for a function that opens a detailed task view for the selected task
+        # self.ui.project_expand_button.clicked.connect(self.showProjectExpand) # placeholder for a function that opens a detailed project view for the selected project
+        # self.ui.task_expand_button.clicked.connect(self.showTaskExpand)  # placeholder for a function that opens a detailed task view for the selected task
 
         # Handling calendar controls
         self.calendar = self.ui.home_calendar

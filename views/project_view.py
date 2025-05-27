@@ -158,11 +158,3 @@ class loadProject (QWidget):
         layout = QGridLayout(self)
         layout.addWidget(scroll)
         self.setLayout(layout)
-
-class ProjectView(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        layout = QVBoxLayout(self)  # Main layout for the Project Section
-        project_grid = loadProject(self)
-        layout.addWidget(project_grid)
-        self.setLayout(layout)
