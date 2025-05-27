@@ -1,4 +1,3 @@
-import pymysql.cursors #########################################3
 from config.db_config import getConnection
 
 # --- CRUD for Task ---
@@ -78,7 +77,7 @@ def getAllTasks() -> list[dict]:
 
 def getTaskByID(taskID: str) -> dict | None:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
     
     sql = "SELECT * FROM task WHERE taskID = %s"
     
@@ -104,7 +103,7 @@ def taskExists(taskID: str) -> bool:
 
 def searchTasks(keyword: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
     
     sql = """
         SELECT * FROM task
@@ -162,7 +161,7 @@ def getMembersForTask(taskID: str) -> list[dict]:
 
 def getTasksForMember(memberID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
     
     sql = """
         SELECT t.* FROM task t
@@ -203,7 +202,7 @@ def setTaskAccomplished(taskID: str, dateAccomplished) -> None:
 
 def getOverdueTasks(current_datetime) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
     
     sql = """
         SELECT * FROM task

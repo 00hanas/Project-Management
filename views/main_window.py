@@ -12,7 +12,7 @@ from datetime import datetime
 from controllers.project_controller import getTotalTasks, getMembersForProject
 from controllers.task_controller import getMembersForTask
 from widgets.TaskCardWidget import TaskCardWidget
-# from utils.searchworker_homesearch import SearchWorker
+from utils.searchworker_homesearch import SearchWorker
 
 class MainApp(QMainWindow):
     def __init__(self):

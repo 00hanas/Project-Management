@@ -1,4 +1,3 @@
-import pymysql.cursors #########################################3
 from config.db_config import getConnection
 
 # Create
@@ -95,7 +94,7 @@ def getCompletedTasks(projectID: str) -> int:
 # Get by ID
 def getProjectByID(projectID: str) -> dict | None:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
     
     sql = "SELECT * FROM project WHERE projectID = %s"
     
@@ -130,7 +129,7 @@ def projectExists(projectID: str) -> bool:
 
 def searchProjects(keyword: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
     
     sql = "SELECT * FROM project WHERE projectName LIKE %s OR shortDescrip LIKE %s"
     
@@ -185,7 +184,7 @@ def getMembersForProject(projectID: str) -> list[dict]:
 # Get projects for a specific member
 def getProjectsForMember(memberID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
     
     sql = """
         SELECT p.* FROM project p

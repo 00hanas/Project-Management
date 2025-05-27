@@ -51,6 +51,7 @@ class AddProjectForm(QDialog):
         })
 
         # insert here statement to load the widgets #
+        loadProjects(self.main_window)
 
         QMessageBox.information(self, "Success", "Project saved successfully.")
         self.close()

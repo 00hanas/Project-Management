@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (
-    QWidget, QGridLayout, QScrollArea, QVBoxLayout
+    QWidget, QGridLayout, QScrollArea, QVBoxLayout, QSizePolicy, QSpacerItem
 )
 from PyQt6.QtGui import QColor
 from PyQt6.QtCore import Qt
@@ -8,7 +8,7 @@ from widgets.ProjectCardWidget import ProjectCardWidget
 
 def loadProjects(parent=None) -> QWidget:
     # Main container
-    container = QWidget(parent)
+    container = QWidget(parent) #whole projects display area
     container.setObjectName("#ProjectVContainer")
     container.setStyleSheet("""
         #ProjectVContainer {
@@ -52,8 +52,8 @@ def loadProjects(parent=None) -> QWidget:
     scroll.setWidgetResizable(True)
     
     # Content widget
-    content = QWidget()
-    content.setMaximumHeight(300)
+    content = QWidget() #card
+    content.setMinimumHeight(0) 
     content.setObjectName("scrollContent")
     content.setStyleSheet("""
         #scrollContent {
@@ -67,8 +67,8 @@ def loadProjects(parent=None) -> QWidget:
     # Grid layout
     grid = QGridLayout(content)
     grid.setAlignment(Qt.AlignmentFlag.AlignTop)
-    grid.setContentsMargins(0, 10, 5, 10)  # Margins around the grid
-    grid.setVerticalSpacing(2)  # change 10 to any desired pixel value
+    grid.setContentsMargins(1, 0, 1, 0)  # Margins around the grid
+    grid.setVerticalSpacing(0)
 
     # Add projects
     projects = getAllProjects()
@@ -87,11 +87,18 @@ def loadProjects(parent=None) -> QWidget:
         col = index % columns
         grid.addWidget(project_widget, row, col)
 
+    columns = 2
+    card_height = 150  
+    rows = (len(projects) + columns - 1) // columns
+
+    content.setFixedHeight(rows * card_height)
+    spacer = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+    grid.addItem(spacer, grid.rowCount(), 0, 1, columns)
+
     scroll.setWidget(content)
     layout = QGridLayout(container)
     layout.addWidget(scroll)
     container.setLayout(layout)
-    
     return container
 
 
