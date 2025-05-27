@@ -72,10 +72,6 @@ def getAllProjectsTasksMembers(keyword: str, search_by: str) -> list[dict]:
         # Normalize the search_by parameter
         search_by = search_by.lower().strip() if search_by else ""
 
-        cursor.execute("""SELECT taskID, taskName FROM task WHERE taskID LIKE %s OR taskName LIKE %s""", (keyword_like, keyword_like))
-        rows = cursor.fetchall()
-        for row in rows:
-            results.append({'type': 'task', 'id': row[0], 'label': row[1]})
         # Search projects
         if not search_by or "projects" in search_by:
             cursor.execute("""

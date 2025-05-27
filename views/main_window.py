@@ -29,15 +29,15 @@ class MainApp(QMainWindow):
         self.ui.tasks_total_count.setText(str(getTotalTaskCount()))
         self.ui.members_total_count.setText(str(getTotalMemberCount()))
 
-        self.ui.projects_total_count.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
-        self.ui.tasks_total_count.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
-        self.ui.members_total_count.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3))
-
         # Navigation to pages
-        self.ui.home_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
-        self.ui.projects_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
-        self.ui.tasks_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
-        self.ui.members_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3)) 
+        self.ui.projects_total_count.clicked.connect(lambda: self.switchPage(1))
+        self.ui.tasks_total_count.clicked.connect(lambda: self.switchPage(2))
+        self.ui.members_total_count.clicked.connect(lambda: self.switchPage(3))
+
+        self.ui.home_button.clicked.connect(lambda: self.switchPage(0)) 
+        self.ui.projects_button.clicked.connect(lambda: self.switchPage(1))
+        self.ui.tasks_button.clicked.connect(lambda: self.switchPage(2))
+        self.ui.members_button.clicked.connect(lambda: self.switchPage(3))
 
         # Handling add buttons
         self.ui.addproject_button.clicked.connect(lambda: AddProjectForm(self).exec())
@@ -45,8 +45,8 @@ class MainApp(QMainWindow):
         self.ui.addmember_button.clicked.connect(lambda: AddMemberForm(self).exec())
 
         # Handling expand buttons
-        #self.ui.project_expand_button.clicked.connect(self.showProjectExpand) # placeholder for a function that opens a detailed project view for the selected project
-        #self.ui.task_expand_button.clicked.connect(self.showTaskExpand)  # placeholder for a function that opens a detailed task view for the selected task
+        # self.ui.project_expand_button.clicked.connect(self.showProjectExpand) # placeholder for a function that opens a detailed project view for the selected project
+        # self.ui.task_expand_button.clicked.connect(self.showTaskExpand)  # placeholder for a function that opens a detailed task view for the selected task
 
         # Handling calendar controls
         self.calendar = self.ui.home_calendar
@@ -334,10 +334,16 @@ QListWidget::item:selected {
             list_item.setData(Qt.ItemDataRole.UserRole, item)
             self.search_suggestion.addItem(list_item)
 
+        if not self.search_suggestion.isVisible():
+            self.search_suggestion.setParent(None)
+            self.search_suggestion.setWindowFlags(
+                Qt.WindowType.ToolTip | Qt.WindowType.FramelessWindowHint
+            )
+
         # Position and show suggestion popup
         home_search = self.ui.home_search
         global_pos = home_search.mapToGlobal(home_search.rect().bottomLeft())
-        self.search_suggestion.move(global_pos + QPoint(-180, -90))
+        self.search_suggestion.move(global_pos + QPoint(0, 1))
 
         self.search_suggestion.resize(
             self.ui.home_search.width(),
@@ -462,5 +468,10 @@ color: white;
             print(f"Error updating task details: {e}")
             import traceback
             print(traceback.format_exc())
+
+    def switchPage(self, page_index: int):
+        self.ui.stackedWidget.setCurrentIndex(page_index)
+        self.ui.home_search.clear()
+        self.search_suggestion.hide()
 
 
