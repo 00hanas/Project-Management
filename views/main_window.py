@@ -6,7 +6,8 @@ from views.member_view import expandRow, EditMemberForm, AddMemberForm
 from controllers.dashboard_controller import getTotalProjectCount, getTotalTaskCount, getTotalMemberCount, getCalendarEvents, getAllProjectsTasksMembers
 from controllers.member_controller import searchMembers, getAllMembersForSearch
 from PyQt6.QtGui import QTextCharFormat, QColor, QFont
-from PyQt6.QtCore import QDate, Qt, QTimer
+from PyQt6.QtCore import QDate, Qt, QTimer, QThreadPool, QPoint
+from utils.searchworker_homesearch import SearchWorker
 
 class MainApp(QMainWindow):
     def __init__(self):
@@ -52,19 +53,19 @@ class MainApp(QMainWindow):
         self.calendar.setSelectionMode(QCalendarWidget.SelectionMode.SingleSelection)
 
         # Home page search functionality
+        self.threadpool = QThreadPool()
         self.search_timer = QTimer(self)
         self.search_timer.setSingleShot(True)
         self.search_timer.timeout.connect(self.performHomeSearch)
         self.ui.home_search.textChanged.connect(lambda: self.search_timer.start(200)) 
         self.ui.home_searchby.currentIndexChanged.connect(self.performHomeSearch)
         self.ui.home_search.setPlaceholderText("Search projects, tasks, or members...")
-        self.search_suggestion = QListWidget(self)
-        self.search_suggestion.setWindowFlags(Qt.WindowType.Popup)
+        self.search_suggestion = QListWidget()
+        self.search_suggestion.setParent(None)  # No parent (acts as top-level window)
+        self.search_suggestion.setWindowFlags(Qt.WindowType.ToolTip)  # Allows interaction without blocking focus
         self.search_suggestion.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.search_suggestion.setMouseTracking(True)
         self.search_suggestion.setParent(self)
-
-        self.search_suggestion.move(self.ui.home_search.mapToGlobal(self.ui.home_search.rect().bottomLeft()))
 
         self.search_suggestion.hide()
         self.search_suggestion.itemClicked.connect(self.handleSuggestionClicked)
@@ -74,12 +75,12 @@ QListWidget {
     border-radius: 8px;
     padding: 4px;
     font-family: "Poppins", sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     background-color: #edf4fa;
     color: black;
 }
 QListWidget::item {
-    padding: 6px 10px;
+    padding: 4px 10px;
 }
 QListWidget::item:hover {
     background-color: #f0f0f0;
@@ -241,11 +242,17 @@ QListWidget::item:selected {
             self.search_suggestion.hide()
             return
         
-        if search_by == "Search By":
+        if search_by == "Search by":
             search_by = ""
         
         results = getAllProjectsTasksMembers(keyword, search_by)
         self.updateSearchSuggestions(results)
+
+        self.ui.home_search.setFocus()  # Give focus back to the search box
+
+        worker = SearchWorker(keyword, search_by)
+        worker.signals.finished.connect(self.updateSearchSuggestions)
+        self.threadpool.start(worker)
         
     def updateSearchSuggestions(self, results: list[dict]):
         if not results:
@@ -260,12 +267,13 @@ QListWidget::item:selected {
             self.search_suggestion.addItem(list_item)
 
         # Position and show suggestion popup
-        input_rect = self.ui.home_search.geometry()
-        global_pos = self.ui.home_search.mapToGlobal(input_rect.bottomLeft())
-        self.search_suggestion.move(global_pos)
+        home_search = self.ui.home_search
+        global_pos = home_search.mapToGlobal(home_search.rect().bottomLeft())
+        self.search_suggestion.move(global_pos + QPoint(-180, -90))
+
         self.search_suggestion.resize(
             self.ui.home_search.width(),
-            min(200, self.search_suggestion.sizeHintForRow(0) * self.search_suggestion.count())
+            min(200, self.search_suggestion.sizeHintForRow(0) * self.search_suggestion.count() + 10)
         )
         self.search_suggestion.show()
 
@@ -282,19 +290,36 @@ QListWidget::item:selected {
             self.navigateToMember(entity_id)
 
         self.search_suggestion.hide()
-        self.ui.search_input.clear()
-
+        self.ui.home_search.clear()
 
     def navigateToProject(self, project_id):
         self.ui.stackedWidget.setCurrentIndex(1)
-        self.ui.search_input.clear()
+        self.ui.home_search.clear()
         # Optionally scroll to or highlight project row in table
 
     def navigateToTask(self, task_id):
         self.ui.stackedWidget.setCurrentIndex(2)
-        self.ui.search_input.clear()
+        self.ui.home_search.clear()
         # Optionally scroll to or highlight task row in table
 
     def navigateToMember(self, member_id):
         self.ui.stackedWidget.setCurrentIndex(3)
-        self.ui.search_input.clear()
+        self.ui.home_search.clear()
+        table = self.ui.members_table
+        table.clearSelection()
+        table.setFocus()
+        table.setStyleSheet("""
+QTableWidget::item:selected {
+background-color: #01c28e;
+color: white;
+}
+""")
+
+        for row in range(table.rowCount()):
+            item = table.item(row, 0)  # Assuming member_id is in column 0
+            if item and item.text().strip() == member_id.strip():
+                table.selectRow(row)
+                table.scrollToItem(item, QAbstractItemView.ScrollHint.PositionAtCenter)
+                return  # stop once found
+
+    

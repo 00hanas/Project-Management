@@ -69,22 +69,11 @@ def getAllProjectsTasksMembers(keyword: str, search_by: str) -> list[dict]:
         keyword_like = f"%{keyword}%"
         results = []
 
-        # TEST: Print database name and tables
-        cursor.execute("SELECT DATABASE()")
-        print(f"[DEBUG] Connected to database: {cursor.fetchone()[0]}")
-        
-        cursor.execute("SHOW TABLES")
-        print(f"[DEBUG] Tables in database: {cursor.fetchall()}")
-
-        print(f"[DEBUG] Search params - keyword: '{keyword}', search_by: '{search_by}'")
-        print(f"[DEBUG] Formatted search term: '{keyword_like}'")
-
         # Normalize the search_by parameter
         search_by = search_by.lower().strip() if search_by else ""
 
         cursor.execute("""SELECT taskID, taskName FROM task WHERE taskID LIKE %s OR taskName LIKE %s""", (keyword_like, keyword_like))
         rows = cursor.fetchall()
-        print(f"[DEBUG] Task rows: {rows}")
         for row in rows:
             results.append({'type': 'task', 'id': row[0], 'label': row[1]})
         # Search projects
@@ -95,7 +84,6 @@ def getAllProjectsTasksMembers(keyword: str, search_by: str) -> list[dict]:
                 WHERE projectID LIKE %s OR projectName LIKE %s
             """, (keyword_like, keyword_like))
             for row in cursor.fetchall():
-                print(f"[DEBUG] Found project: {row}")
                 results.append({'type': 'project', 'id': row[0], 'label': row[1]})
 
         # Search tasks
@@ -106,7 +94,6 @@ def getAllProjectsTasksMembers(keyword: str, search_by: str) -> list[dict]:
                 WHERE taskID LIKE %s OR taskName LIKE %s
             """, (keyword_like, keyword_like))
             for row in cursor.fetchall():
-                print(f"[DEBUG] Found task: {row}")
                 results.append({'type': 'task', 'id': row[0], 'label': row[1]})
 
         # Search members
@@ -117,10 +104,9 @@ def getAllProjectsTasksMembers(keyword: str, search_by: str) -> list[dict]:
                 WHERE memberID LIKE %s OR fullname LIKE %s OR email LIKE %s
             """, (keyword_like, keyword_like, keyword_like))
             for row in cursor.fetchall():
-                print(f"[DEBUG] Found member: {row}")
                 results.append({'type': 'member', 'id': row[0], 'label': row[1]})
 
-        print(f"[DEBUG] Total results found: {len(results)}")
+
         return results
 
     except Exception as e:
