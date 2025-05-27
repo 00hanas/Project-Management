@@ -31,22 +31,14 @@ class MainApp(QMainWindow):
         self.ui.members_total_count.setText(str(getTotalMemberCount()))
 
         # Navigation to pages
-        self.ui.projects_total_count.clicked.connect(lambda: self.switchPage(1))
-        self.ui.tasks_total_count.clicked.connect(lambda: self.switchPage(2))
-        self.ui.members_total_count.clicked.connect(lambda: self.switchPage(3))
-
         self.ui.home_button.clicked.connect(lambda: self.switchPage(0)) 
         self.ui.projects_button.clicked.connect(lambda: self.switchPage(1))
         self.ui.tasks_button.clicked.connect(lambda: self.switchPage(2))
         self.ui.members_button.clicked.connect(lambda: self.switchPage(3))
+
         self.ui.projects_total_count.clicked.connect(lambda: self.switchPage(1))
         self.ui.tasks_total_count.clicked.connect(lambda: self.switchPage(2))
         self.ui.members_total_count.clicked.connect(lambda: self.switchPage(3))
-
-        self.ui.home_button.clicked.connect(lambda: self.switchPage(0)) 
-        self.ui.projects_button.clicked.connect(lambda: self.switchPage(1))
-        self.ui.tasks_button.clicked.connect(lambda: self.switchPage(2))
-        self.ui.members_button.clicked.connect(lambda: self.switchPage(3))
 
         # Handling add buttons
         self.ui.addproject_button.clicked.connect(lambda: AddProjectForm(self).exec())
@@ -90,19 +82,20 @@ class MainApp(QMainWindow):
                 border-radius: 8px;
                 padding: 4px;
                 font-family: "Poppins", sans-serif;
-                font-size: 11px;
+                font-size: 14px;
                 background-color: #edf4fa;
                 color: black;
             }
             QListWidget::item {
                 padding: 4px 10px;
+                border-radius: 8px;
             }
             QListWidget::item:hover {
-                background-color: #f0f0f0;
+                background-color: #bbddfa;
                 color: black;
             }
             QListWidget::item:selected {
-                background-color: #b8e6d9;
+                background-color: #8f89fa;
                 color: black;
             }
             """)
@@ -137,8 +130,8 @@ class MainApp(QMainWindow):
         self.selected_task = None
 
         # Connect expand buttons
-        self.ui.project_expand_button.clicked.connect(self.handle_project_expand)
-        self.ui.task_expand_button.clicked.connect(self.handle_task_expand)
+        # self.ui.project_expand_button.clicked.connect(self.handle_project_expand)
+        # self.ui.task_expand_button.clicked.connect(self.handle_task_expand)
     
     def setup_project_connections(self):
         """Setup connections for project cards"""
