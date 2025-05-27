@@ -6,6 +6,7 @@ from controllers.project_controller import addProject, getProjectByID, updatePro
 from widgets.project_widget import ProjectWidget
 from ui.addproject_interface import Ui_addproject_dialog
 from utils.project_validators import uniqueProject, uniqueEditProject
+from datetime import datetime
 
 class AddProjectForm(QDialog):
     def __init__(self, main_window):
@@ -22,11 +23,11 @@ class AddProjectForm(QDialog):
         self.ui.project_cancel_button.clicked.connect(self.cancelProject)
 
     def saveProject(self):
-        project_id = self.ui.lineEdit.text().strip()      # Assume
-        name = self.ui.lineEdit_1.text().strip()          # Assume
-        desc = self.ui.lineEdit_2.text().strip()          # Assume
-        start = self.ui.lineEdit_3.text().strip()         # Assume
-        end = self.ui.lineEdit_4.text().strip()           # Assume
+        project_id = self.ui.project_id_info.text().strip()      
+        name = self.ui.project_name_info.text().strip()          
+        desc = self.ui.project_shortDescrip_info.toPlainText()      
+        start = self.ui.project_startDate_info.text().strip()     
+        end = self.ui.project_endDate_info.text().strip()          
 
         if not project_id or not name:
             QMessageBox.warning(self, "Input Error", "Project ID and Name cannot be empty.")
@@ -36,6 +37,10 @@ class AddProjectForm(QDialog):
         if error:
             QMessageBox.warning(self, "Validation Error", error)
             return
+        
+        start = datetime.strptime(start, "%m/%d/%Y %I:%M %p")
+
+        end = datetime.strptime(end, "%m/%d/%Y %I:%M %p")
 
         addProject({
             "projectID": project_id,
@@ -44,6 +49,11 @@ class AddProjectForm(QDialog):
             "startDate": start,
             "endDate": end
         })
+
+        # insert here statement to load the widgets #
+
+        QMessageBox.information(self, "Success", "Project saved successfully.")
+        self.close()
 
     def clearProject(self):
         self.ui.project_name_info.clear()
@@ -69,20 +79,22 @@ class EditProjectForm(QDialog):
         # Load existing data into the form
         data = getProjectByID(originalID)
         if data:
-            self.ui.lineEdit.setText(data["projectID"])
-            self.ui.lineEdit_1.setText(data["projectName"])
-            self.ui.lineEdit_2.setText(data["shortDescrip"])
-            self.ui.lineEdit_3.setText(data["startDate"])
-            self.ui.lineEdit_4.setText(data["endDate"])
+            self.ui.project_id_info.setText(data["projectID"])
+            self.ui.project_name_info.setText(data["projectName"])
+            self.ui.project_shortDescrip_info.setText(data["shortDescrip"])
+            self.ui.project_startDate_info.setText(data["startDate"])
+            self.ui.project_endDate_info.setText(data["endDate"])
 
-        self.ui.pushButton.clicked.connect(self.saveProject)
+        self.ui.project_save_button.clicked.connect(self.saveProject)
+        self.ui.project_clear_button.clicked.connect(self.clearProject)
+        self.ui.project_cancel_button.clicked.connect(self.cancelProject)
 
     def saveProject(self):
-        project_id = self.ui.lineEdit.text().strip()
-        name = self.ui.lineEdit_1.text().strip()
-        desc = self.ui.lineEdit_2.text().strip()
-        start = self.ui.lineEdit_3.text().strip()
-        end = self.ui.lineEdit_4.text().strip()
+        project_id = self.ui.project_id_info.text().strip()
+        name = self.ui.project_name_info.text().strip()
+        desc = self.ui.project_shortDescrip_info.toPlainText().strip()
+        start = self.ui.project_startDate_info.text().strip()
+        end = self.ui.project_endDate_info.text().strip()
 
         if not project_id or not name:
             QMessageBox.warning(self, "Input Error", "Project ID and Name cannot be empty.")
@@ -92,6 +104,10 @@ class EditProjectForm(QDialog):
         if error:
             QMessageBox.warning(self, "Validation Error", error)
             return
+        
+        start = datetime.strptime(start, "%m/%d/%Y %I:%M %p")
+
+        end = datetime.strptime(end, "%m/%d/%Y %I:%M %p")
 
         updateProject(self.originalID, {
             "projectID": project_id,
@@ -100,6 +116,21 @@ class EditProjectForm(QDialog):
             "startDate": start,
             "endDate": end
         })
+
+        # insert here statement to load the widgets #
+
+        QMessageBox.information(self, "Success", "Project updated successfully.")
+        self.close()        
+
+    def clearProject(self):
+        self.ui.project_name_info.clear()
+        self.ui.project_id_info.clear()
+        self.ui.project_shortDescrip_info.clear()
+        self.ui.project_startDate_info.setDateTime(QDateTime(2000, 1, 1, 0, 0))
+        self.ui.project_endDate_info.setDateTime(QDateTime(2000, 1, 1, 0, 0))
+
+    def cancelProject(self):
+        self.close()
         
         
 class loadProject (QWidget):
