@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QCalendarWidget, QMainWindow, QAbstractItemView, QMessageBox, QTableWidgetItem, QListWidget, QListWidgetItem
+from PyQt6.QtWidgets import QWidget
 from ui.main_interface import Ui_MainWindow
 from views.project_view import AddProjectForm
 from views.task_view import AddTaskForm
@@ -7,13 +8,18 @@ from controllers.dashboard_controller import getTotalProjectCount, getTotalTaskC
 from controllers.member_controller import searchMembers, getAllMembersForSearch
 from PyQt6.QtGui import QTextCharFormat, QColor, QFont
 from PyQt6.QtCore import QDate, Qt, QTimer, QThreadPool, QPoint
-from utils.searchworker_homesearch import SearchWorker
+from datetime import datetime
+from controllers.project_controller import getTotalTasks, getMembersForProject
+from controllers.task_controller import getMembersForTask
+from widgets.TaskCardWidget import TaskCardWidget
+# from utils.searchworker_homesearch import SearchWorker
 
 class MainApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        
 
         # Default navigation to home page
         self.ui.stackedWidget.setCurrentIndex(0)
@@ -108,6 +114,68 @@ QListWidget::item:selected {
 
         # Sort Members Table by column header click
         self.ui.members_table.horizontalHeader().sectionClicked.connect(self.sortTableByColumn)
+
+        # Connect task container updates
+        self.connect_task_cards()
+        
+        # Setup task connections
+        self.setup_task_connections()
+        
+    def connect_task_cards(self):
+        """Setup connections for task cards"""
+        print("Setting up task connections...")
+        
+        # Find all task cards in the stacked widget
+        tasks_page = self.ui.stackedWidget.widget(2)  # Assuming tasks page is index 2
+        if tasks_page:
+            task_cards = tasks_page.findChildren(TaskCardWidget)
+            print(f"Found {len(task_cards)} task cards")
+            
+            # Connect each card's signal
+            for task_card in task_cards:
+                try:
+                    # Connect with lambda to preserve task data
+                    task_card.clicked.connect(
+                        lambda checked=False, card=task_card: self.update_task_details(card.task_data)
+                    )
+                    print(f"Connected signal for task: {task_card.task_data['taskID']}")
+                except Exception as e:
+                    print(f"Error connecting task card: {e}")
+        else:
+            print("Error: Could not find tasks page")
+
+    def setup_task_connections(self):
+        """Setup connections for task cards"""
+        print("Setting up task connections...")
+        
+        # Find task container in the tasks page
+        tasks_page = self.ui.stackedWidget.widget(2)  # Assuming tasks page is index 2
+        tasks_container = tasks_page.findChild(QWidget, "TaskVContainer")
+        
+        if not tasks_container:
+            print("Error: Could not find TaskVContainer")
+            return
+            
+        # Find all task cards
+        task_cards = tasks_container.findChildren(TaskCardWidget)
+        print(f"Found {len(task_cards)} task cards")
+        
+        # Connect each card's signal
+        for task_card in task_cards:
+            try:
+                # Disconnect any existing connections first
+                try:
+                    task_card.clicked.disconnect()
+                except:
+                    pass
+                    
+                # Connect with lambda to preserve task data
+                task_card.clicked.connect(
+                    lambda checked, data=task_card.task_data: self.update_task_details(data)
+                )
+                print(f"Connected signal for task: {task_card.task_data['taskID']}")
+            except Exception as e:
+                print(f"Error connecting task card: {e}")
 
     def setupTableInteractions(self):
         table = self.ui.members_table
@@ -328,9 +396,82 @@ color: white;
                 table.scrollToItem(item, QAbstractItemView.ScrollHint.PositionAtCenter)
                 return  # stop once found
 
+    def update_project_details(self, project_data: dict):
+        # This method already exists and works correctly
+        self.ui.project_name_info.setText(project_data['projectName'])
+        self.ui.project_id_info.setText(project_data['projectID'])
+        
+        # Format and set dates
+        start_date = project_data['startDate']
+        if isinstance(start_date, str):
+            start_date = datetime.strptime(start_date.split()[0], '%Y-%m-%d').strftime("%B %d, %Y")
+        self.ui.project_startDate_info.setText(start_date)
+        
+        end_date = project_data['endDate']
+        if isinstance(end_date, str):
+            end_date = datetime.strptime(end_date.split()[0], '%Y-%m-%d').strftime("%B %d, %Y")
+        self.ui.project_endDate_info.setText(end_date)
+        
+        # Get and set task count
+        total_tasks = getTotalTasks(project_data['projectID'])
+        self.ui.project_totalTasks_info.setText(str(total_tasks))
+        
+        # Get and set member count
+        members = getMembersForProject(project_data['projectID'])
+        self.ui.project_totalMembers_info.setText(str(len(members)))
+
+    def update_task_details(self, task_data: dict):
+        """Update task details in the UI"""
+        print(f"\nUpdating task details for task: {task_data['taskID']}")
+        
+        try:
+            # Task Name
+            self.ui.task_name_info.setText(task_data['taskName'])
+            print("Updated task name")
+            
+            # Task ID
+            self.ui.task_id_info.setText(task_data['taskID'])
+            print("Updated task ID")
+            
+            # Project ID
+            self.ui.task_project_info.setText(task_data['projectID'])
+            print("Updated project ID")
+            
+            # Status
+            self.ui.task_status_info.setText(task_data.get('currentStatus', 'Not Set'))
+            print("Updated status")
+            
+            # Due Date
+            due_date = task_data.get('dueDate', '')
+            if due_date:
+                try:
+                    date_str = due_date.split()[0] if isinstance(due_date, str) else due_date.strftime('%Y-%m-%d')
+                    formatted_date = datetime.strptime(date_str, '%Y-%m-%d').strftime("%B %d, %Y")
+                    self.ui.task_dueDate_info.setText(formatted_date)
+                    print("Updated due date")
+                except Exception as e:
+                    print(f"Error formatting date: {e}")
+                    self.ui.task_dueDate_info.setText(str(due_date))
+            
+            # Member Count
+            try:
+                members = getMembersForTask(task_data['taskID'])
+                self.ui.task_totalMembers_info.setText(str(len(members)))
+                print("Updated member count")
+            except Exception as e:
+                print(f"Error getting members: {e}")
+                self.ui.task_totalMembers_info.setText('0')
+                
+            print("Task details update completed")
+            
+        except Exception as e:
+            print(f"Error updating task details: {e}")
+            import traceback
+            print(traceback.format_exc())
+
     def switchPage(self, page_index: int):
         self.ui.stackedWidget.setCurrentIndex(page_index)
         self.ui.home_search.clear()
         self.search_suggestion.hide()
 
-    
+
