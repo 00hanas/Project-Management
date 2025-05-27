@@ -26,10 +26,21 @@ class Ui_addproject_dialog(object):
 "\n"
 "QLabel    {\n"
 "    font-family: \"Poppins\", sans-serif;\n"
+"    font-size: 15px;\n"
+"    color: #000000;\n"
+"    background-color: transparent;\n"
+"    border: none;\n"
+"}\n"
+"#project_name, #project_id, #project_shortDescrip, #project_startDate, #project_endDate {\n"
 "    font-weight: bold;\n"
 "    font-size: 8pt;\n"
 "    color: #92979d;\n"
-"    border: none;\n"
+"}\n"
+"\n"
+"#addproject_label {\n"
+"    font-weight: bold;\n"
+"    font-size: 20pt;\n"
+"    color: #2b70ff;\n"
 "}\n"
 "\n"
 "QLineEdit, QTextEdit, QDateTimeEdit {\n"
@@ -71,6 +82,11 @@ class Ui_addproject_dialog(object):
 "    color: #FFFFFF;\n"
 "    text-align: center;\n"
 "    font-family: \"Poppins\", sans-serif;\n"
+"    font-size: 15px;\n"
+"    padding: 8px;\n"
+"}\n"
+"\n"
+"#project_save_button, #project_clear_button, #project_cancel_button {\n"
 "    font-size: 10pt;\n"
 "    font-weight: bold;\n"
 "}\n"
@@ -168,6 +184,18 @@ class Ui_addproject_dialog(object):
         self.verticalLayout_5.addWidget(self.project_endDate)
         self.project_endDate_info = QtWidgets.QDateTimeEdit(parent=self.project_endDate_frame)
         self.project_endDate_info.setObjectName("project_endDate_info")
+        # Set minimum datetime
+        min_datetime = QtCore.QDateTime.fromString("2000-01-01T00:00:00", QtCore.Qt.DateFormat.ISODate)
+        if not min_datetime.isValid():
+            min_datetime = QtCore.QDateTime(2000, 1, 1, 0, 0)
+
+        self.project_endDate_info.setMinimumDateTime(min_datetime)
+
+        # Set special text to show when date = minimum date
+        self.project_endDate_info.setSpecialValueText("No date set")
+
+        # Initialize with minimum datetime so "No date set" is shown
+        self.project_endDate_info.setDateTime(min_datetime)
         self.verticalLayout_5.addWidget(self.project_endDate_info)
         self.gridLayout.addWidget(self.project_endDate_frame, 3, 1, 1, 1)
         self.verticalLayout_6.addWidget(self.project_info)

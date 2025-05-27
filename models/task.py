@@ -72,7 +72,7 @@ def loadTasks(parent=None) -> QWidget:
     grid.setAlignment(Qt.AlignmentFlag.AlignTop)
     grid.setContentsMargins(1, 0, 1, 0)  # Margins around the grid
     grid.setVerticalSpacing(0)     # Increased from 2 to 10
-    columns = 2
+    columns = 3
     
     try:
         tasks = getAllTasks()
@@ -104,8 +104,8 @@ def loadTasks(parent=None) -> QWidget:
     except Exception as e:
         print(f"Error loading tasks: {e}")
 
-    columns = 2
-    card_height = 150  
+    # columns = 4
+    card_height = 170  
     rows = (len(tasks) + columns - 1) // columns
 
     content.setFixedHeight(rows * card_height)

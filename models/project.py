@@ -73,11 +73,9 @@ def loadProjects(parent=None) -> QWidget:
 
     # Add projects
     projects = getAllProjects()
-    columns = 2
+    columns = 3
     headers = ["projectID", "projectName", "shortDescrip", "startDate", "endDate"]
-    
-    total_rows = (len(projects) + columns - 1) // columns  # Calculate total rows needed
-    
+        
     for index, project in enumerate(projects):
         project_dict = dict(zip(headers, project))
         project_widget = ProjectCardWidget(project_dict)
@@ -86,7 +84,7 @@ def loadProjects(parent=None) -> QWidget:
         col = index % columns
         grid.addWidget(project_widget, row, col)
 
-    columns = 2
+    # columns = 4
     card_height = 150  
     rows = (len(projects) + columns - 1) // columns
 
