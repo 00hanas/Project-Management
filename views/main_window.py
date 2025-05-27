@@ -23,15 +23,15 @@ class MainApp(QMainWindow):
         self.ui.tasks_total_count.setText(str(getTotalTaskCount()))
         self.ui.members_total_count.setText(str(getTotalMemberCount()))
 
-        self.ui.projects_total_count.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
-        self.ui.tasks_total_count.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
-        self.ui.members_total_count.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3))
-
         # Navigation to pages
-        self.ui.home_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
-        self.ui.projects_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
-        self.ui.tasks_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
-        self.ui.members_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3)) 
+        self.ui.projects_total_count.clicked.connect(lambda: self.switchPage(1))
+        self.ui.tasks_total_count.clicked.connect(lambda: self.switchPage(2))
+        self.ui.members_total_count.clicked.connect(lambda: self.switchPage(3))
+
+        self.ui.home_button.clicked.connect(lambda: self.switchPage(0)) 
+        self.ui.projects_button.clicked.connect(lambda: self.switchPage(1))
+        self.ui.tasks_button.clicked.connect(lambda: self.switchPage(2))
+        self.ui.members_button.clicked.connect(lambda: self.switchPage(3))
 
         # Handling add buttons
         self.ui.addproject_button.clicked.connect(lambda: AddProjectForm(self).exec())
@@ -327,5 +327,10 @@ color: white;
                 table.selectRow(row)
                 table.scrollToItem(item, QAbstractItemView.ScrollHint.PositionAtCenter)
                 return  # stop once found
+
+    def switchPage(self, page_index: int):
+        self.ui.stackedWidget.setCurrentIndex(page_index)
+        self.ui.home_search.clear()
+        self.search_suggestion.hide()
 
     
