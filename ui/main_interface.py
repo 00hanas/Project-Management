@@ -108,7 +108,7 @@ class Ui_MainWindow(object):
 "    gridline-color: transparent;\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: normal;\n"
-"    font-size: 12px;\n"
+"    font-size: 13px;\n"
 "    alternate-background-color: #aef2e0;\n"
 "    background-color: #FFFFFF;\n"
 "    selection-background-color: #01c28e;\n"
@@ -313,7 +313,7 @@ class Ui_MainWindow(object):
 "#project_name_info,#project_id_info, #project_startDate_info, #project_endDate_info, #project_totalMembers_info, #project_totalTasks_info, #task_name_info, #task_id_info, #task_project_info, #task_status_info, #task_dueDate_info, #task_totalMembers_info {\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: normal;\n"
-"    font-size: 12px;\n"
+"    font-size: 14px;\n"
 "    color: #000000;\n"
 "}\n"
 "\n"
@@ -422,10 +422,10 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setSpacing(5)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.planado_icon = QtWidgets.QPushButton(parent=self.planado)
-        self.planado_icon.setMaximumSize(QtCore.QSize(31, 16777215))
+        self.planado_icon.setMaximumSize(QtCore.QSize(30, 16777215))
         self.planado_icon.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("icons/chevron-down_black.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("icons/briefcase.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.planado_icon.setIcon(icon)
         self.planado_icon.setObjectName("planado_icon")
         self.horizontalLayout.addWidget(self.planado_icon)
@@ -661,7 +661,7 @@ QCalendarWidget {
     border-bottom-right-radius: 8px;
     padding: 5px;
     font-family: "Poppins", sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     background-color: white;
 }
 
@@ -675,15 +675,20 @@ QCalendarWidget QWidget#qt_calendar_navigationbar {
 
 /* Date Cells */
 QCalendarWidget QAbstractItemView {
+    font-size: 15px;
     color: black;
-    selection-background-color: #e2091e;  /* No fill for selection */
+    selection-background-color: #e2091e;
 }
 
-/* SELECTED DATE - Gets red border when clicked */
-QCalendarWidget QAbstractItemView:selected {
+QCalendarWidget QAbstractItemView::header {
+    background-color: #edf4fa; /* or any color you want */
+}
+                                         
+QCalendarWidget QAbstractItemView:item:selected {
+    background-color: #edf4fa !important;
+    color: black !important;
     border: 2px solid #e2091e;
-    border-radius: 10px;
-    background-color: #e2091e;
+    border-radius: 3px;
 }
 
 /* Navigation Buttons */
@@ -694,7 +699,7 @@ QCalendarWidget QToolButton {
     font-weight: bold;
     border: none;
     border-radius: 8px;
-    padding: 4px 8px;
+    padding: 5px 8px;
     margin: 2px;
 }
                                          
@@ -703,12 +708,13 @@ QCalendarWidget QToolButton QMenu {
     color: #FFFFFF;
     font-family: "Poppins", sans-serif;
     font-weight: normal;
-    border-radius: 8px;
-    padding: 4px;
+    border-radius: 4px;
+    padding: 5px;
 }
                                         
 QCalendarWidget QToolButton QMenu::item:selected {
     background-color: #b50817;
+    border-radius: 4px;
 }
 
 /* Arrow Buttons */
@@ -754,27 +760,6 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         
         self.verticalLayout_9.addWidget(loadProjects(self.view_projects))
         
-        # self.vProjects_scrollArea = QtWidgets.QScrollArea(parent=self.view_projects)
-        # self.vProjects_scrollArea.setWidgetResizable(True)
-        # self.vProjects_scrollArea.setObjectName("vProjects_scrollArea")
-        # self.vProjectSA_widget = QtWidgets.QWidget()
-        # self.vProjectSA_widget.setGeometry(QtCore.QRect(0, 0, 98, 28))
-        # self.vProjectSA_widget.setObjectName("vProjectSA_widget")
-        # self.gridLayout_3 = QtWidgets.QGridLayout(self.vProjectSA_widget)
-        # self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
-        # self.gridLayout_3.setObjectName("gridLayout_3")
-        # self.vProject_contents = QtWidgets.QFrame(parent=self.vProjectSA_widget)
-        # self.vProject_contents.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
-        # self.vProject_contents.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
-        # self.vProject_contents.setObjectName("vProject_contents")
-        # self.gridLayout_4 = QtWidgets.QGridLayout(self.vProject_contents)
-        # self.gridLayout_4.setObjectName("gridLayout_4")
-        # self.vProject_layout = QtWidgets.QVBoxLayout()
-        # self.vProject_layout.setObjectName("vProject_layout")
-        # self.gridLayout_4.addLayout(self.vProject_layout, 0, 0, 1, 1)
-        # self.gridLayout_3.addWidget(self.vProject_contents, 0, 0, 1, 1)
-        # self.vProjects_scrollArea.setWidget(self.vProjectSA_widget)
-        # self.verticalLayout_9.addWidget(self.vProjects_scrollArea)
         self.gridLayout_2.addWidget(self.view_projects, 2, 0, 1, 1)
         self.stackedWidget.addWidget(self.home_page)
         
