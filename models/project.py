@@ -74,9 +74,10 @@ def loadProjects(parent=None) -> QWidget:
 
     # Add projects
     projects = getAllProjects()
-    columns = 2
+    columns = 3
     headers = ["projectID", "projectName", "shortDescrip", "startDate", "endDate"]
     
+        
     for index, project in enumerate(projects):
         project_dict = dict(zip(headers, project))
         project_widget = ProjectCardWidget(project_dict)

@@ -4,6 +4,18 @@ from PyQt6.QtGui import QIcon, QCursor
 from controllers.project_controller import getTotalTasks, getCompletedTasks, getMembersForProject
 from datetime import datetime
 
+def safe_format_date(date_val, fmt="%B %d"):
+    if isinstance(date_val, datetime):
+        return date_val.strftime(fmt)
+    if isinstance(date_val, str):
+        # Try to parse common formats
+        for f in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d", "%m/%d/%Y %I:%M %p"):
+            try:
+                return datetime.strptime(date_val, f).strftime(fmt)
+            except Exception:
+                continue
+        return date_val  # Return as-is if parsing fails
+    return str(date_val)
 
 def safe_format_date(date_val, fmt="%B %d"):
     if isinstance(date_val, datetime):
@@ -53,7 +65,7 @@ class ProjectCardWidget(QWidget):
         toprow.setObjectName("toprow")
         toprow.setStyleSheet("""
             #toprow {
-                background-color: #4A90E2;
+                background-color: #2b70ff;
                 border-top-right-radius: 8px 8px;
                 border-top-left-radius: 8px 8px;
                 border-bottom-right-radius: 0px 0px;
@@ -68,6 +80,7 @@ class ProjectCardWidget(QWidget):
                 margin: 0px;
                 margin-left: 2px;
                 padding: 0px;
+                font-size: 15px;
             }
         """)
         toprow_layout = QHBoxLayout()
@@ -83,14 +96,14 @@ class ProjectCardWidget(QWidget):
         secrow.setObjectName("secrow")
         secrow.setStyleSheet("""
             #secrow {
-                background-color: #DBECFF;
+                background-color: #bfd5ff;
                 border-radius: 0px;
                 margin: 0px;
                 padding: 0px;
             }
             QLabel {
                 background-color: transparent;
-                font-size: 12px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2A2A2A;
                 margin: 0px;
@@ -110,7 +123,7 @@ class ProjectCardWidget(QWidget):
         thirdrow.setObjectName("thirdrow")
         thirdrow.setStyleSheet("""
             #thirdrow {
-                background-color: #DBECFF;
+                background-color: #bfd5ff;
                 border-radius: 0px;
                 margin: 0px;
                 padding: 0px;
@@ -154,13 +167,13 @@ class ProjectCardWidget(QWidget):
         lastrow.setObjectName("lastrow")
         lastrow.setStyleSheet("""
             #lastrow {
-                background-color: #DBECFF;
+                background-color: #bfd5ff;
                 border: none;
                 border-radius: 0px;
                 border-bottom-right-radius: 8px 8px;
                 border-bottom-left-radius: 8px 8px;
                 border-bottom: solid;
-                border-bottom-color: #DBECFF;
+                border-bottom-color: #bfd5ff;
                 border-bottom-width: 8px;
                 
                 margin: 0px;
@@ -175,9 +188,9 @@ class ProjectCardWidget(QWidget):
             }
             QLabel {
                 background-color: transparent;
-                font-size: 12px;
+                font-size: 9pt;
                 font-weight: bold;
-                color: #4A90E2;
+                color: #2b70ff;
                 margin: 0px;
                 padding: 0px;
             }

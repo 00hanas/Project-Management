@@ -26,10 +26,22 @@ class Ui_addtask_dialog(object):
 "\n"
 "QLabel    {\n"
 "    font-family: \"Poppins\", sans-serif;\n"
+"    font-size: 15px;\n"
+"    color: #000000;\n"
+"    background-color: transparent;\n"
+"    border: none;\n"
+"}\n"
+"\n"
+"#task_project, #task_status, #task_name, #task_id, #task_shortDescrip, #task_dueDate, #task_dateAccomplished{\n"
 "    font-weight: bold;\n"
 "    font-size: 8pt;\n"
 "    color: #92979d;\n"
-"    border: none;\n"
+"}\n"
+"\n"
+"#addtask_label {\n"
+"    font-weight: bold;\n"
+"    font-size: 20pt;\n"
+"    color: #fe9137;\n"
 "}\n"
 "\n"
 "QLineEdit, QTextEdit, QDateTimeEdit, QComboBox {\n"
@@ -59,7 +71,6 @@ class Ui_addtask_dialog(object):
 "    width: 10px;\n"
 "    height: 10px;\n"
 "}\n"
-"\n"
 "QPushButton {\n"
 "    background-color: #fe9137;\n"
 "    border: none;\n"
@@ -67,6 +78,11 @@ class Ui_addtask_dialog(object):
 "    color: #FFFFFF;\n"
 "    text-align: center;\n"
 "    font-family: \"Poppins\", sans-serif;\n"
+"    font-size: 15px;\n"
+"    padding: 8px;\n"
+"}\n"
+"\n"
+"#task_save_button, #task_clear_button, #task_cancel_button {\n"
 "    font-size: 10pt;\n"
 "    font-weight: bold;\n"
 "}\n"
@@ -100,6 +116,18 @@ class Ui_addtask_dialog(object):
         self.gridLayout.addWidget(self.task_dateAccomplished, 4, 1, 1, 1)
         self.task_dateAccomplished_info = QtWidgets.QDateTimeEdit(parent=self.task_info)
         self.task_dateAccomplished_info.setObjectName("task_dateAccomplished_info")
+        # Set minimum datetime
+        min_datetime = QtCore.QDateTime.fromString("2000-01-01T00:00:00", QtCore.Qt.DateFormat.ISODate)
+        if not min_datetime.isValid():
+            min_datetime = QtCore.QDateTime(2000, 1, 1, 0, 0)
+
+        self.task_dateAccomplished_info.setMinimumDateTime(min_datetime)
+
+        # Set special text to show when date = minimum date
+        self.task_dateAccomplished_info.setSpecialValueText("No date set")
+
+        # Initialize with minimum datetime so "No date set" is shown
+        self.task_dateAccomplished_info.setDateTime(min_datetime)
         self.gridLayout.addWidget(self.task_dateAccomplished_info, 5, 1, 1, 1)
         self.task_dueDate = QtWidgets.QLabel(parent=self.task_info)
         self.task_dueDate.setObjectName("task_dueDate")

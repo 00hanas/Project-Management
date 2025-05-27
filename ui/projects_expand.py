@@ -24,12 +24,18 @@ class Ui_projects_expand(object):
 "    border-radius: 8px;\n"
 "}\n"
 "\n"
-"QLabel    {\n"
+"QLabel {\n"
 "    font-family: \"Poppins\", sans-serif;\n"
-"    font-weight: 500;\n"
+"    font-size: 15px;\n"
+"    color: #000000;\n"
+"    background-color: transparent;\n"
+"    border: none;\n"
+"}\n"
+"\n"
+"#project_id, #project_startDate, #project_endDate, #project_shortDescrip, #project_tasks, #project_members {\n"
+"    font-weight: bold;\n"
 "    font-size: 9pt;\n"
 "    color: #92979d;\n"
-"    border: none;\n"
 "}\n"
 "\n"
 "QTextEdit, QListWidget {\n"
@@ -41,34 +47,39 @@ class Ui_projects_expand(object):
 "}\n"
 "\n"
 "QPushButton {\n"
-"    background-color: transparent;;\n"
-"    border: none;\n"
-"    border-radius: 8px;\n"
-"}\n"
-"\n"
-"#project_update_button, #project_delete_button {\n"
 "    background-color: #2b70ff;\n"
+"    border: none;\n"
 "    border-radius: 8px;\n"
 "    color: #FFFFFF;\n"
 "    text-align: center;\n"
 "    font-family: \"Poppins\", sans-serif;\n"
+"    font-size: 15px;\n"
+"    padding: 8px;\n"
+"}\n"
+"\n"
+"#project_id_icon, #project_startDate_icon, #project_endDate_icon, #project_shortDescrip_icon, #project_tasks_icon, #project_members_icon {\n"
+"    background-color: transparent;\n"
+"}\n"
+"\n"
+"#project_update_button, #project_delete_button {\n"
 "    font-size: 10pt;\n"
 "    font-weight: bold;\n"
 "}\n"
 "\n"
 "Line {\n"
 "    background-color: #92979d;\n"
+"    color: #92979d;\n"
 "}\n"
 "\n"
 "#project_name {\n"
 "    font-size: 20pt;\n"
 "    font-weight: bold;\n"
 "    color: #2b70ff;\n"
-"    border: none;\n"
 "}\n"
 "\n"
-"#project_id_info, #project_startDate_info, #project_endDate_info {\n"
+"#project_id_info, #project_startDate_info, #project_endDate_info, #project_shortDescrip_info, #project_tasks_info, #project_members_info {\n"
 "    font-weight: normal;\n"
+"    font-size: 10pt;\n"
 "    color: #000000;\n"
 "}")
         self.gridLayout = QtWidgets.QGridLayout(projects_expand)
@@ -110,13 +121,13 @@ class Ui_projects_expand(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.project_update_button = QtWidgets.QPushButton(parent=self.project_updateDelete)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/icons/edit.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("icons/edit.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_update_button.setIcon(icon)
         self.project_update_button.setObjectName("project_update_button")
         self.verticalLayout.addWidget(self.project_update_button)
         self.project_delete_button = QtWidgets.QPushButton(parent=self.project_updateDelete)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icons/icons/trash-2.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon1.addPixmap(QtGui.QPixmap("icons/trash-2.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_delete_button.setIcon(icon1)
         self.project_delete_button.setObjectName("project_delete_button")
         self.verticalLayout.addWidget(self.project_delete_button)
@@ -150,7 +161,7 @@ class Ui_projects_expand(object):
         self.project_id_icon.setMaximumSize(QtCore.QSize(20, 20))
         self.project_id_icon.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/icons/icons/key_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon2.addPixmap(QtGui.QPixmap("icons/key_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_id_icon.setIcon(icon2)
         self.project_id_icon.setObjectName("project_id_icon")
         self.horizontalLayout.addWidget(self.project_id_icon)
@@ -186,7 +197,7 @@ class Ui_projects_expand(object):
         self.project_startDate_icon.setMaximumSize(QtCore.QSize(20, 20))
         self.project_startDate_icon.setText("")
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":/icons/icons/calendar_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon3.addPixmap(QtGui.QPixmap("icons/calendar_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_startDate_icon.setIcon(icon3)
         self.project_startDate_icon.setObjectName("project_startDate_icon")
         self.horizontalLayout_4.addWidget(self.project_startDate_icon)
@@ -257,7 +268,7 @@ class Ui_projects_expand(object):
         self.project_shortDescrip_icon.setMaximumSize(QtCore.QSize(20, 20))
         self.project_shortDescrip_icon.setText("")
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(":/icons/icons/edit-3_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon4.addPixmap(QtGui.QPixmap("icons/edit-3_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_shortDescrip_icon.setIcon(icon4)
         self.project_shortDescrip_icon.setObjectName("project_shortDescrip_icon")
         self.horizontalLayout_11.addWidget(self.project_shortDescrip_icon)
@@ -297,7 +308,7 @@ class Ui_projects_expand(object):
         self.project_tasks_icon.setMaximumSize(QtCore.QSize(20, 20))
         self.project_tasks_icon.setText("")
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap(":/icons/icons/clipboard_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon5.addPixmap(QtGui.QPixmap("icons/clipboard_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_tasks_icon.setIcon(icon5)
         self.project_tasks_icon.setObjectName("project_tasks_icon")
         self.horizontalLayout_12.addWidget(self.project_tasks_icon)
@@ -344,7 +355,7 @@ class Ui_projects_expand(object):
         self.project_members_icon.setMaximumSize(QtCore.QSize(20, 20))
         self.project_members_icon.setText("")
         icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(":/icons/icons/users_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon6.addPixmap(QtGui.QPixmap("icons/users_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_members_icon.setIcon(icon6)
         self.project_members_icon.setObjectName("project_members_icon")
         self.horizontalLayout_14.addWidget(self.project_members_icon)
@@ -372,7 +383,7 @@ class Ui_projects_expand(object):
         self.gridLayout_6.addWidget(self.project_members_frame, 6, 1, 1, 1)
         self.gridLayout.addWidget(self.projects_expand_frame, 0, 0, 1, 1)
 
-        frames = [self.projects_expand_frame, self.frame]
+        frames = [self.projects_expand_frame]
         for frame in frames:
             shadow = QGraphicsDropShadowEffect(frame)
             shadow.setBlurRadius(20)
