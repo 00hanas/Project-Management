@@ -7,6 +7,8 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtWidgets import QGraphicsDropShadowEffect
+from PyQt6.QtGui import QColor
 
 
 class Ui_addmember_dialog(object):
@@ -210,6 +212,14 @@ class Ui_addmember_dialog(object):
         self.horizontalLayout.addWidget(self.member_cancel_button)
         self.member_cancel_button.setMinimumHeight(30)
         self.verticalLayout_11.addWidget(self.frame)
+
+        frames = [self.member_info, self.frame]
+        for frame in frames:
+            shadow = QGraphicsDropShadowEffect(frame)
+            shadow.setBlurRadius(20)
+            shadow.setOffset(0, 0)
+            shadow.setColor(QColor(0, 0, 0, 80))
+            frame.setGraphicsEffect(shadow)
 
         self.retranslateUi(addmember_dialog)
         QtCore.QMetaObject.connectSlotsByName(addmember_dialog)

@@ -7,7 +7,8 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
-
+from PyQt6.QtWidgets import QGraphicsDropShadowEffect
+from PyQt6.QtGui import QColor
 
 class Ui_tasks_expand(object):
     def setupUi(self, tasks_expand):
@@ -396,6 +397,14 @@ class Ui_tasks_expand(object):
         self.gridLayout_3.addWidget(self.task_members_info, 1, 1, 1, 2)
         self.verticalLayout_3.addWidget(self.task_members_frame)
         self.gridLayout.addWidget(self.tasks_expand_frame, 0, 0, 1, 1)
+
+        frames = [self.tasks_expand_frame, self.frame]
+        for frame in frames:
+            shadow = QGraphicsDropShadowEffect(frame)
+            shadow.setBlurRadius(20)
+            shadow.setOffset(0, 0)
+            shadow.setColor(QColor(0, 0, 0, 80))
+            frame.setGraphicsEffect(shadow)
 
         self.retranslateUi(tasks_expand)
         QtCore.QMetaObject.connectSlotsByName(tasks_expand)
