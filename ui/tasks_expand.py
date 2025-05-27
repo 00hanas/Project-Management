@@ -398,7 +398,7 @@ class Ui_tasks_expand(object):
         self.verticalLayout_3.addWidget(self.task_members_frame)
         self.gridLayout.addWidget(self.tasks_expand_frame, 0, 0, 1, 1)
 
-        frames = [self.tasks_expand_frame, self.frame]
+        frames = [self.tasks_expand_frame, self.frame_3]
         for frame in frames:
             shadow = QGraphicsDropShadowEffect(frame)
             shadow.setBlurRadius(20)
