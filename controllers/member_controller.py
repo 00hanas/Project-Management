@@ -138,10 +138,10 @@ def searchMembers(keyword: str, search_by: str) -> list[str]:
     elif search_by == "Email":
         sql = sql_base + " WHERE m.email LIKE %s"
         cursor.execute(sql, (keyword_like,))
-    elif search_by == "ProjectName":
+    elif search_by == "Project":
         sql = sql_base + " WHERE p.projectName LIKE %s"
         cursor.execute(sql, (keyword_like,))
-    elif search_by == "TaskName":
+    elif search_by == "Task":
         sql = sql_base + " WHERE t.taskName LIKE %s"
         cursor.execute(sql, (keyword_like,))
     else:
