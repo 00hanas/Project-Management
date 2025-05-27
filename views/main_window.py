@@ -1,13 +1,12 @@
-from PyQt6.QtWidgets import QCalendarWidget, QMainWindow, QAbstractItemView, QMessageBox, QTableWidgetItem
+from PyQt6.QtWidgets import QCalendarWidget, QMainWindow, QAbstractItemView, QMessageBox, QTableWidgetItem, QListWidget, QListWidgetItem
 from ui.main_interface import Ui_MainWindow
-from models.member import loadMember
 from views.project_view import AddProjectForm
 from views.task_view import AddTaskForm
 from views.member_view import expandRow, EditMemberForm, AddMemberForm
-from controllers.dashboard_controller import getTotalProjectCount, getTotalTaskCount, getTotalMemberCount, getCalendarEvents
+from controllers.dashboard_controller import getTotalProjectCount, getTotalTaskCount, getTotalMemberCount, getCalendarEvents, getAllProjectsTasksMembers
 from controllers.member_controller import searchMembers, getAllMembersForSearch
 from PyQt6.QtGui import QTextCharFormat, QColor, QFont
-from PyQt6.QtCore import QDate
+from PyQt6.QtCore import QDate, Qt, QTimer
 
 class MainApp(QMainWindow):
     def __init__(self):
@@ -45,15 +44,52 @@ class MainApp(QMainWindow):
         self.calendar.style().polish(self.calendar)
         self.highlightEvents()
         
-
         # Configure calendar selection behavior
         self.calendar.setSelectionMode(QCalendarWidget.SelectionMode.SingleSelection)
-        
-        # Functionality in members' page
-        self.ui.members_search.textChanged.connect(self.performSearch)
-        self.ui.members_searchby.currentIndexChanged.connect(self.performSearch)
-        self.ui.addmember_button.clicked.connect(self.showAddMember)
 
+        # Home page search functionality
+        self.search_timer = QTimer(self)
+        self.search_timer.setSingleShot(True)
+        self.search_timer.timeout.connect(self.performHomeSearch)
+        self.ui.home_search.textChanged.connect(lambda: self.search_timer.start(200)) 
+        self.ui.home_searchby.currentIndexChanged.connect(self.performHomeSearch)
+        self.ui.home_search.setPlaceholderText("Search projects, tasks, or members...")
+        self.search_suggestion = QListWidget(self)
+        self.search_suggestion.setWindowFlags(Qt.WindowType.Popup)
+        self.search_suggestion.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.search_suggestion.setMouseTracking(True)
+        self.search_suggestion.setParent(self)
+
+        self.search_suggestion.move(self.ui.home_search.mapToGlobal(self.ui.home_search.rect().bottomLeft()))
+
+        self.search_suggestion.hide()
+        self.search_suggestion.itemClicked.connect(self.handleSuggestionClicked)
+        self.search_suggestion.setStyleSheet("""
+QListWidget {
+    border: 1px solid #edf4fa;
+    border-radius: 8px;
+    padding: 4px;
+    font-family: "Poppins", sans-serif;
+    font-size: 10px;
+    background-color: #edf4fa;
+    color: black;
+}
+QListWidget::item {
+    padding: 6px 10px;
+}
+QListWidget::item:hover {
+    background-color: #f0f0f0;
+    color: black;
+}
+QListWidget::item:selected {
+    background-color: #b8e6d9;
+    color: black;
+}
+""")
+        
+        # Member search functionality
+        self.ui.members_search.textChanged.connect(self.performSearchforMembers)
+        self.ui.members_searchby.currentIndexChanged.connect(self.performSearchforMembers)
 
         #Load members into the table
         if hasattr(self.ui, 'members_table'):
@@ -63,8 +99,9 @@ class MainApp(QMainWindow):
             self.original_items = {}
             #Functions for the members' table
             self.setupTableInteractions()
-            loadMember(self.ui.members_table)
+            self.refreshTable()
 
+        # Sort Members Table by column header click
         self.ui.members_table.horizontalHeader().sectionClicked.connect(self.sortTableByColumn)
 
     def setupTableInteractions(self):
@@ -76,14 +113,6 @@ class MainApp(QMainWindow):
 
     def handlingDoubleClicked(self, row, column):
         expandRow(self, row)
-
-    def showAddMember(self):
-        add_form = AddMemberForm(self)
-        add_form.show()
-        add_form.exec()
-
-        from models.member import loadMember
-        loadMember(self.ui.members_table)
 
     def editMemberFromWidget(self, widget):
         member_id = widget.property("member_id")
@@ -112,7 +141,7 @@ class MainApp(QMainWindow):
         if reply == QMessageBox.StandardButton.Yes:
             from controllers.member_controller import deleteMemberbyID
             deleteMemberbyID(member_id)
-            loadMember(self.ui.members_table)
+            self.refreshTable()
 
     def highlightEvents(self):
 
@@ -163,7 +192,7 @@ class MainApp(QMainWindow):
 
         self.calendar.setDateTextFormat(QDate.currentDate(), fmt)
 
-    def performSearch(self):
+    def performSearchforMembers(self):
         keyword = self.ui.members_search.text()
         search_by = self.ui.members_searchby.currentText()
 
@@ -199,3 +228,69 @@ class MainApp(QMainWindow):
 
         for row in range(self.ui.members_table.rowCount()):
             self.ui.members_table.setRowHeight(row, self.default_row_height)
+
+    def performHomeSearch(self):
+        keyword = self.ui.home_search.text()
+        search_by = self.ui.home_searchby.currentText()
+        
+        if not keyword:
+            self.search_suggestion.hide()
+            return
+        
+        if search_by == "Search By":
+            search_by = ""
+        
+        results = getAllProjectsTasksMembers(keyword, search_by)
+        self.updateSearchSuggestions(results)
+        
+    def updateSearchSuggestions(self, results: list[dict]):
+        if not results:
+            self.search_suggestion.hide()
+            print("[DEBUG] No search results found")
+            return
+        self.search_suggestion.clear()
+        for item in results:
+            display_text = f"{item['type'].capitalize()}: {item['label']}"
+            list_item = QListWidgetItem(display_text)
+            list_item.setData(Qt.ItemDataRole.UserRole, item)
+            self.search_suggestion.addItem(list_item)
+
+        # Position and show suggestion popup
+        input_rect = self.ui.home_search.geometry()
+        global_pos = self.ui.home_search.mapToGlobal(input_rect.bottomLeft())
+        self.search_suggestion.move(global_pos)
+        self.search_suggestion.resize(
+            self.ui.home_search.width(),
+            min(200, self.search_suggestion.sizeHintForRow(0) * self.search_suggestion.count())
+        )
+        self.search_suggestion.show()
+
+    def handleSuggestionClicked(self, item):
+        data = item.data(Qt.ItemDataRole.UserRole)
+        entity_type = data['type']
+        entity_id = data['id']
+
+        if entity_type == 'project':
+            self.navigateToProject(entity_id)
+        elif entity_type == 'task':
+            self.navigateToTask(entity_id)
+        elif entity_type == 'member':
+            self.navigateToMember(entity_id)
+
+        self.search_suggestion.hide()
+        self.ui.search_input.clear()
+
+
+    def navigateToProject(self, project_id):
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.search_input.clear()
+        # Optionally scroll to or highlight project row in table
+
+    def navigateToTask(self, task_id):
+        self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.search_input.clear()
+        # Optionally scroll to or highlight task row in table
+
+    def navigateToMember(self, member_id):
+        self.ui.stackedWidget.setCurrentIndex(3)
+        self.ui.search_input.clear()

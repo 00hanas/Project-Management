@@ -122,6 +122,8 @@ class EditMemberForm(QDialog):
                 item.setCheckState(Qt.CheckState.Checked)
         
         self.ui.member_save_button.clicked.connect(self.saveMember)
+        self.ui.member_clear_button.clicked.connect(self.clearMember)
+        self.ui.member_cancel_button.clicked.connect(self.cancelMember)
         
     def saveMember(self):
         member_id = self.ui.member_id_info.text().strip() #assume
@@ -162,12 +164,25 @@ class EditMemberForm(QDialog):
                     assignProjecttoMember((project_id, member_id))
                     new_project_ids.add(project_id)
 
-        from models.member import loadMember
         self.main_window.refreshTable()  
-        loadMember(self.main_window.ui.members_table)
-
-
+    
         QMessageBox.information(self, "Success", "Member updated successfully.")
+        self.close()
+
+    def clearMember(self):
+        self.ui.member_name_info.clear()
+        self.ui.member_id_info.clear()
+        self.ui.member_email_info.clear()
+
+        for i in range(self.ui.member_project_info.count()):
+            item = self.ui.member_project_info.item(i)
+            item.setCheckState(QtCore.Qt.CheckState.Unchecked)
+
+        for i in range(self.ui.member_task_info.count()):
+            item = self.ui.member_task_info.item(i)
+            item.setCheckState(QtCore.Qt.CheckState.Unchecked)
+
+    def cancelMember(self):
         self.close()
 
 
