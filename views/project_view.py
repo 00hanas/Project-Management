@@ -152,7 +152,13 @@ class EditProjectForm(QDialog):
 
         # Ensure correct format for parsing dates from QDateTimeEdit
         start = datetime.strptime(start, "%d/%m/%Y %I:%M %p") # Corrected format string
-        end = datetime.strptime(end, "%d/%m/%Y %I:%M %p") # Corrected format string
+        
+        # Handle case where end date is default/unset value
+        default_date = QDateTime(2000, 1, 1, 0, 0)
+        if self.ui.project_endDate_info.dateTime() == default_date:
+            end = None
+        else:
+            end = datetime.strptime(end, "%d/%m/%Y %I:%M %p")
 
 
         try:
