@@ -216,3 +216,22 @@ def getOverdueTasks(current_datetime) -> list[dict]:
     conn.close()
     
     return tasks
+
+def getTasksByProjectID(projectID: str) -> list[dict]:
+    """
+    Retrieves all tasks associated with a given projectID.
+    Returns a list of dictionaries, where each dictionary represents a task.
+    """
+    conn = getConnection()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    sql = "SELECT taskID, taskName, currentStatus, dueDate FROM task WHERE projectID = %s ORDER BY taskID"
+    try:
+        cursor.execute(sql, (projectID,))
+        tasks = cursor.fetchall()
+        return tasks if tasks else []
+    except Exception as e:
+        print(f"Error fetching tasks for project {projectID}: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
