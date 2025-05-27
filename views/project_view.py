@@ -1,9 +1,9 @@
 from PyQt6.QtWidgets import QDialog, QWidget, QScrollArea, QGridLayout, QVBoxLayout, QMessageBox
 from PyQt6.QtCore import QDateTime, QRegularExpression
 from PyQt6.QtGui import QRegularExpressionValidator
-from models.project import loadProject
+from models.project import loadProjects
 from controllers.project_controller import addProject, getProjectByID, updateProject, getAllProjects
-from widgets.project_widget import ProjectWidget
+from widgets.ProjectCardWidget import ProjectCardWidget
 from ui.addproject_interface import Ui_addproject_dialog
 from utils.project_validators import uniqueProject, uniqueEditProject
 from datetime import datetime
@@ -132,37 +132,11 @@ class EditProjectForm(QDialog):
     def cancelProject(self):
         self.close()
         
-        
-class loadProject (QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        scroll = QScrollArea(self) 
-        scroll.setWidgetResizable(True) 
-        container = QWidget() 
-        grid = QGridLayout(container) # create a grid layout to organize widgets inside the container widget
-        grid.setSpacing(10)
-
-        projects = getAllProjects() # get all projects from the controller, returns a list of tuples
-        columns = 3
-        headers = ["projectID", "projectName", "shortDescrip", "startDate", "endDate"]
-        # Create a ProjectWidget for each project and add it to the grid layout
-        for index, project in enumerate(projects):
-            # Convert each project tuple to a dictionary using headers
-            project_dict = dict(zip(headers, project))
-            project_widget = ProjectWidget(project_dict)
-            row = index // columns
-            col = index % columns
-            grid.addWidget(project_widget, row, col)
-
-        scroll.setWidget(container)
-        layout = QGridLayout(self)
-        layout.addWidget(scroll)
-        self.setLayout(layout)
 
 class ProjectView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         layout = QVBoxLayout(self)  # Main layout for the Project Section
-        project_grid = loadProject(self)
+        project_grid = loadProjects(self)
         layout.addWidget(project_grid)
         self.setLayout(layout)

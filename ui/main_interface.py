@@ -9,6 +9,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QGraphicsDropShadowEffect
 from PyQt6.QtGui import QColor
+from models.project import loadProject
 from utils.clickableLabel import ClickableLabel
 
 
@@ -697,18 +698,28 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
 }
 """)
         self.gridLayout_2.addWidget(self.home_calendar, 2, 1, 1, 1)
+        
         self.view_projects = QtWidgets.QFrame(parent=self.home_page)
         self.view_projects.setEnabled(True)
         self.view_projects.setMinimumSize(QtCore.QSize(441, 411))
         self.view_projects.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.view_projects.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.view_projects.setObjectName("view_projects")
+        self.view_projects.setStyleSheet("""
+            background-color: white;
+            border-radius: 8px;
+            border: none;
+        """)
+
         self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.view_projects)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
         self.view_projects_label = QtWidgets.QLabel(parent=self.view_projects)
         self.view_projects_label.setMaximumSize(QtCore.QSize(237, 16777215))
         self.view_projects_label.setObjectName("view_projects_label")
         self.verticalLayout_9.addWidget(self.view_projects_label)
+        
+        self.verticalLayout_9.addWidget(loadProject(self.view_projects))
+        
         self.vProjects_scrollArea = QtWidgets.QScrollArea(parent=self.view_projects)
         self.vProjects_scrollArea.setWidgetResizable(True)
         self.vProjects_scrollArea.setObjectName("vProjects_scrollArea")
