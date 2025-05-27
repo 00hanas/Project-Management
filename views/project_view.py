@@ -106,9 +106,9 @@ class EditProjectForm(QDialog):
             QMessageBox.warning(self, "Validation Error", error)
             return
         
-        start = datetime.strptime(start, "%m/%d/%Y %I:%M %p")
+        start = datetime.strptime(start, "%d/%m/%Y %I:%M %p")
 
-        end = datetime.strptime(end, "%m/%d/%Y %I:%M %p")
+        end = datetime.strptime(end, "%d/%m/%Y %I:%M %p")
 
         updateProject(self.originalID, {
             "projectID": project_id,

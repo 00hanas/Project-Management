@@ -43,7 +43,7 @@ class Ui_MainWindow(object):
 #topbar, #planado, #menu_board, #frame, #menu_buttons,
 #home_bar, #view_projects, #projects_bar, #projects_container,
 #project_details, #tasks_bar, #tasks_container, #task_details,
-#members_bar, #members_table_frame, #project_details_frame, #task_details_frame {
+#members_bar, #members_table_frame, #project_details_frame, #task_details_frame, #projects_total, #tasks_total, #members_total {
     background-color: #FFFFFF;
     border: 1px solid #FFFFFF;
     border-radius: 8px;
