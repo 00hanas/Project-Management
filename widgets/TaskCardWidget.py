@@ -1,12 +1,15 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
-from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtCore import QSize, Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
 from controllers.task_controller import getMembersForTask
 from datetime import datetime
 
 class TaskCardWidget(QWidget):
+    clicked = pyqtSignal(dict)  # Define the signal
+    
     def __init__(self, task_data, parent=None):
         super().__init__(parent)
+        self.task_data = task_data  # Store the task data
         self.setObjectName("TaskCard")
         
         self.setMinimumSize(QSize(200, 220))
@@ -35,7 +38,7 @@ class TaskCardWidget(QWidget):
         toprow.setObjectName("toprow")
         toprow.setStyleSheet("""
             #toprow {
-                background-color: #fe9137;
+                background-color: #FFC301;
                 border-top-right-radius: 8px 8px;
                 border-top-left-radius: 8px 8px;
                 border-bottom-left-radius: 0px;
@@ -204,3 +207,12 @@ class TaskCardWidget(QWidget):
         
         container_layout.addWidget(content)
         self.setLayout(container_layout)
+
+        # Make widget focusable and clickable
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)  # Changes cursor to hand when hovering
+
+    def mousePressEvent(self, event):
+        super().mousePressEvent(event)
+        print(f"Task clicked: {self.task_data['taskID']}")  # Debug print
+        self.clicked.emit(self.task_data)  # Emit the stored task data

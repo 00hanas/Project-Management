@@ -12,6 +12,7 @@ from datetime import datetime
 from controllers.project_controller import getTotalTasks, getMembersForProject
 from controllers.task_controller import getMembersForTask
 from widgets.TaskCardWidget import TaskCardWidget
+from widgets.ProjectCardWidget import ProjectCardWidget
 # from utils.searchworker_homesearch import SearchWorker
 
 class MainApp(QMainWindow):
@@ -29,15 +30,15 @@ class MainApp(QMainWindow):
         self.ui.tasks_total_count.setText(str(getTotalTaskCount()))
         self.ui.members_total_count.setText(str(getTotalMemberCount()))
 
-        self.ui.projects_total_count.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
-        self.ui.tasks_total_count.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
-        self.ui.members_total_count.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3))
-
         # Navigation to pages
-        self.ui.home_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
-        self.ui.projects_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
-        self.ui.tasks_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
-        self.ui.members_button.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3)) 
+        self.ui.projects_total_count.clicked.connect(lambda: self.switchPage(1))
+        self.ui.tasks_total_count.clicked.connect(lambda: self.switchPage(2))
+        self.ui.members_total_count.clicked.connect(lambda: self.switchPage(3))
+
+        self.ui.home_button.clicked.connect(lambda: self.switchPage(0)) 
+        self.ui.projects_button.clicked.connect(lambda: self.switchPage(1))
+        self.ui.tasks_button.clicked.connect(lambda: self.switchPage(2))
+        self.ui.members_button.clicked.connect(lambda: self.switchPage(3))
 
         # Handling add buttons
         self.ui.addproject_button.clicked.connect(lambda: AddProjectForm(self).exec())
@@ -45,8 +46,8 @@ class MainApp(QMainWindow):
         self.ui.addmember_button.clicked.connect(lambda: AddMemberForm(self).exec())
 
         # Handling expand buttons
-        #self.ui.project_expand_button.clicked.connect(self.showProjectExpand) # placeholder for a function that opens a detailed project view for the selected project
-        #self.ui.task_expand_button.clicked.connect(self.showTaskExpand)  # placeholder for a function that opens a detailed task view for the selected task
+        # self.ui.project_expand_button.clicked.connect(self.showProjectExpand) # placeholder for a function that opens a detailed project view for the selected project
+        # self.ui.task_expand_button.clicked.connect(self.showTaskExpand)  # placeholder for a function that opens a detailed task view for the selected task
 
         # Handling calendar controls
         self.calendar = self.ui.home_calendar
@@ -76,27 +77,27 @@ class MainApp(QMainWindow):
         self.search_suggestion.hide()
         self.search_suggestion.itemClicked.connect(self.handleSuggestionClicked)
         self.search_suggestion.setStyleSheet("""
-QListWidget {
-    border: 1px solid #edf4fa;
-    border-radius: 8px;
-    padding: 4px;
-    font-family: "Poppins", sans-serif;
-    font-size: 11px;
-    background-color: #edf4fa;
-    color: black;
-}
-QListWidget::item {
-    padding: 4px 10px;
-}
-QListWidget::item:hover {
-    background-color: #f0f0f0;
-    color: black;
-}
-QListWidget::item:selected {
-    background-color: #b8e6d9;
-    color: black;
-}
-""")
+            QListWidget {
+                border: 1px solid #edf4fa;
+                border-radius: 8px;
+                padding: 4px;
+                font-family: "Poppins", sans-serif;
+                font-size: 11px;
+                background-color: #edf4fa;
+                color: black;
+            }
+            QListWidget::item {
+                padding: 4px 10px;
+            }
+            QListWidget::item:hover {
+                background-color: #f0f0f0;
+                color: black;
+            }
+            QListWidget::item:selected {
+                background-color: #b8e6d9;
+                color: black;
+            }
+            """)
         
         # Member search functionality
         self.ui.members_search.textChanged.connect(self.performSearchforMembers)
@@ -116,33 +117,76 @@ QListWidget::item:selected {
         self.ui.members_table.horizontalHeader().sectionClicked.connect(self.sortTableByColumn)
 
         # Connect task container updates
-        self.connect_task_cards()
+        # self.connect_task_cards()
+        self.setup_project_connections()
         
         # Setup task connections
         self.setup_task_connections()
         
-    def connect_task_cards(self):
-        """Setup connections for task cards"""
-        print("Setting up task connections...")
+        # Track selected project
+        self.selected_project = None
+        # Track selected task
+        self.selected_task = None
+
+        # Connect expand buttons
+        self.ui.project_expand_button.clicked.connect(self.handle_project_expand)
+        self.ui.task_expand_button.clicked.connect(self.handle_task_expand)
+    
+    def setup_project_connections(self):
+        """Setup connections for project cards"""
+        print("Setting up project connections...")
         
-        # Find all task cards in the stacked widget
-        tasks_page = self.ui.stackedWidget.widget(2)  # Assuming tasks page is index 2
-        if tasks_page:
-            task_cards = tasks_page.findChildren(TaskCardWidget)
-            print(f"Found {len(task_cards)} task cards")
-            
-            # Connect each card's signal
-            for task_card in task_cards:
+        # Find all project cards in the stacked widget
+        projects_page = self.ui.stackedWidget.widget(1)
+        projects_container = projects_page.findChild(QWidget, "ProjectVContainer")
+        
+        if not projects_container:
+            print("Error: Could not find ProjectVContainer")
+            return
+        
+        # Find all project cards
+        project_cards = projects_container.findChildren(ProjectCardWidget)
+        print(f"Found {len(project_cards)} project cards")
+        
+        # Connect each card's signal
+        for project_card in project_cards:
+            try:
+                # Disconnect any existing connections first
                 try:
-                    # Connect with lambda to preserve task data
-                    task_card.clicked.connect(
-                        lambda checked=False, card=task_card: self.update_task_details(card.task_data)
-                    )
-                    print(f"Connected signal for task: {task_card.task_data['taskID']}")
-                except Exception as e:
-                    print(f"Error connecting task card: {e}")
-        else:
-            print("Error: Could not find tasks page")
+                    project_card.clicked.disconnect()
+                except:
+                    pass
+                    
+                # Connect with lambda to preserve project data
+                project_card.clicked.connect(
+                    lambda checked, data=project_card.project_data: self.update_project_details(data)
+                )
+                print(f"Connected signal for project: {project_card.project_data['projectID']}")
+            except Exception as e:
+                print(f"Error connecting project card: {e}")
+        
+    # def connect_task_cards(self):
+    #     """Setup connections for task cards"""
+    #     print("Setting up task connections...")
+        
+    #     # Find all task cards in the stacked widget
+    #     tasks_page = self.ui.stackedWidget.widget(2)  # Assuming tasks page is index 2
+    #     if tasks_page:
+    #         task_cards = tasks_page.findChildren(TaskCardWidget)
+    #         print(f"Found {len(task_cards)} task cards")
+            
+    #         # Connect each card's signal
+    #         for task_card in task_cards:
+    #             try:
+    #                 # Connect with lambda to preserve task data
+    #                 task_card.clicked.connect(
+    #                     lambda checked=False, card=task_card: self.update_task_details(card.task_data)
+    #                 )
+    #                 print(f"Connected signal for task: {task_card.task_data['taskID']}")
+    #             except Exception as e:
+    #                 print(f"Error connecting task card: {e}")
+    #     else:
+    #         print("Error: Could not find tasks page")
 
     def setup_task_connections(self):
         """Setup connections for task cards"""
@@ -334,10 +378,16 @@ QListWidget::item:selected {
             list_item.setData(Qt.ItemDataRole.UserRole, item)
             self.search_suggestion.addItem(list_item)
 
+        if not self.search_suggestion.isVisible():
+            self.search_suggestion.setParent(None)
+            self.search_suggestion.setWindowFlags(
+                Qt.WindowType.ToolTip | Qt.WindowType.FramelessWindowHint
+            )
+
         # Position and show suggestion popup
         home_search = self.ui.home_search
         global_pos = home_search.mapToGlobal(home_search.rect().bottomLeft())
-        self.search_suggestion.move(global_pos + QPoint(-180, -90))
+        self.search_suggestion.move(global_pos + QPoint(0, 1))
 
         self.search_suggestion.resize(
             self.ui.home_search.width(),
@@ -391,28 +441,60 @@ color: white;
                 return  # stop once found
 
     def update_project_details(self, project_data: dict):
-        # This method already exists and works correctly
-        self.ui.project_name_info.setText(project_data['projectName'])
-        self.ui.project_id_info.setText(project_data['projectID'])
         
-        # Format and set dates
-        start_date = project_data['startDate']
-        if isinstance(start_date, str):
-            start_date = datetime.strptime(start_date.split()[0], '%Y-%m-%d').strftime("%B %d, %Y")
-        self.ui.project_startDate_info.setText(start_date)
+        print(f"\nUpdating project details for project: {project_data['projectID']}")
         
-        end_date = project_data['endDate']
-        if isinstance(end_date, str):
-            end_date = datetime.strptime(end_date.split()[0], '%Y-%m-%d').strftime("%B %d, %Y")
-        self.ui.project_endDate_info.setText(end_date)
+        try:
+            # Project Name
+            self.ui.project_name_info.setText(project_data['projectName'])
+            print("Updated project name")
+            
+            # Project ID
+            self.ui.project_id_info.setText(project_data['projectID'])
+            print("Updated project ID")
+            
+            # Format and set dates
+            start_date = project_data.get('startDate', '')
+            if start_date:
+                try:
+                    date_str = start_date.split()[0] if isinstance(start_date, str) else start_date.strftime('%Y-%m-%d')
+                    formatted_start = datetime.strptime(date_str, '%Y-%m-%d').strftime("%B %d, %Y")
+                    self.ui.project_startDate_info.setText(formatted_start)
+                    print("Updated start date")
+                except Exception as e:
+                    print(f"Error formatting start date: {e}")
+                    self.ui.project_startDate_info.setText(str(start_date))
         
-        # Get and set task count
-        total_tasks = getTotalTasks(project_data['projectID'])
-        self.ui.project_totalTasks_info.setText(str(total_tasks))
+            end_date = project_data.get('endDate', '')
+            if end_date:
+                try:
+                    date_str = end_date.split()[0] if isinstance(end_date, str) else end_date.strftime('%Y-%m-%d')
+                    formatted_end = datetime.strptime(date_str, '%Y-%m-%d').strftime("%B %d, %Y")
+                    self.ui.project_endDate_info.setText(formatted_end)  # This line was missing
+                    print("Updated end date")
+                except Exception as e:
+                    print(f"Error formatting end date: {e}")
+                    self.ui.project_endDate_info.setText(str(end_date))
         
-        # Get and set member count
-        members = getMembersForProject(project_data['projectID'])
-        self.ui.project_totalMembers_info.setText(str(len(members)))
+            # Get and set task count
+            total_tasks = getTotalTasks(project_data['projectID'])
+            self.ui.project_totalTasks_info.setText(str(total_tasks))
+            print("Updated total tasks")
+             
+            # Get and set member count
+            try:
+                members = getMembersForProject(project_data['projectID'])
+                self.ui.project_totalMembers_info.setText(str(len(members)))
+                print("Updated total members")
+            except Exception as e:
+                print(f"Error getting members: {e}")
+                self.ui.project_totalMembers_info.setText('0')
+            
+        except Exception as e:
+            print(f"Error updating task details: {e}")
+            import traceback
+            print(traceback.format_exc())
+        
 
     def update_task_details(self, task_data: dict):
         """Update task details in the UI"""
@@ -462,5 +544,10 @@ color: white;
             print(f"Error updating task details: {e}")
             import traceback
             print(traceback.format_exc())
+
+    def switchPage(self, page_index: int):
+        self.ui.stackedWidget.setCurrentIndex(page_index)
+        self.ui.home_search.clear()
+        self.search_suggestion.hide()
 
 

@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 class ProjectCardWidget(QWidget):
-    clicked = pyqtSignal(dict)  # Add signal
+    clicked = pyqtSignal(dict)  # Signal is already defined
     
     def __init__(self, project_data, parent=None):
         super().__init__(parent)
@@ -40,7 +40,7 @@ class ProjectCardWidget(QWidget):
         toprow.setObjectName("toprow")
         toprow.setStyleSheet("""
             #toprow {
-                background-color: #4a90e2;
+                background-color: #4A90E2;
                 border-top-right-radius: 8px 8px;
                 border-top-left-radius: 8px 8px;
                 border-bottom-right-radius: 0px 0px;
@@ -164,7 +164,7 @@ class ProjectCardWidget(QWidget):
                 background-color: transparent;
                 font-size: 12px;
                 font-weight: bold;
-                color: #4a90e2;
+                color: #4A90E2;
                 margin: 0px;
                 padding: 0px;
             }
@@ -224,6 +224,10 @@ class ProjectCardWidget(QWidget):
 
         container_layout.addWidget(content)
         self.setLayout(container_layout)
+        
+        # Make widget focusable and clickable
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)  # Changes cursor to hand when hovering
         
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
