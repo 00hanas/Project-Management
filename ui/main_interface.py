@@ -360,7 +360,7 @@ class Ui_MainWindow(object):
 "    border: 1px solid #01c28e;\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: bold;\n"
-"    font-size: 10pt;\n"
+"    font-size: 15px;\n"
 "    color: #FFFFFF;\n"
 "    text-align: center;\n"
 "}")

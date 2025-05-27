@@ -5,6 +5,7 @@ from models.project import loadProject
 from controllers.project_controller import addProject, getProjectByID, updateProject, getAllProjects
 from widgets.project_widget import ProjectWidget
 from ui.addproject_interface import Ui_addproject_dialog
+from ui.projects_expand import Ui_projects_expand
 
 class AddProjectForm(QDialog):
     def __init__(self, main_window):
@@ -100,12 +101,4 @@ class loadProject (QWidget):
         scroll.setWidget(container)
         layout = QGridLayout(self)
         layout.addWidget(scroll)
-        self.setLayout(layout)
-
-class ProjectView(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        layout = QVBoxLayout(self)  # Main layout for the Project Section
-        project_grid = loadProject(self)
-        layout.addWidget(project_grid)
         self.setLayout(layout)
