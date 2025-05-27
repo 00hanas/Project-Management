@@ -167,7 +167,7 @@ def removeMemberFromProject(projectID: str, memberID: str) -> None:
 # Get members for a specific project
 def getMembersForProject(projectID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)  # <-- FIXED
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
 
     sql = """
         SELECT m.* FROM members m

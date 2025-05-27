@@ -10,6 +10,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QGraphicsDropShadowEffect
 from PyQt6.QtGui import QColor
 from models.project import loadProjects
+from models.task import loadTasks
 from utils.clickableLabel import ClickableLabel
 
 

@@ -65,7 +65,7 @@ def deleteTask(taskID: str) -> None:
 
 def getAllTasks() -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)  # Changed from dictionary=True to DictCursor
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     sql = "SELECT * FROM task"
     
@@ -145,7 +145,7 @@ def removeMemberFromTask(taskID: str, memberID: str):
 
 def getMembersForTask(taskID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)  # Changed from dictionary=True to DictCursor
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     sql = """
         SELECT m.* FROM members m

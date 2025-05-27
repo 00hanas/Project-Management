@@ -59,9 +59,9 @@ class AddTaskForm(QDialog):
             QMessageBox.warning(self, "Validation Error", error)
             return
         
-        due = datetime.strptime(due, "%m/%d/%Y %I:%M %p")
+        due = datetime.strptime(due, "%d/%m/%Y %I:%M %p")
 
-        accomplished = datetime.strptime(accomplished, "%m/%d/%Y %I:%M %p")
+        accomplished = datetime.strptime(accomplished, "%d/%m/%Y %I:%M %p")
 
         addTask({
             "taskID": task_id,
