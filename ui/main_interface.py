@@ -1047,7 +1047,7 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.task_name.setObjectName("task_name")
         self.verticalLayout_8.addWidget(self.task_name)
         self.task_name_info = QtWidgets.QLabel(parent=self.task_details_frame)
-        # self.task_name_info.setText("")
+        self.task_name_info.setText("")
         self.task_name_info.setObjectName("task_name_info")
         self.verticalLayout_8.addWidget(self.task_name_info)
         
