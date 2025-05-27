@@ -1,6 +1,5 @@
 import pymysql.cursors #########################################3
 from config.db_config import getConnection
-import pymysql
 
 # --- CRUD for Task ---
 
@@ -66,7 +65,7 @@ def deleteTask(taskID: str) -> None:
 
 def getAllTasks() -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)  # Changed from dictionary=True to DictCursor
+    cursor = conn.cursor(dictionary=True)  # Changed from dictionary=True to DictCursor
     
     sql = "SELECT * FROM task"
     
@@ -146,7 +145,7 @@ def removeMemberFromTask(taskID: str, memberID: str):
 
 def getMembersForTask(taskID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)  # Changed from dictionary=True to DictCursor
+    cursor = conn.cursor(dictionary=True)  # Changed from dictionary=True to DictCursor
     
     sql = """
         SELECT m.* FROM members m
