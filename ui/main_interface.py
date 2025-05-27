@@ -9,7 +9,8 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QGraphicsDropShadowEffect
 from PyQt6.QtGui import QColor
-from models.project import loadProject
+from models.project import loadProjects
+from models.task import loadTasks
 from utils.clickableLabel import ClickableLabel
 
 
@@ -716,47 +717,58 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.view_projects_label = QtWidgets.QLabel(parent=self.view_projects)
         self.view_projects_label.setMaximumSize(QtCore.QSize(237, 16777215))
         self.view_projects_label.setObjectName("view_projects_label")
+        self.view_projects_label.setStyleSheet("font-size: 15pt; color: #7f00ff; margin-top: 10px;")
         self.verticalLayout_9.addWidget(self.view_projects_label)
         
-        self.verticalLayout_9.addWidget(loadProject(self.view_projects))
+        self.verticalLayout_9.addWidget(loadProjects(self.view_projects))
         
-        self.vProjects_scrollArea = QtWidgets.QScrollArea(parent=self.view_projects)
-        self.vProjects_scrollArea.setWidgetResizable(True)
-        self.vProjects_scrollArea.setObjectName("vProjects_scrollArea")
-        self.vProjectSA_widget = QtWidgets.QWidget()
-        self.vProjectSA_widget.setGeometry(QtCore.QRect(0, 0, 98, 28))
-        self.vProjectSA_widget.setObjectName("vProjectSA_widget")
-        self.gridLayout_3 = QtWidgets.QGridLayout(self.vProjectSA_widget)
-        self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout_3.setObjectName("gridLayout_3")
-        self.vProject_contents = QtWidgets.QFrame(parent=self.vProjectSA_widget)
-        self.vProject_contents.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
-        self.vProject_contents.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
-        self.vProject_contents.setObjectName("vProject_contents")
-        self.gridLayout_4 = QtWidgets.QGridLayout(self.vProject_contents)
-        self.gridLayout_4.setObjectName("gridLayout_4")
-        self.vProject_layout = QtWidgets.QVBoxLayout()
-        self.vProject_layout.setObjectName("vProject_layout")
-        self.gridLayout_4.addLayout(self.vProject_layout, 0, 0, 1, 1)
-        self.gridLayout_3.addWidget(self.vProject_contents, 0, 0, 1, 1)
-        self.vProjects_scrollArea.setWidget(self.vProjectSA_widget)
-        self.verticalLayout_9.addWidget(self.vProjects_scrollArea)
+        # self.vProjects_scrollArea = QtWidgets.QScrollArea(parent=self.view_projects)
+        # self.vProjects_scrollArea.setWidgetResizable(True)
+        # self.vProjects_scrollArea.setObjectName("vProjects_scrollArea")
+        # self.vProjectSA_widget = QtWidgets.QWidget()
+        # self.vProjectSA_widget.setGeometry(QtCore.QRect(0, 0, 98, 28))
+        # self.vProjectSA_widget.setObjectName("vProjectSA_widget")
+        # self.gridLayout_3 = QtWidgets.QGridLayout(self.vProjectSA_widget)
+        # self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
+        # self.gridLayout_3.setObjectName("gridLayout_3")
+        # self.vProject_contents = QtWidgets.QFrame(parent=self.vProjectSA_widget)
+        # self.vProject_contents.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        # self.vProject_contents.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        # self.vProject_contents.setObjectName("vProject_contents")
+        # self.gridLayout_4 = QtWidgets.QGridLayout(self.vProject_contents)
+        # self.gridLayout_4.setObjectName("gridLayout_4")
+        # self.vProject_layout = QtWidgets.QVBoxLayout()
+        # self.vProject_layout.setObjectName("vProject_layout")
+        # self.gridLayout_4.addLayout(self.vProject_layout, 0, 0, 1, 1)
+        # self.gridLayout_3.addWidget(self.vProject_contents, 0, 0, 1, 1)
+        # self.vProjects_scrollArea.setWidget(self.vProjectSA_widget)
+        # self.verticalLayout_9.addWidget(self.vProjects_scrollArea)
         self.gridLayout_2.addWidget(self.view_projects, 2, 0, 1, 1)
         self.stackedWidget.addWidget(self.home_page)
+        
+        # Projects Page
         self.projects_page = QtWidgets.QWidget()
         self.projects_page.setObjectName("projects_page")
+        
+        # Grid layout for the projects page
         self.gridLayout_5 = QtWidgets.QGridLayout(self.projects_page)
         self.gridLayout_5.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_5.setSpacing(10)
         self.gridLayout_5.setObjectName("gridLayout_5")
+        
+        # Projects bar at the top of the projects page
         self.projects_bar = QtWidgets.QFrame(parent=self.projects_page)
         self.projects_bar.setMinimumSize(QtCore.QSize(651, 66))
         self.projects_bar.setMaximumSize(QtCore.QSize(16777215, 66))
         self.projects_bar.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.projects_bar.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.projects_bar.setObjectName("projects_bar")
+        
+        # Horizontal layout for the projects bar
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout(self.projects_bar)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        
+        # Projects search input and buttons
         self.projects_search = QtWidgets.QLineEdit(parent=self.projects_bar)
         self.projects_search.setMinimumSize(QtCore.QSize(374, 40))
         self.projects_search.setText("")
@@ -793,107 +805,149 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.addproject_button.setObjectName("addproject_button")
         self.horizontalLayout_6.addWidget(self.addproject_button)
         self.gridLayout_5.addWidget(self.projects_bar, 0, 0, 1, 2)
+        
+        # Projects container with scroll area
         self.projects_container = QtWidgets.QFrame(parent=self.projects_page)
         self.projects_container.setMinimumSize(QtCore.QSize(681, 0))
         self.projects_container.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.projects_container.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.projects_container.setObjectName("projects_container")
+        self.projects_container.setStyleSheet("""
+            background-color: white;
+            border-radius: 8px;
+            border: none;
+        """)
+        
+        # Horizontal layout for the projects container
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout(self.projects_container)
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        self.projects_scrollarea = QtWidgets.QScrollArea(parent=self.projects_container)
-        self.projects_scrollarea.setWidgetResizable(True)
-        self.projects_scrollarea.setObjectName("projects_scrollarea")
-        self.projects_contents = QtWidgets.QWidget()
-        self.projects_contents.setGeometry(QtCore.QRect(0, 0, 655, 531))
-        self.projects_contents.setObjectName("projects_contents")
-        self.gridLayout_11 = QtWidgets.QGridLayout(self.projects_contents)
-        self.gridLayout_11.setObjectName("gridLayout_11")
-        self.projects_gridlayout = QtWidgets.QGridLayout()
-        self.projects_gridlayout.setObjectName("projects_gridlayout")
-        self.gridLayout_11.addLayout(self.projects_gridlayout, 0, 0, 1, 1)
-        self.projects_scrollarea.setWidget(self.projects_contents)
-        self.horizontalLayout_7.addWidget(self.projects_scrollarea)
+        self.horizontalLayout_7.addWidget(loadProjects(self.projects_container))
+        
+        # Add the projects container to the grid layout
         self.gridLayout_5.addWidget(self.projects_container, 1, 0, 1, 1)
+        
+        # Project details section
         self.project_details = QtWidgets.QFrame(parent=self.projects_page)
         self.project_details.setMinimumSize(QtCore.QSize(271, 0))
         self.project_details.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.project_details.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.project_details.setObjectName("project_details")
+        
+        # Vertical layout for the project details
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.project_details)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
+        
+        # Project details label
         self.project_details_label = QtWidgets.QLabel(parent=self.project_details)
         self.project_details_label.setMaximumSize(QtCore.QSize(16777215, 38))
         self.project_details_label.setObjectName("project_details_label")
+        
+        # Add the project details label to the vertical layout
         self.verticalLayout_4.addWidget(self.project_details_label)
+        
+        # Project details frame containing project information
         self.project_details_frame = QtWidgets.QFrame(parent=self.project_details)
         self.project_details_frame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.project_details_frame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.project_details_frame.setObjectName("project_details_frame")
+        
+        # Vertical layout for the project details frame
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.project_details_frame)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
+        
+        # Adding project information labels to the vertical layout
         self.project_name = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_name.setObjectName("project_name")
         self.verticalLayout_3.addWidget(self.project_name)
+        
         self.project_name_info = QtWidgets.QLabel(parent=self.project_details_frame)
-        self.project_name_info.setText("")
+        self.project_name_info.setText(f"")
         self.project_name_info.setObjectName("project_name_info")
         self.verticalLayout_3.addWidget(self.project_name_info)
+        
         self.project_id = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_id.setObjectName("project_id")
         self.verticalLayout_3.addWidget(self.project_id)
+        
         self.project_id_info = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_id_info.setText("")
         self.project_id_info.setObjectName("project_id_info")
         self.verticalLayout_3.addWidget(self.project_id_info)
+        
         self.project_startDate = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_startDate.setObjectName("project_startDate")
         self.verticalLayout_3.addWidget(self.project_startDate)
+        
         self.project_startDate_info = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_startDate_info.setText("")
         self.project_startDate_info.setObjectName("project_startDate_info")
         self.verticalLayout_3.addWidget(self.project_startDate_info)
+        
         self.project_endDate = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_endDate.setObjectName("project_endDate")
         self.verticalLayout_3.addWidget(self.project_endDate)
+        
         self.project_endDate_info = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_endDate_info.setText("")
         self.project_endDate_info.setObjectName("project_endDate_info")
         self.verticalLayout_3.addWidget(self.project_endDate_info)
+        
         self.project_totalTasks = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_totalTasks.setObjectName("project_totalTasks")
         self.verticalLayout_3.addWidget(self.project_totalTasks)
+        
         self.project_totalTasks_info = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_totalTasks_info.setText("")
         self.project_totalTasks_info.setObjectName("project_totalTasks_info")
         self.verticalLayout_3.addWidget(self.project_totalTasks_info)
+        
         self.project_totalMembers = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_totalMembers.setObjectName("project_totalMembers")
         self.verticalLayout_3.addWidget(self.project_totalMembers)
+        
         self.project_totalMembers_info = QtWidgets.QLabel(parent=self.project_details_frame)
         self.project_totalMembers_info.setText("")
         self.project_totalMembers_info.setObjectName("project_totalMembers_info")
         self.verticalLayout_3.addWidget(self.project_totalMembers_info)
+        
         self.verticalLayout_4.addWidget(self.project_details_frame)
+        
+        
         self.project_expand_button = QtWidgets.QPushButton(parent=self.project_details)
         icon7 = QtGui.QIcon()
         icon7.addPixmap(QtGui.QPixmap("icons/maximize.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.project_expand_button.setIcon(icon7)
         self.project_expand_button.setObjectName("project_expand_button")
         self.verticalLayout_4.addWidget(self.project_expand_button)
+        
         self.gridLayout_5.addWidget(self.project_details, 1, 1, 1, 1)
+        
         self.stackedWidget.addWidget(self.projects_page)
+        
+        
+        
+        
+        
+        
+        # Tasks Page
         self.tasks_page = QtWidgets.QWidget()
         self.tasks_page.setObjectName("tasks_page")
+        
+        # Grid layout for the tasks page
         self.gridLayout_10 = QtWidgets.QGridLayout(self.tasks_page)
         self.gridLayout_10.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_10.setSpacing(10)
         self.gridLayout_10.setObjectName("gridLayout_10")
+        
+        # Tasks bar at the top of the tasks page
         self.tasks_bar = QtWidgets.QFrame(parent=self.tasks_page)
         self.tasks_bar.setMinimumSize(QtCore.QSize(651, 66))
         self.tasks_bar.setMaximumSize(QtCore.QSize(16777215, 66))
         self.tasks_bar.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.tasks_bar.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.tasks_bar.setObjectName("tasks_bar")
+        
+        # Horizontal layout for the tasks bar
         self.horizontalLayout_13 = QtWidgets.QHBoxLayout(self.tasks_bar)
         self.horizontalLayout_13.setObjectName("horizontalLayout_13")
         self.tasks_search = QtWidgets.QLineEdit(parent=self.tasks_bar)
@@ -901,6 +955,8 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.tasks_search.setText("")
         self.tasks_search.setObjectName("tasks_search")
         self.horizontalLayout_13.addWidget(self.tasks_search)
+        
+        # Tasks search and sort options
         self.tasks_searchby = QtWidgets.QComboBox(parent=self.tasks_bar)
         self.tasks_searchby.setMinimumSize(QtCore.QSize(141, 40))
         self.tasks_searchby.setObjectName("tasks_searchby")
@@ -912,6 +968,8 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.tasks_searchby.addItem("")
         self.tasks_searchby.addItem("")
         self.horizontalLayout_13.addWidget(self.tasks_searchby)
+        
+        # Tasks sort options
         self.tasks_sortby = QtWidgets.QComboBox(parent=self.tasks_bar)
         self.tasks_sortby.setMinimumSize(QtCore.QSize(141, 40))
         self.tasks_sortby.setObjectName("tasks_sortby")
@@ -923,6 +981,8 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.tasks_sortby.addItem("")
         self.tasks_sortby.addItem("")
         self.horizontalLayout_13.addWidget(self.tasks_sortby)
+        
+        # Button to add a new task
         self.addtask_button = QtWidgets.QPushButton(parent=self.tasks_bar)
         self.addtask_button.setMinimumSize(QtCore.QSize(261, 0))
         self.addtask_button.setMaximumSize(QtCore.QSize(16777215, 40))
@@ -931,52 +991,67 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.addtask_button.setAutoRepeat(False)
         self.addtask_button.setObjectName("addtask_button")
         self.horizontalLayout_13.addWidget(self.addtask_button)
+        
+        # Add the tasks bar to the grid layout
         self.gridLayout_10.addWidget(self.tasks_bar, 0, 0, 1, 2)
+        
+        # Tasks container with scroll area
         self.tasks_container = QtWidgets.QFrame(parent=self.tasks_page)
         self.tasks_container.setMinimumSize(QtCore.QSize(681, 0))
         self.tasks_container.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.tasks_container.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.tasks_container.setObjectName("tasks_container")
+        self.tasks_container.setStyleSheet("""
+            background-color: white;
+            border-radius: 8px;
+            border: none;
+        """)
+        
+        # Horizontal layout for the tasks container
         self.horizontalLayout_14 = QtWidgets.QHBoxLayout(self.tasks_container)
         self.horizontalLayout_14.setObjectName("horizontalLayout_14")
-        self.tasks_scrollArea = QtWidgets.QScrollArea(parent=self.tasks_container)
-        self.tasks_scrollArea.setWidgetResizable(True)
-        self.tasks_scrollArea.setObjectName("tasks_scrollArea")
-        self.tasks_contents = QtWidgets.QWidget()
-        self.tasks_contents.setGeometry(QtCore.QRect(0, 0, 655, 531))
-        self.tasks_contents.setObjectName("tasks_contents")
-        self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.tasks_contents)
-        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
-        self.tasks_gridlayout = QtWidgets.QGridLayout()
-        self.tasks_gridlayout.setObjectName("tasks_gridlayout")
-        self.horizontalLayout_5.addLayout(self.tasks_gridlayout)
-        self.tasks_scrollArea.setWidget(self.tasks_contents)
-        self.horizontalLayout_14.addWidget(self.tasks_scrollArea)
+        self.horizontalLayout_14.addWidget(loadTasks(self.tasks_container))
+        
+        # Add the tasks container to the grid layout
         self.gridLayout_10.addWidget(self.tasks_container, 1, 0, 1, 1)
+        
+        # Task details section
         self.task_details = QtWidgets.QFrame(parent=self.tasks_page)
         self.task_details.setMinimumSize(QtCore.QSize(271, 0))
         self.task_details.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.task_details.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.task_details.setObjectName("task_details")
+        
+        # Vertical layout for the task details
         self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.task_details)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
+        
+        # Task details label
         self.task_details_label = QtWidgets.QLabel(parent=self.task_details)
         self.task_details_label.setMaximumSize(QtCore.QSize(16777215, 38))
         self.task_details_label.setObjectName("task_details_label")
         self.verticalLayout_7.addWidget(self.task_details_label)
+        
+        # Task details frame containing task information
         self.task_details_frame = QtWidgets.QFrame(parent=self.task_details)
         self.task_details_frame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.task_details_frame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.task_details_frame.setObjectName("task_details_frame")
+        
+        # Vertical layout for the task details frame
         self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.task_details_frame)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
+        
+        # Task Name Information
         self.task_name = QtWidgets.QLabel(parent=self.task_details_frame)
         self.task_name.setObjectName("task_name")
         self.verticalLayout_8.addWidget(self.task_name)
         self.task_name_info = QtWidgets.QLabel(parent=self.task_details_frame)
-        self.task_name_info.setText("")
+        # self.task_name_info.setText("")
         self.task_name_info.setObjectName("task_name_info")
         self.verticalLayout_8.addWidget(self.task_name_info)
+        
+        # Task ID Information
         self.task_id = QtWidgets.QLabel(parent=self.task_details_frame)
         self.task_id.setObjectName("task_id")
         self.verticalLayout_8.addWidget(self.task_id)
@@ -984,6 +1059,8 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.task_id_info.setText("")
         self.task_id_info.setObjectName("task_id_info")
         self.verticalLayout_8.addWidget(self.task_id_info)
+        
+        # Task Project Information
         self.task_project = QtWidgets.QLabel(parent=self.task_details_frame)
         self.task_project.setObjectName("task_project")
         self.verticalLayout_8.addWidget(self.task_project)
@@ -991,6 +1068,8 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.task_project_info.setText("")
         self.task_project_info.setObjectName("task_project_info")
         self.verticalLayout_8.addWidget(self.task_project_info)
+        
+        # Task Status Information
         self.task_status = QtWidgets.QLabel(parent=self.task_details_frame)
         self.task_status.setObjectName("task_status")
         self.verticalLayout_8.addWidget(self.task_status)
@@ -998,6 +1077,8 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.task_status_info.setText("")
         self.task_status_info.setObjectName("task_status_info")
         self.verticalLayout_8.addWidget(self.task_status_info)
+        
+        # Task Due Date Information
         self.task_dueDate = QtWidgets.QLabel(parent=self.task_details_frame)
         self.task_dueDate.setObjectName("task_dueDate")
         self.verticalLayout_8.addWidget(self.task_dueDate)
@@ -1005,6 +1086,8 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.task_dueDate_info.setText("")
         self.task_dueDate_info.setObjectName("task_dueDate_info")
         self.verticalLayout_8.addWidget(self.task_dueDate_info)
+        
+        # Task Total Members Information
         self.task_totalMembers = QtWidgets.QLabel(parent=self.task_details_frame)
         self.task_totalMembers.setObjectName("task_totalMembers")
         self.verticalLayout_8.addWidget(self.task_totalMembers)
@@ -1012,7 +1095,10 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.task_totalMembers_info.setText("")
         self.task_totalMembers_info.setObjectName("task_totalMembers_info")
         self.verticalLayout_8.addWidget(self.task_totalMembers_info)
+        
+        # Add the task details frame to the vertical layout
         self.verticalLayout_7.addWidget(self.task_details_frame)
+        
         self.task_expand_button = QtWidgets.QPushButton(parent=self.task_details)
         self.task_expand_button.setIcon(icon7)
         self.task_expand_button.setObjectName("task_expand_button")
@@ -1134,7 +1220,7 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.home_searchby.setItemText(1, _translate("MainWindow", "Projects"))
         self.home_searchby.setItemText(2, _translate("MainWindow", "Tasks"))
         self.home_searchby.setItemText(3, _translate("MainWindow", "Members"))
-        self.view_projects_label.setText(_translate("MainWindow", "Ongoing Projects"))
+        self.view_projects_label.setText(_translate("MainWindow", "    Ongoing Projects"))
         self.projects_search.setPlaceholderText(_translate("MainWindow", "Type to search..."))
         self.projects_searchby.setItemText(0, _translate("MainWindow", "Search by"))
         self.projects_searchby.setItemText(1, _translate("MainWindow", "Name"))
