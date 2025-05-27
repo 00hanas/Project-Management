@@ -62,6 +62,13 @@ class AddTaskForm(QDialog):
         due = datetime.strptime(due, "%d/%m/%Y %I:%M %p")
 
         accomplished = datetime.strptime(accomplished, "%d/%m/%Y %I:%M %p")
+    
+        # Handle case where date accomplished is default/unset value
+        default_date = QDateTime(2000, 1, 1, 0, 0)
+        if self.ui.task_dateAccomplished_info.dateTime() == default_date:
+            accomplished = None
+        else:
+            accomplished = datetime.strptime(accomplished, "%d/%m/%Y %I:%M %p")
 
         addTask({
             "taskID": task_id,
