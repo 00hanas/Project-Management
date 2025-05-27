@@ -9,7 +9,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QGraphicsDropShadowEffect
 from PyQt6.QtGui import QColor
-from models.project import loadProject
+from models.project import loadProjects
 from utils.clickableLabel import ClickableLabel
 
 
@@ -718,7 +718,7 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.view_projects_label.setObjectName("view_projects_label")
         self.verticalLayout_9.addWidget(self.view_projects_label)
         
-        self.verticalLayout_9.addWidget(loadProject(self.view_projects))
+        self.verticalLayout_9.addWidget(loadProjects(self.view_projects))
         
         self.vProjects_scrollArea = QtWidgets.QScrollArea(parent=self.view_projects)
         self.vProjects_scrollArea.setWidgetResizable(True)

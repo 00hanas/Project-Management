@@ -1,5 +1,4 @@
 from config.db_config import getConnection
-import pymysql
 
 # Create
 def addProject(project: dict) -> None:
@@ -167,7 +166,7 @@ def removeMemberFromProject(projectID: str, memberID: str) -> None:
 # Get members for a specific project
 def getMembersForProject(projectID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)  # <-- FIXED
+    cursor = conn.cursor(dictionary=True)  # <-- FIXED
 
     sql = """
         SELECT m.* FROM members m
