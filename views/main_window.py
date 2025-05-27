@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QCalendarWidget, QMainWindow, QAbstractItemView, QMessageBox, QTableWidgetItem, QListWidget, QListWidgetItem
+from PyQt6.QtWidgets import QCalendarWidget, QMainWindow, QAbstractItemView, QMessageBox, QTableWidgetItem, QListWidget, QListWidgetItem, QGridLayout, QSizePolicy, QScrollArea
 from PyQt6.QtWidgets import QWidget
 from ui.main_interface import Ui_MainWindow
 from views.project_view import AddProjectForm
@@ -9,11 +9,12 @@ from controllers.member_controller import searchMembers, getAllMembersForSearch
 from PyQt6.QtGui import QTextCharFormat, QColor, QFont
 from PyQt6.QtCore import QDate, Qt, QTimer, QThreadPool, QPoint
 from datetime import datetime
-from controllers.project_controller import getTotalTasks, getMembersForProject
+from controllers.project_controller import getTotalTasks, getMembersForProject, searchProjects, getAllProjectsForSearch, getAllProjects
 from controllers.task_controller import getMembersForTask
 from widgets.TaskCardWidget import TaskCardWidget
 from widgets.ProjectCardWidget import ProjectCardWidget
 from utils.searchworker_homesearch import SearchWorker
+from utils.ProjectSearchWorker import ProjectSearchWorker
 
 class MainApp(QMainWindow):
     def __init__(self):
@@ -111,6 +112,18 @@ class MainApp(QMainWindow):
         self.ui.members_search.textChanged.connect(self.performSearchforMembers)
         self.ui.members_searchby.currentIndexChanged.connect(self.performSearchforMembers)
 
+        # Project search functionality
+        # In __init__
+        self.threadpool = QThreadPool()
+        self.project_search_timer = QTimer(self)
+        self.project_search_timer.setSingleShot(True)
+        self.project_search_timer.timeout.connect(self.performSearchforProjects)
+        self.ui.projects_search.textChanged.connect(lambda: self.project_search_timer.start(150))
+        self.ui.projects_searchby.currentIndexChanged.connect(self.performSearchforProjects)
+
+        self.ui.projects_search.textChanged.connect(self.performSearchforProjects)
+        self.ui.projects_searchby.currentIndexChanged.connect(self.performSearchforProjects)
+
         #Load members into the table
         if hasattr(self.ui, 'members_table'):
             #For the members' table
@@ -137,8 +150,8 @@ class MainApp(QMainWindow):
         self.selected_task = None
 
         # Connect expand buttons
-        self.ui.project_expand_button.clicked.connect(self.handle_project_expand)
-        self.ui.task_expand_button.clicked.connect(self.handle_task_expand)
+        #self.ui.project_expand_button.clicked.connect(self.handle_project_expand)
+        #self.ui.task_expand_button.clicked.connect(self.handle_task_expand)
     
     def setup_project_connections(self):
         """Setup connections for project cards"""
@@ -316,6 +329,87 @@ class MainApp(QMainWindow):
         self.calendar.setDateTextFormat(QDate.currentDate(), fmt)
 
         self.calendar.setDateTextFormat(QDate.currentDate(), fmt)
+
+    def performSearchforProjects(self):
+        keyword = self.ui.projects_search.text()
+        search_by = self.ui.projects_searchby.currentText()
+        if search_by == "Search By":
+            search_by = ""
+
+        self.ui.projects_search.setFocus()
+
+        worker = ProjectSearchWorker(keyword, search_by)
+        #worker.setAutoDelete(True)  # Optional but recommended
+        worker.signals.finished.connect(self.updateProjectWidgets)
+        self.threadpool.start(worker)
+
+    def updateProjectWidgets(self, project_ids: list[str]):
+        # Find the projects container in the stacked widget
+        projects_page = self.ui.stackedWidget.widget(1)  # Projects page is index 1
+        projects_container = projects_page.findChild(QWidget, "ProjectVContainer")
+
+        if not projects_container:
+            print("Error: Could not find ProjectVContainer")
+            return
+        
+        # Find the scroll area and content widget
+        scroll_area = projects_container.findChild(QScrollArea, "ProjectScrollArea")
+        if not scroll_area:
+            print("Error: Could not find ProjectScrollArea")
+            return
+        
+        content = scroll_area.widget()
+        if not content:
+            print("Error: Scroll area has no content widget")
+            return
+
+
+        grid = content.layout()
+        if grid is None:
+            print("[DEBUG] Layout is None! This should not happen unless content was replaced.")
+            print(f"[DEBUG] content type: {type(content)} repr: {repr(content)}")
+            return
+
+        # Clear existing widgets
+        while grid.count():
+            item = grid.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.setParent(None)
+                widget.deleteLater()
+            else:
+                # Remove spacers or other items
+                del item
+
+        #all_projects = getAllProjectsForSearch(project_ids)
+        all_projects = getAllProjectsForSearch(project_ids)
+        headers = ["projectID", "projectName", "shortDescrip", "startDate", "endDate"]
+
+        scroll_area.setWidgetResizable(True)
+        content.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        
+        columns = 2
+        for index, project in enumerate(all_projects):
+            project_dict = dict(zip(headers, project))
+            widget = ProjectCardWidget(project_dict)
+            widget.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+            
+            # Connect the clicked signal
+            widget.clicked.connect(
+                lambda checked, data=project_dict: self.update_project_details(data)
+            )
+            
+            row = index // columns
+            col = index % columns
+            grid.addWidget(widget, row, col)
+
+        # Adjust content height
+        card_height = 150
+        rows = (len(all_projects) + columns - 1) // columns
+        content.setFixedHeight(rows * card_height)
+        content.updateGeometry()
+        content.repaint()
+
 
     def performSearchforMembers(self):
         keyword = self.ui.members_search.text()

@@ -70,13 +70,12 @@ def loadProjects(parent=None) -> QWidget:
     grid.setAlignment(Qt.AlignmentFlag.AlignTop)
     grid.setContentsMargins(1, 0, 1, 0)  # Margins around the grid
     grid.setVerticalSpacing(0)
+    content.setLayout(grid) 
 
     # Add projects
     projects = getAllProjects()
     columns = 2
     headers = ["projectID", "projectName", "shortDescrip", "startDate", "endDate"]
-    
-    total_rows = (len(projects) + columns - 1) // columns  # Calculate total rows needed
     
     for index, project in enumerate(projects):
         project_dict = dict(zip(headers, project))
@@ -86,7 +85,6 @@ def loadProjects(parent=None) -> QWidget:
         col = index % columns
         grid.addWidget(project_widget, row, col)
 
-    columns = 2
     card_height = 150  
     rows = (len(projects) + columns - 1) // columns
 
@@ -102,7 +100,6 @@ def loadProjects(parent=None) -> QWidget:
     layout.addWidget(scroll)
     container.setLayout(layout)
     return container
-
 
 
 

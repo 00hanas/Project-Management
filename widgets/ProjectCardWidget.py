@@ -5,6 +5,20 @@ from controllers.project_controller import getTotalTasks, getCompletedTasks, get
 from datetime import datetime
 
 
+def safe_format_date(date_val, fmt="%B %d"):
+    if isinstance(date_val, datetime):
+        return date_val.strftime(fmt)
+    if isinstance(date_val, str):
+        # Try to parse common formats
+        for f in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d", "%m/%d/%Y %I:%M %p"):
+            try:
+                return datetime.strptime(date_val, f).strftime(fmt)
+            except Exception:
+                continue
+        return date_val  # Return as-is if parsing fails
+    return str(date_val)
+
+
 class ProjectCardWidget(QWidget):
     clicked = pyqtSignal(dict)  # Signal is already defined
     
@@ -186,7 +200,7 @@ class ProjectCardWidget(QWidget):
         
         project_end_date_str = project_data['endDate']  # or whatever your variable is
 
-        formatted_date = project_end_date_str.strftime("%B %d")
+        formatted_date = safe_format_date(project_end_date_str)
 
         # Set this to your label
         ProjectEndDateLabel.setText(formatted_date)
