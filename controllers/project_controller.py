@@ -1,5 +1,6 @@
 import pymysql.cursors #########################################3
 from config.db_config import getConnection
+import pymysql
 
 # Create
 def addProject(project: dict) -> None:
@@ -65,6 +66,32 @@ def getAllProjects() -> list[tuple]:
     cursor.close()
     conn.close()
     return projects
+
+# Get total tasks for a project
+def getTotalTasks(projectID: str) -> int:
+    conn = getConnection()
+    cursor = conn.cursor()
+    
+    sql = "SELECT COUNT(*) FROM task WHERE projectID = %s"
+    
+    cursor.execute(sql, (projectID,))
+    total = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    return total
+
+# Get all completed tasks for a project
+def getCompletedTasks(projectID: str) -> int:
+    conn = getConnection()
+    cursor = conn.cursor()
+    
+    sql = "SELECT COUNT(*) FROM task WHERE projectID = %s AND currentStatus = 'Completed'"
+    
+    cursor.execute(sql, (projectID,))
+    completed = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    return completed
 
 # Get by ID
 def getProjectByID(projectID: str) -> dict | None:
@@ -138,23 +165,25 @@ def removeMemberFromProject(projectID: str, memberID: str) -> None:
     cursor.close()
     conn.close()
 
+# Get members for a specific project
 def getMembersForProject(projectID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
-    
+    cursor = conn.cursor(pymysql.cursors.DictCursor)  # <-- FIXED
+
     sql = """
         SELECT m.* FROM members m
         JOIN projectMember pm ON m.memberID = pm.memberID
         WHERE pm.projectID = %s
     """
-    
+
     cursor.execute(sql, (projectID,))
     members = cursor.fetchall()
     cursor.close()
     conn.close()
-    
+
     return members
 
+# Get projects for a specific member
 def getProjectsForMember(memberID: str) -> list[dict]:
     conn = getConnection()
     cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
@@ -171,3 +200,4 @@ def getProjectsForMember(memberID: str) -> list[dict]:
     conn.close()
     
     return projects
+
