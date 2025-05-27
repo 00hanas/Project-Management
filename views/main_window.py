@@ -266,10 +266,16 @@ QListWidget::item:selected {
             list_item.setData(Qt.ItemDataRole.UserRole, item)
             self.search_suggestion.addItem(list_item)
 
+        if not self.search_suggestion.isVisible():
+            self.search_suggestion.setParent(None)
+            self.search_suggestion.setWindowFlags(
+                Qt.WindowType.ToolTip | Qt.WindowType.FramelessWindowHint
+            )
+
         # Position and show suggestion popup
         home_search = self.ui.home_search
         global_pos = home_search.mapToGlobal(home_search.rect().bottomLeft())
-        self.search_suggestion.move(global_pos + QPoint(-180, -90))
+        self.search_suggestion.move(global_pos + QPoint(0, 1))
 
         self.search_suggestion.resize(
             self.ui.home_search.width(),
