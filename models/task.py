@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (
-    QWidget, QGridLayout, QScrollArea, QVBoxLayout, QLabel
+    QWidget, QGridLayout, QScrollArea, QVBoxLayout, QLabel, QSpacerItem, QSizePolicy
 )
 from PyQt6 import QtWidgets
 from PyQt6.QtGui import QColor
@@ -12,7 +12,7 @@ from widgets.TaskCardWidget import TaskCardWidget
 def loadTasks(parent=None) -> QWidget:
     # Main container
     container = QWidget(parent)
-    container.setObjectName("#TaskVContainer")
+    container.setObjectName("TaskVContainer")
     container.setStyleSheet("""
         #TaskVContainer {
             background-color: transparent;
@@ -87,19 +87,24 @@ def loadTasks(parent=None) -> QWidget:
             for index, task in enumerate(tasks):
                 try:
                     task_widget = TaskCardWidget(task)
-                    task_widget.setSizePolicy(
-                        QtWidgets.QSizePolicy.Policy.Preferred,  # Horizontal policy
-                        QtWidgets.QSizePolicy.Policy.Preferred   # Vertical policy
-                    )
+                    
+                    # Connect the click signal to the parent's update_task_details method
+                    if hasattr(parent, 'update_task_details'):
+                        task_widget.clicked.connect(parent.update_task_details)
+                    
                     row = index // columns
                     col = index % columns
                     grid.addWidget(task_widget, row, col)
+                    
+                    
                 except Exception as e:
                     print(f"Error creating task widget: {e}")
+                    
+            # spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+            # grid.addItem(spacer, (len(tasks) // columns) + 1, 0, 1, columns)
+
     except Exception as e:
-        error_label = QLabel(f"Error loading tasks: {e}")
-        error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        grid.addWidget(error_label, 0, 0, 1, 2)
+        print(f"Error loading tasks: {e}")
 
     scroll.setWidget(content)
     layout = QGridLayout(container)

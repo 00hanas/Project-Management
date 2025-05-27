@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import (
     QWidget, QGridLayout, QScrollArea, QVBoxLayout
 )
+from PyQt6.QtWidgets import QSpacerItem, QSizePolicy
 from PyQt6.QtGui import QColor
 from PyQt6.QtCore import Qt
 from controllers.project_controller import getAllProjects
@@ -9,7 +10,7 @@ from widgets.ProjectCardWidget import ProjectCardWidget
 def loadProjects(parent=None) -> QWidget:
     # Main container
     container = QWidget(parent)
-    container.setObjectName("#ProjectVContainer")
+    container.setObjectName("ProjectVContainer")
     container.setStyleSheet("""
         #ProjectVContainer {
             background-color: transparent;
@@ -53,7 +54,6 @@ def loadProjects(parent=None) -> QWidget:
     
     # Content widget
     content = QWidget()
-    content.setMaximumHeight(300)
     content.setObjectName("scrollContent")
     content.setStyleSheet("""
         #scrollContent {
@@ -64,31 +64,37 @@ def loadProjects(parent=None) -> QWidget:
         }
         """)
     
-    # Grid layout
-    grid = QGridLayout(content)
+    # Grid layout - Updated settings
+    grid = QGridLayout(content)  # Changed from scroll to content
     grid.setAlignment(Qt.AlignmentFlag.AlignTop)
-    grid.setContentsMargins(0, 10, 5, 10)  # Margins around the grid
-    grid.setVerticalSpacing(2)  # change 10 to any desired pixel value
-
-    # Add projects
+    grid.setContentsMargins(20, 20, 20, 20)
+    grid.setSpacing(20)  # Set both vertical and horizontal spacing
+    
+    # Add projects with proper row/column calculation
     projects = getAllProjects()
     columns = 2
     headers = ["projectID", "projectName", "shortDescrip", "startDate", "endDate"]
+    
+    total_rows = (len(projects) + columns - 1) // columns  # Calculate total rows needed
     
     for index, project in enumerate(projects):
         project_dict = dict(zip(headers, project))
         project_widget = ProjectCardWidget(project_dict)
         
-        # Connect the click signal to the parent's update_project_details method
-        if hasattr(parent, 'update_project_details'):
-            project_widget.clicked.connect(parent.update_project_details)
-        
         row = index // columns
         col = index % columns
-        grid.addWidget(project_widget, row, col)
-
+        grid.addWidget(project_widget, row, col, Qt.AlignmentFlag.AlignTop)
+    
+    # Add spacer at the bottom
+    if projects:
+        spacer = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        grid.addItem(spacer, total_rows, 0, 1, columns)
+    
     scroll.setWidget(content)
-    layout = QGridLayout(container)
+    
+    # Main layout
+    layout = QVBoxLayout(container)
+    layout.setContentsMargins(0, 0, 0, 0)
     layout.addWidget(scroll)
     container.setLayout(layout)
     
