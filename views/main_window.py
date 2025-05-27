@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QCalendarWidget, QMainWindow, QAbstractItemView, QMessageBox, QTableWidgetItem, QListWidget, QListWidgetItem
 from ui.main_interface import Ui_MainWindow
-from views.project_view import AddProjectForm, ProjectExpand
+from views.project_view import AddProjectForm
 from views.task_view import AddTaskForm
 from views.member_view import expandRow, EditMemberForm, AddMemberForm
 from controllers.dashboard_controller import getTotalProjectCount, getTotalTaskCount, getTotalMemberCount, getCalendarEvents, getAllProjectsTasksMembers
@@ -38,8 +38,9 @@ class MainApp(QMainWindow):
         self.ui.addmember_button.clicked.connect(lambda: AddMemberForm(self).exec())
 
         # Handling expand buttons
-        self.ui.project_expand_button.clicked.connect(self.showProjectExpand) # placeholder for a function that opens a detailed project view for the selected project
-        self.ui.task_expand_button.clicked.connect(self.showTaskExpand)  # placeholder for a function that opens a detailed task view for the selected task
+        #self.ui.project_expand_button.clicked.connect(self.showProjectExpand) # placeholder for a function that opens a detailed project view for the selected project
+        #self.ui.task_expand_button.clicked.connect(self.showTaskExpand)  # placeholder for a function that opens a detailed task view for the selected task
+
         # Handling calendar controls
         self.calendar = self.ui.home_calendar
         self.date_tooltip_map = {}

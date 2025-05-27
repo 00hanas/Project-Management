@@ -10,6 +10,7 @@ from ui.addmember_interface import Ui_addmember_dialog
 from controllers.project_controller import getAllProjects
 from controllers.task_controller import getAllTasks
 from datetime import datetime
+from utils.member_validator import uniqueMember, uniqueEditMember
 
 class AddMemberForm(QDialog):
     def __init__(self, main_window):
@@ -34,6 +35,15 @@ class AddMemberForm(QDialog):
         member_id = self.ui.member_id_info.text().strip() 
         name = self.ui.member_name_info.text().strip() 
         email = self.ui.member_email_info.text().strip() 
+
+        if not member_id or not name or not email:
+            QMessageBox.warning(self, "Input Error", "Please fill in all fields.")
+            return
+        
+        error = uniqueMember(member_id)
+        if error:
+            QMessageBox.warning(self, "Validation Error", error)
+            return
 
         member = (member_id, name, email)
         addMember(member)
@@ -62,8 +72,7 @@ class AddMemberForm(QDialog):
                     assigned_project_ids.add(project_id)
                 
 
-        from models.member import loadMember
-        loadMember(self.main_window.ui.members_table)
+        self.main_window.refreshTable()
 
         QMessageBox.information(self, "Success", "Member saved successfully.")
         self.close()
@@ -91,7 +100,6 @@ class EditMemberForm(QDialog):
         self.ui = Ui_addmember_dialog() 
         self.ui.setupUi(self)
 
-        self.main_window = main_window
         self.originalID = originalID
 
 
@@ -126,9 +134,18 @@ class EditMemberForm(QDialog):
         self.ui.member_cancel_button.clicked.connect(self.cancelMember)
         
     def saveMember(self):
-        member_id = self.ui.member_id_info.text().strip() #assume
-        name = self.ui.member_name_info.text().strip() #assume
-        email = self.ui.member_email_info.text().strip() #assume
+        member_id = self.ui.member_id_info.text().strip() 
+        name = self.ui.member_name_info.text().strip() 
+        email = self.ui.member_email_info.text().strip() 
+
+        if not member_id or not name or not email:
+            QMessageBox.warning(self, "Input Error", "Please fill in all fields.")
+            return
+        
+        error = uniqueEditMember(member_id, self.originalID)
+        if error:
+            QMessageBox.warning(self, "Validation Error", error)
+            return
 
         member = (member_id, name, email)
         updateMember(self.originalID, member)

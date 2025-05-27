@@ -1,12 +1,14 @@
 from config.db_config import getConnection
-from PyQt6.QtWidgets import QDialog, QWidget, QVBoxLayout
-from PyQt6.QtCore import QDateTime
+from PyQt6.QtWidgets import QDialog, QWidget, QVBoxLayout, QMessageBox
+from PyQt6.QtGui import QRegularExpressionValidator
+from PyQt6.QtCore import QDateTime, QRegularExpression
 from models.task import loadTasks
 from controllers.task_controller import (
     addTask, getTaskByID, updateTask, searchTasks,
     assignMemberToTask, removeMemberFromTask, updateTaskStatus, setTaskAccomplished
 )
 from ui.addtask_interface import Ui_addtask_dialog
+from utils.task_validators import uniqueTask, uniqueEditTask
 
 class AddTaskForm(QDialog):
     def __init__(self, main_window):
@@ -14,6 +16,9 @@ class AddTaskForm(QDialog):
         self.main_window = main_window
         self.ui = Ui_addtask_dialog()  # Replace with your actual UI class
         self.ui.setupUi(self)
+
+        id_validator = QRegularExpressionValidator(QRegularExpression(r"^\d{4}-\d{4}$"))
+        self.ui.task_id_info.setValidator(id_validator)
 
         self.ui.task_save_button.clicked.connect(self.saveTask)
         self.ui.task_clear_button.clicked.connect(self.clearTask)
@@ -27,6 +32,15 @@ class AddTaskForm(QDialog):
         due = self.ui.lineEdit_3.text().strip()           # Assume
         accomplished = self.ui.lineEdit_4.text().strip()  # Assume
         project_id = self.ui.lineEdit_5.text().strip()    # Assume
+
+        if not task_id or not name or not project_id:
+            QMessageBox.warning(self, "Input Error", "Task ID, Name, and Project ID cannot be empty.")
+            return
+        
+        error = uniqueTask(task_id)
+        if error:
+            QMessageBox.warning(self, "Validation Error", error)
+            return
 
         addTask({
             "taskID": task_id,
@@ -57,6 +71,11 @@ class EditTaskForm(QDialog):
         self.ui = Ui_addtask_dialog()  # Replace with your actual UI class
         self.ui.setupUi(self)
 
+        self.originalID = originalID
+
+        id_validator = QRegularExpressionValidator(QRegularExpression(r"^\d{4}-\d{4}$"))
+        self.ui.task_id_info.setValidator(id_validator)
+
         # Load existing data into the form
         data = getTaskByID(originalID)
         if data:
@@ -78,6 +97,15 @@ class EditTaskForm(QDialog):
         due = self.ui.lineEdit_3.text().strip()
         accomplished = self.ui.lineEdit_4.text().strip()
         project_id = self.ui.lineEdit_5.text().strip()
+
+        if not task_id or not name or not project_id:
+            QMessageBox.warning(self, "Input Error", "Task ID, Name, and Project ID cannot be empty.")
+            return
+        
+        error = uniqueEditTask(task_id, self.originalID)
+        if error:
+            QMessageBox.warning(self, "Validation Error", error)
+            return
 
         updateTask(self.originalID, {
             "taskID": task_id,

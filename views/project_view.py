@@ -1,17 +1,21 @@
-from config.db_config import getConnection
-from PyQt6.QtWidgets import QDialog, QWidget, QScrollArea, QGridLayout, QVBoxLayout
-from PyQt6.QtCore import QDateTime
+from PyQt6.QtWidgets import QDialog, QWidget, QScrollArea, QGridLayout, QVBoxLayout, QMessageBox
+from PyQt6.QtCore import QDateTime, QRegularExpression
+from PyQt6.QtGui import QRegularExpressionValidator
 from models.project import loadProject
 from controllers.project_controller import addProject, getProjectByID, updateProject, getAllProjects
 from widgets.project_widget import ProjectWidget
 from ui.addproject_interface import Ui_addproject_dialog
+from utils.project_validators import uniqueProject, uniqueEditProject
 
 class AddProjectForm(QDialog):
     def __init__(self, main_window):
         super().__init__()
         self.main_window = main_window
-        self.ui = Ui_addproject_dialog()  # Replace with your actual UI class
+        self.ui = Ui_addproject_dialog() 
         self.ui.setupUi(self)
+
+        id_validator = QRegularExpressionValidator(QRegularExpression(r"^\d{4}-\d{4}$"))
+        self.ui.project_id_info.setValidator(id_validator)
 
         self.ui.project_save_button.clicked.connect(self.saveProject)
         self.ui.project_clear_button.clicked.connect(self.clearProject)
@@ -23,6 +27,15 @@ class AddProjectForm(QDialog):
         desc = self.ui.lineEdit_2.text().strip()          # Assume
         start = self.ui.lineEdit_3.text().strip()         # Assume
         end = self.ui.lineEdit_4.text().strip()           # Assume
+
+        if not project_id or not name:
+            QMessageBox.warning(self, "Input Error", "Project ID and Name cannot be empty.")
+            return
+        
+        error = uniqueProject(project_id)
+        if error:
+            QMessageBox.warning(self, "Validation Error", error)
+            return
 
         addProject({
             "projectID": project_id,
@@ -49,6 +62,10 @@ class EditProjectForm(QDialog):
         self.ui = Ui_addproject_dialog()  # Replace with your actual UI class
         self.ui.setupUi(self)
 
+        self.originalID = originalID
+        id_validator = QRegularExpressionValidator(QRegularExpression(r"^\d{4}-\d{4}$"))
+        self.ui.project_id_info.setValidator(id_validator)  # Assuming lineEdit is for project ID
+
         # Load existing data into the form
         data = getProjectByID(originalID)
         if data:
@@ -66,6 +83,15 @@ class EditProjectForm(QDialog):
         desc = self.ui.lineEdit_2.text().strip()
         start = self.ui.lineEdit_3.text().strip()
         end = self.ui.lineEdit_4.text().strip()
+
+        if not project_id or not name:
+            QMessageBox.warning(self, "Input Error", "Project ID and Name cannot be empty.")
+            return
+        
+        error = uniqueEditProject(project_id, self.originalID)
+        if error:
+            QMessageBox.warning(self, "Validation Error", error)
+            return
 
         updateProject(self.originalID, {
             "projectID": project_id,
