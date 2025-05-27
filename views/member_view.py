@@ -211,7 +211,6 @@ def expandRow(main_window, row):
     
     if main_window.expanded_row == row:
         prev_row = main_window.expanded_row
-
         # Collapse previous row immediately (no animation)
         for col in range(table.columnCount()):
             item = main_window.original_items[prev_row][col]
@@ -225,7 +224,6 @@ def expandRow(main_window, row):
     # Collapse previous expanded row
     if main_window.expanded_row is not None:
         prev_row = main_window.expanded_row
-
         # Collapse previous row immediately (no animation)
         for col in range(table.columnCount()):
             item = main_window.original_items[prev_row][col]
@@ -255,11 +253,29 @@ def expandRow(main_window, row):
         return
     tasks = getProjectsTasksandDateByMemberID(member_id)
 
+    # Flatten into table rows
+    projects = getProjectsByMemberID(member_id)
+    project_task_map = {p["projectID"]: {"projectName": p["projectName"], "tasks": []} for p in projects}
+    for t in tasks:
+        pid = t["projectID"]
+        if pid in project_task_map:
+            project_task_map[pid]["tasks"].append(t)
+            
+    rows = []
+    for project_data in project_task_map.values():
+        if project_data["tasks"]:
+            for t in project_data["tasks"]:
+                rows.append((project_data["projectName"], t["taskName"], t["formattedDate"]))
+        else:
+            rows.append((project_data["projectName"], "No Tasks Assigned", "N/A"))
+
+    if not projects and not tasks:
+        rows.append(("No Projects Assigned", "No Tasks Assigned", "N/A"))
+
     # --- Build widget manually ---
     container = QWidget()
     container.setProperty("member_id", member_id)
     container.setStyleSheet("font-family: Poppins;")
-
     layout = QVBoxLayout(container)
     layout.setContentsMargins(10, 0, 10, 0)
     layout.setSpacing(0) 
@@ -268,7 +284,6 @@ def expandRow(main_window, row):
     header = QHBoxLayout()
     header.setSpacing(5)  # reduce space between widgets
     header.setContentsMargins(0, 0, 0, 0) 
-
     profile_pic = QLabel()
     profile_pic.setPixmap(QPixmap("icons/accountprof.svg").scaled(35, 35)) 
     profile_pic.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
@@ -278,7 +293,6 @@ def expandRow(main_window, row):
     text_block = QVBoxLayout()
     text_block.setSpacing(0)
     text_block.setContentsMargins(0, 0, 0, 0)
-
     name_label = QLabel(f"<b>{user_data[1]}</b>, {user_data[0]}")
     email_label = QLabel(user_data[2])
     for label in [name_label, email_label]:
@@ -286,7 +300,6 @@ def expandRow(main_window, row):
     text_block.addWidget(name_label)
     text_block.addWidget(email_label)
     text_block.setAlignment(Qt.AlignmentFlag.AlignLeft)
-
     header.addLayout(text_block, stretch=1)
     header.setAlignment(text_block, Qt.AlignmentFlag.AlignTop)
 
@@ -294,7 +307,6 @@ def expandRow(main_window, row):
     stats_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignTop)
     stats_label.setStyleSheet("color: black; font-family: Poppins; font-size: 11px;")
     header.addWidget(stats_label, stretch=1)
-
     layout.addLayout(header, stretch=0)
 
     #Button_layout
@@ -336,7 +348,6 @@ def expandRow(main_window, row):
     button_container = QWidget()
     button_container.setLayout(button_layout)
     button_container.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-
     button_style = """
 QPushButton {
     background-color: #e0e0e0;
@@ -356,12 +367,10 @@ QPushButton:pressed {
     minimize_button.setStyleSheet(button_style)
     edit_button.setStyleSheet(button_style)
     delete_button.setStyleSheet(button_style)
-
     header.addWidget(button_container, stretch=0, alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
 
     # Tasks table
-    task_count = max(1, len(tasks))
-    task_table = QTableWidget(task_count, 3)
+    task_table = QTableWidget(len(rows), 3)
     task_table.setHorizontalHeaderLabels(["Project", "Task", "Assigned On"])
 
     task_table.verticalHeader().setVisible(False)
@@ -390,58 +399,9 @@ QPushButton:pressed {
         font-family: Poppins;
     }
 """)
-    task_table.verticalHeader().setDefaultSectionSize(10)   # row height
-    task_table.verticalHeader().setFixedWidth(20)   # row height
-    task_table.horizontalHeader().setDefaultSectionSize(100)  # column width (optional)
-    task_table.setMaximumHeight(100)  # limit total widget height
-    task_table.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+    
     header = task_table.horizontalHeader()
     header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-
-    row_height = task_table.verticalHeader().defaultSectionSize()
-    header_height = task_table.horizontalHeader().height()
-    table_margin = 8  # layout padding/margins around the table
-    row_count = task_table.rowCount()
-
-    inner_table_height = header_height + (row_height * row_count) + table_margin
-    container_total_height = inner_table_height + 60  # add extra height for labels, spacing, etc.
-
-    table.setRowHeight(row, container_total_height)
-    task_table.setFixedHeight(inner_table_height)
-
-
-    spacing = 10  # padding or layout margins
-
-    total_rows = task_table.rowCount()
-    total_height = header_height + (row_height * total_rows) + spacing
-
-    projects = getProjectsByMemberID(member_id)
-    project_task_map = {}
-
-    # Map all projects first
-    for p in projects:
-        project_task_map[p["projectID"]] = {
-            "projectName": p["projectName"],
-            "tasks": []
-        }
-
-    # Add tasks to their corresponding project
-    for t in tasks:
-        pid = t["projectID"]
-        if pid in project_task_map:
-            project_task_map[pid]["tasks"].append(t)
-
-    # Flatten into table rows
-    rows = []
-    for project_data in project_task_map.values():
-        if project_data["tasks"]:
-            for t in project_data["tasks"]:
-                rows.append((project_data["projectName"], t["taskName"], t["formattedDate"]))
-        else:
-            rows.append((project_data["projectName"], "No Tasks Assigned", "N/A"))
-
-    if not projects and not tasks:
-        rows.append(("No Projects Assigned", "No Tasks Assigned", "N/A"))
 
     # Fill table
     task_table.setRowCount(len(rows))
@@ -449,20 +409,24 @@ QPushButton:pressed {
         for j, cell in enumerate(row_data):
             task_table.setItem(i, j, QTableWidgetItem(cell))
 
+    #Compute height needed for task_table
+    row_height = task_table.verticalHeader().defaultSectionSize()
+    header_height = task_table.horizontalHeader().height()
+    vertical_padding = 10 # Add slight padding for safety
+    task_table_total_height = header_height + (row_height * len(rows)) + vertical_padding
+    task_table.setFixedHeight(task_table_total_height)
 
     layout.addWidget(task_table, stretch=1)
 
     # Add widget to the row
     table.setCellWidget(row, 0, container)
-    table.setRowHeight(row, total_height)
-
-
+    
     # Animate row height
     animation = QPropertyAnimation(main_window, b"dummy")
     animation.setDuration(300)
     animation.setEasingCurve(QEasingCurve.Type.OutCubic)
     animation.setStartValue(main_window.default_row_height)
-    dynamic_height = 50 + total_height
+    dynamic_height = 50 + task_table_total_height
     animation.setEndValue(dynamic_height)
 
     def update_height(value):
