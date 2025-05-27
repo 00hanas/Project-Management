@@ -56,7 +56,7 @@ def loadTasks(parent=None) -> QWidget:
     
     # Content widget
     content = QWidget()
-    content.setMaximumHeight(650)
+    content.setMaximumHeight(0)
     content.setObjectName("scrollContent")
     content.setStyleSheet("""
         #scrollContent {
@@ -70,10 +70,8 @@ def loadTasks(parent=None) -> QWidget:
     # Grid layout
     grid = QGridLayout(content)
     grid.setAlignment(Qt.AlignmentFlag.AlignTop)
-    grid.setContentsMargins(0, 10, 5, 10)  # Margins around the grid
-    grid.setVerticalSpacing(5)     # Increased from 2 to 10
-    grid.setHorizontalSpacing(10)   # Added horizontal spacing
-
+    grid.setContentsMargins(1, 0, 1, 0)  # Margins around the grid
+    grid.setVerticalSpacing(0)     # Increased from 2 to 10
     columns = 2
     
     try:
@@ -105,6 +103,14 @@ def loadTasks(parent=None) -> QWidget:
 
     except Exception as e:
         print(f"Error loading tasks: {e}")
+
+    columns = 2
+    card_height = 150  
+    rows = (len(tasks) + columns - 1) // columns
+
+    content.setFixedHeight(rows * card_height)
+    spacer = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+    grid.addItem(spacer, grid.rowCount(), 0, 1, columns)
 
     scroll.setWidget(content)
     layout = QGridLayout(container)

@@ -18,11 +18,10 @@ class ProjectCardWidget(QWidget):
         self.setMaximumSize(QSize(800, 220))
         
         
-        container_layout  = QVBoxLayout(self)
+        container_layout  = QVBoxLayout(self) 
         container_layout.setSpacing(0)
         container_layout.setContentsMargins(12, 0, 6, 0)
-
-        container_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        container_layout.setAlignment(Qt.AlignmentFlag.AlignTop) 
         
         content = QWidget()
         content.setObjectName("content")
@@ -171,7 +170,7 @@ class ProjectCardWidget(QWidget):
         """)
         
         lastrow_layout = QHBoxLayout()
-        lastrow_layout.setContentsMargins(10, 0, 10, 10)
+        lastrow_layout.setContentsMargins(10, 0, 10, 10) 
         
         ProjectEndDateIcon = QPushButton()
         ProjectEndDateIcon.setObjectName("ProjectEndDateIcon")

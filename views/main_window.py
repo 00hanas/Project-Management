@@ -13,7 +13,7 @@ from controllers.project_controller import getTotalTasks, getMembersForProject
 from controllers.task_controller import getMembersForTask
 from widgets.TaskCardWidget import TaskCardWidget
 from widgets.ProjectCardWidget import ProjectCardWidget
-# from utils.searchworker_homesearch import SearchWorker
+from utils.searchworker_homesearch import SearchWorker
 
 class MainApp(QMainWindow):
     def __init__(self):
@@ -31,6 +31,14 @@ class MainApp(QMainWindow):
         self.ui.members_total_count.setText(str(getTotalMemberCount()))
 
         # Navigation to pages
+        self.ui.projects_total_count.clicked.connect(lambda: self.switchPage(1))
+        self.ui.tasks_total_count.clicked.connect(lambda: self.switchPage(2))
+        self.ui.members_total_count.clicked.connect(lambda: self.switchPage(3))
+
+        self.ui.home_button.clicked.connect(lambda: self.switchPage(0)) 
+        self.ui.projects_button.clicked.connect(lambda: self.switchPage(1))
+        self.ui.tasks_button.clicked.connect(lambda: self.switchPage(2))
+        self.ui.members_button.clicked.connect(lambda: self.switchPage(3))
         self.ui.projects_total_count.clicked.connect(lambda: self.switchPage(1))
         self.ui.tasks_total_count.clicked.connect(lambda: self.switchPage(2))
         self.ui.members_total_count.clicked.connect(lambda: self.switchPage(3))

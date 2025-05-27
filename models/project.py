@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (
-    QWidget, QGridLayout, QScrollArea, QVBoxLayout
+    QWidget, QGridLayout, QScrollArea, QVBoxLayout, QSizePolicy, QSpacerItem
 )
 from PyQt6.QtWidgets import QSpacerItem, QSizePolicy
 from PyQt6.QtGui import QColor
@@ -53,7 +53,8 @@ def loadProjects(parent=None) -> QWidget:
     scroll.setWidgetResizable(True)
     
     # Content widget
-    content = QWidget()
+    content = QWidget() #card
+    content.setMinimumHeight(0) 
     content.setObjectName("scrollContent")
     content.setStyleSheet("""
         #scrollContent {
@@ -67,10 +68,10 @@ def loadProjects(parent=None) -> QWidget:
     # Grid layout - Updated settings
     grid = QGridLayout(content)  # Changed from scroll to content
     grid.setAlignment(Qt.AlignmentFlag.AlignTop)
-    grid.setContentsMargins(20, 20, 20, 20)
-    grid.setSpacing(20)  # Set both vertical and horizontal spacing
-    
-    # Add projects with proper row/column calculation
+    grid.setContentsMargins(1, 0, 1, 0)  # Margins around the grid
+    grid.setVerticalSpacing(0)
+
+    # Add projects
     projects = getAllProjects()
     columns = 2
     headers = ["projectID", "projectName", "shortDescrip", "startDate", "endDate"]
@@ -83,13 +84,16 @@ def loadProjects(parent=None) -> QWidget:
         
         row = index // columns
         col = index % columns
-        grid.addWidget(project_widget, row, col, Qt.AlignmentFlag.AlignTop)
-    
-    # Add spacer at the bottom
-    if projects:
-        spacer = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-        grid.addItem(spacer, total_rows, 0, 1, columns)
-    
+        grid.addWidget(project_widget, row, col)
+
+    columns = 2
+    card_height = 150  
+    rows = (len(projects) + columns - 1) // columns
+
+    content.setFixedHeight(rows * card_height)
+    spacer = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+    grid.addItem(spacer, grid.rowCount(), 0, 1, columns)
+
     scroll.setWidget(content)
     
     # Main layout
@@ -97,7 +101,6 @@ def loadProjects(parent=None) -> QWidget:
     layout.setContentsMargins(0, 0, 0, 0)
     layout.addWidget(scroll)
     container.setLayout(layout)
-    
     return container
 
 
