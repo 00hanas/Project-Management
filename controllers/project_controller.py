@@ -130,48 +130,53 @@ def projectExists(projectID: str) -> bool:
     
     return exists
 
-def searchProjects(keyword: str, search_by: str) -> list[tuple]:
+def searchProjects(keyword: str, search_by: str) -> list[dict]:
+    if not keyword.strip():
+        return []
+        
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True)
 
+    if not keyword.strip():
+        cursor.execute("SELECT projectID FROM project")
+        return cursor.fetchall()
+    
     keyword_like = f"%{keyword}%"
     
-    sql_base = """
-        SELECT DISTINCT p.projectID
-        FROM project p
-    """
+    # Use parameterized queries to prevent SQL injection
     if search_by == "ProjectID":
-        sql = sql_base + " WHERE p.projectID LIKE %s"
-        cursor.execute(sql, (keyword_like,))
+        sql = "SELECT projectID FROM project WHERE projectID LIKE %s LIMIT 100"
+        params = (keyword_like,)
     elif search_by == "Project Name":
-        sql = sql_base + " WHERE p.projectName LIKE %s"
-        cursor.execute(sql, (keyword_like,))
+        sql = "SELECT projectID FROM project WHERE projectName LIKE %s LIMIT 100"
+        params = (keyword_like,)
     elif search_by == "Description":
-        sql = sql_base + " WHERE p.shortDescrip LIKE %s"
-        cursor.execute(sql, (keyword_like,))
+        sql = "SELECT projectID FROM project WHERE shortDescrip LIKE %s LIMIT 100"
+        params = (keyword_like,)
     elif search_by == "Start Date":
-        sql = sql_base + " WHERE DATE_FORMAT(p.startDate, '%%Y-%%m-%%d %%H:%%i:%%s') LIKE %s"
-        cursor.execute(sql, (keyword_like,))
+        sql = "SELECT projectID FROM project WHERE DATE_FORMAT(startDate, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
+        params = (keyword_like,)
     elif search_by == "End Date":
-        sql = sql_base + " WHERE DATE_FORMAT(p.endDate, '%%Y-%%m-%%d %%H:%%i:%%s') LIKE %s"
-        cursor.execute(sql, (keyword_like,))
+        sql = "SELECT projectID FROM project WHERE DATE_FORMAT(endDate, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
+        params = (keyword_like,)
     else:
-        # Search across all fields
-        sql = sql_base + """
-            WHERE p.projectID LIKE %s
-               OR p.projectName LIKE %s
-               OR p.shortDescrip LIKE %s
-               OR DATE_FORMAT(p.startDate, '%%Y-%%m-%%d %%H:%%i:%%s') LIKE %s
-               OR DATE_FORMAT(p.endDate, '%%Y-%%m-%%d %%H:%%i:%%s') LIKE %s
+        sql = """
+            SELECT projectID FROM project 
+            WHERE projectID LIKE %s 
+               OR projectName LIKE %s 
+               OR shortDescrip LIKE %s 
+               OR DATE_FORMAT(startDate, '%%Y-%%m-%%d') LIKE %s
+               OR DATE_FORMAT(endDate, '%%Y-%%m-%%d') LIKE %s
+            LIMIT 100
         """
-        cursor.execute(sql, (keyword_like,) * 5)
+        params = (keyword_like,) * 5
 
-    projects = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-    
-    return projects
+    try:
+        cursor.execute(sql, params)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
 
 def parse_date(date_str):
     for fmt in ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d'):
@@ -250,6 +255,32 @@ def getProjectsForMember(memberID: str) -> list[dict]:
     """
     
     cursor.execute(sql, (memberID,))
+    projects = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    return projects
+
+def sortProjects(sort_by: str, ascending: bool = True) -> list[dict]:
+    conn = getConnection()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    
+    # Map UI sort options to database columns
+    sort_mapping = {
+        "Name": "projectName",
+        "Project ID": "projectID",
+        "Start Date": "startDate",
+        "End Date": "endDate"
+    }
+    
+    if sort_by not in sort_mapping:
+        sort_by = "projectName"  # Default sort
+    
+    order = "ASC" if ascending else "DESC"
+    
+    sql = f"SELECT * FROM project ORDER BY {sort_mapping[sort_by]} {order}"
+    
+    cursor.execute(sql)
     projects = cursor.fetchall()
     cursor.close()
     conn.close()
