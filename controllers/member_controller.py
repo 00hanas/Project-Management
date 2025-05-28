@@ -285,4 +285,3 @@ def clearTaskMember(memberID: str) -> None:
     
     cursor.close()
     conn.close()
-
