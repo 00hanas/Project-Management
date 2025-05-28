@@ -1,6 +1,6 @@
+import pymysql.cursors
 from config.db_config import getConnection
 from datetime import datetime
-
 
 # Create
 def addProject(project: dict) -> None:
@@ -96,7 +96,7 @@ def getCompletedTasks(projectID: str) -> int:
 # Get by ID
 def getProjectByID(projectID: str) -> dict | None:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     
     sql = "SELECT * FROM project WHERE projectID = %s"
     
@@ -134,7 +134,7 @@ def searchProjects(keyword: str, search_by: str) -> list[dict]:
         return []
         
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
 
     if not keyword.strip():
         cursor.execute("SELECT projectID FROM project")
@@ -159,7 +159,7 @@ def searchProjects(keyword: str, search_by: str) -> list[dict]:
         sql = """
             SELECT projectID FROM project 
             WHERE projectID LIKE %s 
-               OR projectName LIKE %s  
+               OR projectName LIKE %s 
                OR DATE_FORMAT(startDate, '%%Y-%%m-%%d') LIKE %s
                OR DATE_FORMAT(endDate, '%%Y-%%m-%%d') LIKE %s
             LIMIT 100
@@ -223,7 +223,7 @@ def removeMemberFromProject(projectID: str, memberID: str) -> None:
 # Get members for a specific project
 def getMembersForProject(projectID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
 
     sql = """
         SELECT m.* FROM members m
@@ -241,7 +241,7 @@ def getMembersForProject(projectID: str) -> list[dict]:
 # Get projects for a specific member
 def getProjectsForMember(memberID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     
     sql = """
         SELECT p.* FROM project p
@@ -258,7 +258,7 @@ def getProjectsForMember(memberID: str) -> list[dict]:
 
 def sortProjects(sort_by: str, ascending: bool = True) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     
     # Map UI sort options to database columns
     sort_mapping = {
