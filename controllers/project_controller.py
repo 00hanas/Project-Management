@@ -146,7 +146,7 @@ def searchProjects(keyword: str, search_by: str) -> list[dict]:
     if search_by == "Project ID":
         sql = "SELECT projectID FROM project WHERE projectID LIKE %s LIMIT 100"
         params = (keyword_like,)
-    elif search_by == "Project Name":
+    elif search_by == "Name":
         sql = "SELECT projectID FROM project WHERE projectName LIKE %s LIMIT 100"
         params = (keyword_like,)
     elif search_by == "Start Date":

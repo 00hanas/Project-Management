@@ -117,7 +117,7 @@ def searchTasks(keyword: str, search_by: str) -> list[dict]:
     if search_by == "Task ID":
         sql = "SELECT taskID FROM task WHERE taskID LIKE %s LIMIT 100"
         params = (keyword_like,)
-    elif search_by == "Task Name":
+    elif search_by == "Name":
         sql = "SELECT taskID FROM task WHERE taskName LIKE %s LIMIT 100"
         params = (keyword_like,)
     elif search_by == "Status":
