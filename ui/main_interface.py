@@ -749,7 +749,6 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
             border-radius: 8px;
             border: none;
         """)
-
         self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.view_projects)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
         self.view_projects_label = QtWidgets.QLabel(parent=self.view_projects)
