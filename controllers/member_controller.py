@@ -86,7 +86,7 @@ def getAllMembers() -> list[tuple]:
 #Function to load existing data into the edit form
 def getMemberByID(memberID: str) -> dict | None:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     sql = "SELECT * FROM members WHERE memberID = %s"
     cursor.execute(sql, (memberID,))
     member = cursor.fetchone()
@@ -159,7 +159,7 @@ def searchMembers(keyword: str, search_by: str) -> list[str]:
 #inner table sa expanded row
 def getProjectsTasksandDateByMemberID(memberID: str) -> dict:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     
     sql = """
         SELECT
@@ -184,7 +184,7 @@ WHERE
 
 def getProjectsByMemberID(memberID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     
     sql = """
         SELECT DISTINCT p.projectID, p.projectName
@@ -200,7 +200,7 @@ def getProjectsByMemberID(memberID: str) -> list[dict]:
 
 def getAllMembersForSearch(memberID) -> list[tuple]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     
     sql = """
     SELECT 
@@ -227,7 +227,7 @@ def getAllMembersForSearch(memberID) -> list[tuple]:
 
 def getProjectIDbyTaskID(taskID: str) -> str | None:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     
     sql = "SELECT projectID FROM task WHERE taskID = %s"
     cursor.execute(sql, (taskID,))
