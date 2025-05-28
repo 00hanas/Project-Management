@@ -235,3 +235,31 @@ def getTasksByProjectID(projectID: str) -> list[dict]:
     finally:
         cursor.close()
         conn.close()
+
+def sortTasks(sort_by: str, ascending: bool = True) -> list[dict]:
+    conn = getConnection()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    
+    # Map UI sort options to database columns
+    sort_mapping = {
+        "Name": "taskName",
+        "Task ID": "taskID",
+        "Due Date": "dueDate",
+        "Status": "currentStatus",
+        "Project": "projectID",
+        "Date Accomplished": "dateAccomplished"
+    }
+    
+    if sort_by not in sort_mapping:
+        sort_by = "taskName"  # Default sort
+    
+    order = "ASC" if ascending else "DESC"
+    
+    sql = f"SELECT * FROM task ORDER BY {sort_mapping[sort_by]} {order}"
+    
+    cursor.execute(sql)
+    tasks = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    return tasks

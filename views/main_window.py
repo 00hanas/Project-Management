@@ -11,7 +11,7 @@ from controllers.member_controller import searchMembers, getAllMembersForSearch
 from PyQt6.QtGui import QTextCharFormat, QColor, QFont
 from PyQt6.QtCore import QDate, Qt, QTimer, QThreadPool, QPoint, QDateTime # Import QDateTime
 from datetime import datetime
-from controllers.project_controller import getTotalTasks, getMembersForProject
+from controllers.project_controller import getTotalTasks, getMembersForProject, sortProjects
 from controllers.task_controller import getMembersForTask
 from widgets.TaskCardWidget import TaskCardWidget
 from widgets.ProjectCardWidget import ProjectCardWidget
@@ -49,6 +49,10 @@ class MainApp(QMainWindow):
         self.ui.addproject_button.clicked.connect(lambda: AddProjectForm(self).exec())
         self.ui.addtask_button.clicked.connect(lambda: AddTaskForm(self).exec())
         self.ui.addmember_button.clicked.connect(lambda: AddMemberForm(self).exec())
+
+        # Handling sorting
+        self.ui.projects_sortby.currentTextChanged.connect(self.handle_project_sort)
+        self.ui.tasks_sortby.currentTextChanged.connect(self.handle_task_sort)
 
         # Handling expand buttons
         # self.ui.project_expand_button.clicked.connect(self.showProjectExpand) # placeholder for a function that opens a detailed project view for the selected project
@@ -648,5 +652,90 @@ color: white;
 
         except Exception as e:
             print(f"Error refreshing {container_type} container: {e}")
+            import traceback
+            print(traceback.format_exc())
+
+    def handle_project_sort(self):
+        """Handle sorting of projects based on the selected sort option"""
+        sort_by = self.ui.projects_sortby.currentText()
+        
+        # Skip if default "Sort by" is selected
+        if sort_by == "Sort by":
+            return
+            
+        # Get sorted projects
+        sorted_projects = sortProjects(sort_by)
+        
+        # Refresh the container with sorted projects
+        self.refresh_project_container_with_data(sorted_projects)
+
+    def refresh_project_container_with_data(self, projects_data):
+        """Refresh project container with specific data"""
+        print("Entering refresh_project_container_with_data")
+        try:
+            layout = self.ui.horizontalLayout_7
+            
+            # Clear existing widgets
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget:
+                    widget.deleteLater()
+            QtWidgets.QApplication.processEvents()
+            
+            # Create new container with the sorted data
+            from models.project import loadProjects
+            new_container = loadProjects(self.ui.projects_container, projects_data)
+            layout.addWidget(new_container)
+            
+            # Setup connections for new container
+            self.setup_project_connections()
+            self.clear_project_details_pane()
+            
+        except Exception as e:
+            print(f"Error refreshing project container with sorted data: {e}")
+            import traceback
+            print(traceback.format_exc())
+
+    def handle_task_sort(self):
+        """Handle sorting of tasks based on the selected sort option"""
+        sort_by = self.ui.tasks_sortby.currentText()
+        
+        # Skip if default "Sort by" is selected
+        if sort_by == "Sort by":
+            return
+            
+        # Get sorted tasks
+        from controllers.task_controller import sortTasks
+        sorted_tasks = sortTasks(sort_by)
+        
+        # Refresh the container with sorted tasks
+        self.refresh_task_container_with_data(sorted_tasks)
+
+    def refresh_task_container_with_data(self, tasks_data):
+        """Refresh task container with specific data"""
+        print("Entering refresh_task_container_with_data")
+        try:
+            layout = self.ui.horizontalLayout_14
+            
+            # Clear existing widgets
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget:
+                    widget.deleteLater()
+            QtWidgets.QApplication.processEvents()
+            
+            # Create new container with the sorted data
+            from models.task import loadTasks
+            new_container = loadTasks(self.ui.tasks_container, tasks_data)
+            layout.addWidget(new_container)
+            
+            # Setup connections for new container
+            self.setup_task_connections()
+            self.clear_task_details_pane()
+            
+        except Exception as e:
+            print(f"Error refreshing task container with sorted data: {e}")
             import traceback
             print(traceback.format_exc())

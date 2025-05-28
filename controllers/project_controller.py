@@ -200,3 +200,28 @@ def getProjectsForMember(memberID: str) -> list[dict]:
     
     return projects
 
+def sortProjects(sort_by: str, ascending: bool = True) -> list[dict]:
+    conn = getConnection()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    
+    # Map UI sort options to database columns
+    sort_mapping = {
+        "Name": "projectName",
+        "Project ID": "projectID",
+        "Start Date": "startDate",
+        "End Date": "endDate"
+    }
+    
+    if sort_by not in sort_mapping:
+        sort_by = "projectName"  # Default sort
+    
+    order = "ASC" if ascending else "DESC"
+    
+    sql = f"SELECT * FROM project ORDER BY {sort_mapping[sort_by]} {order}"
+    
+    cursor.execute(sql)
+    projects = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    return projects
