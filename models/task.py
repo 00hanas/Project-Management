@@ -1,10 +1,10 @@
 from PyQt6.QtWidgets import (
-    QWidget, QGridLayout, QScrollArea, QVBoxLayout, QLabel, QSpacerItem, QSizePolicy
+    QWidget, QGridLayout, QScrollArea, QVBoxLayout, QLabel, QSpacerItem, QSizePolicy, QMessageBox   
 )
 from PyQt6 import QtWidgets
 from PyQt6.QtGui import QColor
 from PyQt6.QtCore import Qt
-from controllers.task_controller import getAllTasks, getMembersForTask
+from controllers.task_controller import getAllTasks, getMembersForTask, updateTaskStatus
 from widgets.TaskCardWidget import TaskCardWidget
 
 
@@ -93,14 +93,28 @@ def loadTasks(parent=None, tasks_data=None) -> QWidget:
                 try:
                     # Get the number of members for the task
                     taskID = task['taskID']
-                    NoOFMembers = len(getMembersForTask(taskID))
+                    current_status = task['currentStatus']
+                    members = getMembersForTask(taskID)
+                    has_members = len(members) > 0
+                    accomplished = task.get('dateAccomplished')
+
+                    new_status = None
+
+                    # Auto-set to Unassigned if there are no members and not already completed
+                    if not has_members and current_status != 'Completed':
+                        new_status = 'Unassigned'
+
+                    # Auto-set to Completed if there's an accomplished date but status is not 'Completed'
+                    # elif has_members and accomplished is not None and current_status != 'Completed':
+                    #     new_status = 'Completed'
+
+                    # Otherwise, leave status as-is (including "In Progress" or "Pending")
+                    if new_status and current_status != new_status:
+                        updateTaskStatus(taskID, new_status)
+                        task['currentStatus'] = new_status
+                
                     
-                    # Set the current status based on the number of members
-                    if NoOFMembers == 0:
-                        task['currentStatus'] = 'Unassigned'
-                    elif task.get('dateAccomplished') is None:
-                        task['currentStatus'] = 'Pending'
-                        
+                    # Create a TaskCardWidget instance
                     task_widget = TaskCardWidget(task)
                     
                     # Connect the click signal to the parent's update_task_details method

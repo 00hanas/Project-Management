@@ -45,6 +45,9 @@ class AddTaskForm(QDialog):
         due = self.ui.task_dueDate_info.text().strip()           
         accomplished = self.ui.task_dateAccomplished_info.text().strip()  
         project_name = self.ui.task_project_info.currentText().strip()
+        
+        members = getMembersForTask(task_id)
+        
 
         if not task_id or not name or not project_name:
             QMessageBox.warning(self, "Input Error", "Task ID, Name, and Project ID cannot be empty.")
@@ -185,17 +188,15 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
         name = self.ui.task_name_info.text().strip()
         desc = self.ui.task_shortDescrip_info.toPlainText().strip()
         status = self.ui.task_status_info.currentText().strip()
-        
+
         due_qdatetime = self.ui.task_dueDate_info.dateTime()
         due_datetime = due_qdatetime.toPyDateTime()
 
         accomplished_qdatetime = self.ui.task_dateAccomplished_info.dateTime()
-        accomplished_datetime = accomplished_qdatetime.toPyDateTime() if accomplished_qdatetime > QDateTime(2000,1,1,0,1) else None
-
+        accomplished_datetime = accomplished_qdatetime.toPyDateTime() if accomplished_qdatetime > QDateTime(2000, 1, 1, 0, 1) else None
 
         project_index = self.ui.task_project_info.currentIndex()
-        project_id = self.ui.task_project_info.itemData(project_index) if project_index >=0 else None
-
+        project_id = self.ui.task_project_info.itemData(project_index) if project_index >= 0 else None
 
         if not task_id or not name or not project_id:
             QMessageBox.warning(self, "Input Error", "Task ID, Name, and Project cannot be empty.")
@@ -205,6 +206,16 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
         if error:
             QMessageBox.warning(self, "Validation Error", error)
             return
+
+        if status == "Completed":
+            assigned_members = getMembersForTask(task_id)
+            if not assigned_members or len(assigned_members) == 0:
+                QMessageBox.warning(
+                    self,
+                    "Invalid Status",
+                    "You cannot set this task to 'Completed' because there are no members assigned to it."
+                )
+                return
 
         updated_data = {
             "taskID": task_id,
@@ -223,10 +234,11 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
             self.main_window.refresh_container('project')
             self.main_window.refresh_container('home')
             self.main_window.refreshTable()
-            self.main_window.update_task_details(getTaskByID(task_id)) # Update details pane
-            self.accept() # Close dialog
+            self.main_window.update_task_details(getTaskByID(task_id))
+            self.accept()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to update task: {str(e)}")
+
 
     def clearTaskFields(self): # Renamed for clarity
         # Potentially reset to original data or just clear

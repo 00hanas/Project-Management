@@ -135,7 +135,7 @@ def searchProjects(keyword: str, search_by: str) -> list[dict]:
         return []
         
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
 
     if not keyword.strip():
         cursor.execute("SELECT projectID FROM project")

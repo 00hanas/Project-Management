@@ -52,6 +52,8 @@ class AddProjectForm(QDialog):
             QMessageBox.warning(self, "Input Error", "Project ID and Name cannot be empty.")
             return
         
+        
+        
         # Validate dates before proceeding
         if not self.validate_dates():
             QMessageBox.warning(self, "Date Error", "End date cannot be before start date")
@@ -134,7 +136,7 @@ class EditProjectForm(QDialog):
 
         # Connect buttons
         self.ui.project_save_button.clicked.connect(self.saveProject)
-        # self.ui.project_clear_button.clicked.connect(self.clearProject) # Remove or comment out this line
+        self.ui.project_clear_button.clicked.connect(self.clearProject)
         self.ui.project_cancel_button.clicked.connect(self.cancelProject)
 
     def saveProject(self):
@@ -191,10 +193,11 @@ class EditProjectForm(QDialog):
             QMessageBox.critical(self, "Error", f"Failed to update project: {str(e)}")
 
     def clearProject(self):
-        # This method is not needed for EditProjectForm, but keeping it here
-        # to avoid potential issues if it's called elsewhere unexpectedly.
-        # However, the connection in __init__ should be removed.
-        pass
+        self.ui.project_name_info.clear()
+        self.ui.project_id_info.clear()
+        self.ui.project_shortDescrip_info.clear()
+        self.ui.project_startDate_info.setDateTime(QDateTime(2000, 1, 1, 0, 0))
+        self.ui.project_endDate_info.setDateTime(QDateTime(2000, 1, 1, 0, 0))
 
     def cancelProject(self):
         self.close()
