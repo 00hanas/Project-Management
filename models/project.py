@@ -4,10 +4,11 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtWidgets import QSpacerItem, QSizePolicy
 from PyQt6.QtGui import QColor
 from PyQt6.QtCore import Qt
-from controllers.project_controller import getAllProjects
+from controllers.project_controller import getAllProjects, sortProjects
 from widgets.ProjectCardWidget import ProjectCardWidget
 
-def loadProjects(parent=None) -> QWidget:
+def loadProjects(parent=None, projects_data=None) -> QWidget:
+    """Load projects into a container. If projects_data is provided, use that instead of fetching from database."""
     # Main container
     container = QWidget(parent)
     container.setObjectName("ProjectVContainer")
@@ -35,7 +36,7 @@ def loadProjects(parent=None) -> QWidget:
         }
 
         QScrollBar::handle:vertical {
-            background: transparent;  /* Or use transparent if you want it invisible */
+            background: transparent;
             min-height: 2px;
             border-radius: 6px;
             border: none;
@@ -53,7 +54,7 @@ def loadProjects(parent=None) -> QWidget:
     scroll.setWidgetResizable(True)
     
     # Content widget
-    content = QWidget() #card
+    content = QWidget()
     content.setMinimumHeight(0) 
     content.setObjectName("scrollContent")
     content.setStyleSheet("""
@@ -65,21 +66,30 @@ def loadProjects(parent=None) -> QWidget:
         }
         """)
     
-    # Grid layout - Updated settings
-    grid = QGridLayout(content)  # Changed from scroll to content
+    # Grid layout
+    grid = QGridLayout(content)
     grid.setAlignment(Qt.AlignmentFlag.AlignTop)
-    grid.setContentsMargins(1, 0, 1, 0)  # Margins around the grid
+    grid.setContentsMargins(1, 0, 1, 0)
     grid.setVerticalSpacing(0)
     content.setLayout(grid) 
 
-    # Add projects
-    projects = getAllProjects()
+    # Get projects data - either from parameter or database
+    if projects_data is None:
+        projects = getAllProjects()
+    else:
+        projects = projects_data
+
     columns = 3
     headers = ["projectID", "projectName", "shortDescrip", "startDate", "endDate"]
     
         
+    # Handle both tuple and dict formats
     for index, project in enumerate(projects):
-        project_dict = dict(zip(headers, project))
+        if isinstance(project, tuple):
+            project_dict = dict(zip(headers, project))
+        else:  # Assume it's already a dict
+            project_dict = project
+            
         project_widget = ProjectCardWidget(project_dict)
         
         row = index // columns
@@ -88,8 +98,9 @@ def loadProjects(parent=None) -> QWidget:
 
     card_height = 150  
     rows = (len(projects) + columns - 1) // columns
-
     content.setFixedHeight(rows * card_height)
+    
+    # Add spacer
     spacer = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
     grid.addItem(spacer, grid.rowCount(), 0, 1, columns)
 
@@ -101,8 +112,3 @@ def loadProjects(parent=None) -> QWidget:
     layout.addWidget(scroll)
     container.setLayout(layout)
     return container
-
-
-
-
-

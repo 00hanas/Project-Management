@@ -1,3 +1,4 @@
+import pymysql.cursors #########################################3
 from config.db_config import getConnection
 
 #Create
