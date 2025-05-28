@@ -1,8 +1,11 @@
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 from controllers.task_controller import searchTasks, getAllTasks
 
+# In both TaskSearchWorker.py and ProjectSearchWorker.py
+# Add a signal for incremental updates
 class TaskSearchWorkerSignals(QObject):
     finished = pyqtSignal(list)
+    incremental = pyqtSignal(list)  # New signal for partial results
     error = pyqtSignal(str)
 
 class TaskSearchWorker(QRunnable):
@@ -13,16 +16,18 @@ class TaskSearchWorker(QRunnable):
         self.signals = TaskSearchWorkerSignals()
         self.setAutoDelete(True)
 
+    
     def run(self):
         try:
             if not self.keyword:
-                # Return all tasks when search is empty
-                results = getAllTasks()
-                task_ids = [task["taskID"] for task in results]
+                results = getAllTasks()  # Or getAllProjects()
+                self.signals.incremental.emit(results[:10])  # Emit first batch
+                self.signals.incremental.emit(results[10:])  # Emit remaining
             else:
                 results = searchTasks(self.keyword, self.search_by)
-                task_ids = [task["taskID"] for task in results]
+                self.signals.incremental.emit(results[:10])  # Emit first batch
+                self.signals.incremental.emit(results[10:])  # Emit remaining
             
-            self.signals.finished.emit(task_ids)
+            self.signals.finished.emit(results)
         except Exception as e:
             self.signals.error.emit(str(e))

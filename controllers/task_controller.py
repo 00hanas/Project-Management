@@ -158,6 +158,9 @@ def getAllTasksForSearch(task_ids: list[str]) -> list[tuple]:
 
     if not task_ids:
         return []
+    
+    if isinstance(task_ids[0], dict):
+        task_ids = [task['taskID'] for task in task_ids]
 
     placeholders = ', '.join(['%s'] * len(task_ids))
     sql = f"SELECT * FROM task WHERE taskID IN ({placeholders})"

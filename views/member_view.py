@@ -25,7 +25,13 @@ class AddMemberForm(QDialog):
         self.ui.member_id_info.setValidator(id_validator)
 
         populateProjectList(self.ui.member_project_info)
-        populateTaskList(self.ui.member_task_info)
+        # Start with empty task list
+        self.ui.member_task_info.clear()
+        
+        # Connect project list changes to update task list
+        self.ui.member_project_info.itemChanged.connect(
+            lambda: onProjectSelectionChange(self.ui.member_project_info, self.ui.member_task_info)
+        )
         
         self.ui.member_save_button.clicked.connect(self.saveMember)
         self.ui.member_clear_button.clicked.connect(self.clearMember)
@@ -116,25 +122,66 @@ class EditMemberForm(QDialog):
             self.ui.member_name_info.setText(data["fullname"]) 
             self.ui.member_email_info.setText(data["email"]) 
 
+        # Get currently assigned projects and tasks
+        self.assigned_projects = set(getProjectIDbyMemberID(originalID))
+        self.assigned_tasks = set(getTaskIDbyMemberID(originalID))
+
+        # Populate project list and check assigned ones
         populateProjectList(self.ui.member_project_info)
-        populateTaskList(self.ui.member_task_info)
-
-        assigned_projects = set(getProjectIDbyMemberID(originalID))  # should return list of projectIDs
-        assigned_tasks = set(getTaskIDbyMemberID(originalID))
-
         for i in range(self.ui.member_project_info.count()):
             item = self.ui.member_project_info.item(i)
-            if item.data(Qt.ItemDataRole.UserRole) in assigned_projects:
+            project_id = item.data(Qt.ItemDataRole.UserRole)
+            if project_id in self.assigned_projects:
                 item.setCheckState(Qt.CheckState.Checked)
 
-        for i in range(self.ui.member_task_info.count()):
-            item = self.ui.member_task_info.item(i)
-            if item.data(Qt.ItemDataRole.UserRole) in assigned_tasks:
-                item.setCheckState(Qt.CheckState.Checked)
+        # Immediately populate tasks from checked projects
+        self.populateAndCheckTasks()
+
+        # Connect project list changes to update task list
+        self.ui.member_project_info.itemChanged.connect(self.onProjectSelectionChanged)
         
         self.ui.member_save_button.clicked.connect(self.saveMember)
         self.ui.member_clear_button.clicked.connect(self.clearMember)
         self.ui.member_cancel_button.clicked.connect(self.cancelMember)
+
+    def populateAndCheckTasks(self):
+        """Populate task list based on checked projects and check assigned tasks"""
+        self.ui.member_task_info.clear()
+        
+        # Get checked projects
+        checked_projects = set()
+        for i in range(self.ui.member_project_info.count()):
+            item = self.ui.member_project_info.item(i)
+            if item.checkState() == Qt.CheckState.Checked:
+                checked_projects.add(item.data(Qt.ItemDataRole.UserRole))
+
+        # Populate tasks from checked projects
+        for task in getAllTasks():
+            if task['projectID'] in checked_projects:
+                item = QListWidgetItem(f"{task['projectID']}: {task['taskName']}")
+                item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+                # Check if this task was previously assigned
+                if task["taskID"] in self.assigned_tasks:
+                    item.setCheckState(Qt.CheckState.Checked)
+                else:
+                    item.setCheckState(Qt.CheckState.Unchecked)
+                item.setData(Qt.ItemDataRole.UserRole, task["taskID"])
+                self.ui.member_task_info.addItem(item)
+
+    def onProjectSelectionChanged(self):
+        """Handle project selection changes while preserving task check states"""
+        # Save currently checked tasks from visible items
+        checked_tasks = set()
+        for i in range(self.ui.member_task_info.count()):
+            item = self.ui.member_task_info.item(i)
+            if item.checkState() == Qt.CheckState.Checked:
+                checked_tasks.add(item.data(Qt.ItemDataRole.UserRole))
+
+        # Update the assigned tasks set with any newly checked tasks
+        self.assigned_tasks.update(checked_tasks)
+        
+        # Repopulate tasks based on new project selection
+        self.populateAndCheckTasks()
         
     def saveMember(self):
         member_id = self.ui.member_id_info.text().strip() 
@@ -503,12 +550,48 @@ def populateProjectList(member_project_info):
         item.setData(Qt.ItemDataRole.UserRole, project[0])
         member_project_info.addItem(item)
 
-def populateTaskList(member_task_info):
+def populateTaskList(member_task_info, member_project_info=None, force_empty=False):
     member_task_info.clear()
+    
+    # If forced empty or no projects checked, return empty list
+    if force_empty or member_project_info is None:
+        return
+    
+    # Get currently checked projects
+    checked_projects = set()
+    for i in range(member_project_info.count()):
+        item = member_project_info.item(i)
+        if item.checkState() == Qt.CheckState.Checked:
+            checked_projects.add(item.data(Qt.ItemDataRole.UserRole))
+    
+    # Only proceed if there are checked projects
+    if not checked_projects:
+        return
+    
+    # Show only tasks from checked projects
     for task in getAllTasks():
-        item = QListWidgetItem(f"{task['projectID']}: {task['taskName']}")
-        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
-        item.setCheckState(Qt.CheckState.Unchecked)
-        item.setData(Qt.ItemDataRole.UserRole, task["taskID"])
-        member_task_info.addItem(item)
+        if task['projectID'] in checked_projects:
+            item = QListWidgetItem(f"{task['projectID']}: {task['taskName']}")
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            item.setCheckState(Qt.CheckState.Unchecked)
+            item.setData(Qt.ItemDataRole.UserRole, task["taskID"])
+            member_task_info.addItem(item)
+
+def onProjectSelectionChange(member_project_info, member_task_info):
+    # Save currently checked tasks
+    checked_tasks = set()
+    for i in range(member_task_info.count()):
+        item = member_task_info.item(i)
+        if item.checkState() == Qt.CheckState.Checked:
+            checked_tasks.add(item.data(Qt.ItemDataRole.UserRole))
+    
+    # Repopulate tasks only if projects are checked
+    populateTaskList(member_task_info, member_project_info)
+    
+    # Restore checked state for tasks that are still visible
+    for i in range(member_task_info.count()):
+        item = member_task_info.item(i)
+        task_id = item.data(Qt.ItemDataRole.UserRole)
+        if task_id in checked_tasks:
+            item.setCheckState(Qt.CheckState.Checked)
     
