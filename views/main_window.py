@@ -19,7 +19,9 @@ from utils.searchworker_homesearch import SearchWorker
 from utils.ProjectSearchWorker import ProjectSearchWorker
 from models.project import loadProjects
 from models.task import loadTasks
-from PyQt6 import QtWidgets # Import QtWidgets to use QApplication.processEvents
+from PyQt6 import QtWidgets 
+from utils.TaskSearchWorker import TaskSearchWorker
+from controllers.task_controller import getAllTasksForSearch
 
 class MainApp(QMainWindow):
     def __init__(self):
@@ -111,16 +113,24 @@ class MainApp(QMainWindow):
         self.ui.members_searchby.currentIndexChanged.connect(self.performSearchforMembers)
 
         # Project search functionality
-        # In __init__
-        self.threadpool = QThreadPool()
+        self.currently_showing_all_projects = True  # Start by showing all projects
         self.project_search_timer = QTimer(self)
         self.project_search_timer.setSingleShot(True)
+        self.project_search_timer.setInterval(100)  # 300ms delay after typing stops
         self.project_search_timer.timeout.connect(self.performSearchforProjects)
-        self.ui.projects_search.textChanged.connect(lambda: self.project_search_timer.start(150))
+
+        self.ui.projects_search.textChanged.connect(self.handleProjectSearchChanged)
         self.ui.projects_searchby.currentIndexChanged.connect(self.performSearchforProjects)
 
-        self.ui.projects_search.textChanged.connect(self.performSearchforProjects)
-        self.ui.projects_searchby.currentIndexChanged.connect(self.performSearchforProjects)
+        # Task search functionality
+        self.currently_showing_all_tasks = True
+        self.task_search_timer = QTimer(self)
+        self.task_search_timer.setSingleShot(True)
+        self.task_search_timer.setInterval(100)
+        self.task_search_timer.timeout.connect(self.performSearchforTasks)
+
+        self.ui.tasks_search.textChanged.connect(self.handleTaskSearchChanged)
+        self.ui.tasks_searchby.currentIndexChanged.connect(self.performSearchforTasks)
 
         #Load members into the table
         if hasattr(self.ui, 'members_table'):
@@ -312,18 +322,34 @@ class MainApp(QMainWindow):
 
         self.calendar.setDateTextFormat(QDate.currentDate(), fmt)
 
+    def handleProjectSearchChanged(self):
+        """Handle text changes in project search field"""
+        if not self.ui.projects_search.text().strip():
+            # If field is being cleared, perform search immediately
+            self.project_search_timer.stop()  # Cancel any pending timer
+            self.performSearchforProjects()
+        else:
+            # For normal typing, use the timer
+            self.project_search_timer.start()
+
     def performSearchforProjects(self):
-        keyword = self.ui.projects_search.text()
+        """Perform the project search with current parameters"""
+        keyword = self.ui.projects_search.text().strip()
         search_by = self.ui.projects_searchby.currentText()
-        if search_by == "Search By":
-            search_by = ""
-
-        self.ui.projects_search.setFocus()
-
+        
         worker = ProjectSearchWorker(keyword, search_by)
-        #worker.setAutoDelete(True)  # Optional but recommended
         worker.signals.finished.connect(self.updateProjectWidgets)
-        self.threadpool.start(worker)
+        worker.signals.error.connect(self.showSearchError)
+        QThreadPool.globalInstance().start(worker)
+
+    def loadAllProjects(self):
+        """Load all projects when search field is empty"""
+        all_projects = getAllProjects()  # This should return all projects
+        project_ids = [project[0] for project in all_projects]  # Assuming projectID is first element
+        self.updateProjectWidgets(project_ids)
+
+    def showSearchError(self, error_msg):
+        QMessageBox.warning(self, "Search Error", f"An error occurred during search:\n{error_msg}")
 
     def updateProjectWidgets(self, project_ids: list[str]):
         # Find the projects container in the stacked widget
@@ -370,7 +396,7 @@ class MainApp(QMainWindow):
         scroll_area.setWidgetResizable(True)
         content.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         
-        columns = 2
+        columns = 3
         for index, project in enumerate(all_projects):
             project_dict = dict(zip(headers, project))
             widget = ProjectCardWidget(project_dict)
@@ -744,3 +770,88 @@ color: white;
             print(f"Error refreshing {container_type} container: {e}")
             import traceback
             print(traceback.format_exc())
+
+    def handleTaskSearchChanged(self):
+        """Handle text changes in task search field"""
+        if not self.ui.tasks_search.text().strip():
+            # If field is being cleared, perform search immediately
+            self.task_search_timer.stop()
+            self.performSearchforTasks()
+        else:
+            # For normal typing, use the timer
+            self.task_search_timer.start()
+
+    def performSearchforTasks(self):
+        """Perform the task search with current parameters"""
+        keyword = self.ui.tasks_search.text().strip()
+        search_by = self.ui.tasks_searchby.currentText()
+        
+        worker = TaskSearchWorker(keyword, search_by)
+        worker.signals.finished.connect(self.updateTaskWidgets)
+        worker.signals.error.connect(self.showSearchError)
+        QThreadPool.globalInstance().start(worker)
+
+    def updateTaskWidgets(self, task_ids: list[str]):
+        # Find the tasks container in the stacked widget
+        tasks_page = self.ui.stackedWidget.widget(2)  # Tasks page is index 2
+        tasks_container = tasks_page.findChild(QWidget, "TaskVContainer")
+
+        if not tasks_container:
+            print("Error: Could not find TaskVContainer")
+            return
+        
+        # Find the scroll area and content widget
+        scroll_area = tasks_container.findChild(QScrollArea, "TaskScrollArea")
+        if not scroll_area:
+            print("Error: Could not find TaskScrollArea")
+            return
+        
+        content = scroll_area.widget()
+        if not content:
+            print("Error: Scroll area has no content widget")
+            return
+
+        grid = content.layout()
+        if grid is None:
+            print("[DEBUG] Layout is None! This should not happen unless content was replaced.")
+            print(f"[DEBUG] content type: {type(content)} repr: {repr(content)}")
+            return
+
+        # Clear existing widgets
+        while grid.count():
+            item = grid.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.setParent(None)
+                widget.deleteLater()
+            else:
+                # Remove spacers or other items
+                del item
+
+        all_tasks = getAllTasksForSearch(task_ids)
+        headers = ["taskID", "taskName", "shortDescrip", "currentStatus", "dueDate", "dateAccomplished", "projectID"]
+
+        scroll_area.setWidgetResizable(True)
+        content.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        
+        columns = 3
+        for index, task in enumerate(all_tasks):
+            task_dict = dict(zip(headers, task))
+            widget = TaskCardWidget(task_dict)
+            widget.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+            
+            # Connect the clicked signal
+            widget.clicked.connect(
+                lambda checked, data=task_dict: self.update_task_details(data)
+            )
+            
+            row = index // columns
+            col = index % columns
+            grid.addWidget(widget, row, col)
+
+        # Adjust content height
+        card_height = 170
+        rows = (len(all_tasks) + columns - 1) // columns
+        content.setFixedHeight(rows * card_height)
+        content.updateGeometry()
+        content.repaint()

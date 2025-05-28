@@ -101,22 +101,71 @@ def taskExists(taskID: str) -> bool:
     
     return exists
 
-def searchTasks(keyword: str) -> list[dict]:
+# In task_controller.py - update the searchTasks function
+def searchTasks(keyword: str, search_by: str) -> list[dict]:
+    if not keyword.strip():
+        return []
+        
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True) #########################################################
+    cursor = conn.cursor(dictionary=True)
     
-    sql = """
-        SELECT * FROM task
-        WHERE taskName LIKE %s OR shortDescrip LIKE %s OR currentStatus LIKE %s
+    keyword_like = f"%{keyword}%"
     
-    """
-    like = f"%{keyword}%"
-    cursor.execute(sql, (like, like, like))
-    results = cursor.fetchall()
+    # Use parameterized queries to prevent SQL injection
+    if search_by == "TaskID":
+        sql = "SELECT taskID FROM task WHERE taskID LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "Task Name":
+        sql = "SELECT taskID FROM task WHERE taskName LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "Description":
+        sql = "SELECT taskID FROM task WHERE shortDescrip LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "Status":
+        sql = "SELECT taskID FROM task WHERE currentStatus LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "Due Date":
+        sql = "SELECT taskID FROM task WHERE DATE_FORMAT(dueDate, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "Project ID":
+        sql = "SELECT taskID FROM task WHERE projectID LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    else:
+        sql = """
+            SELECT taskID FROM task 
+            WHERE taskID LIKE %s 
+               OR taskName LIKE %s 
+               OR shortDescrip LIKE %s 
+               OR currentStatus LIKE %s
+               OR DATE_FORMAT(dueDate, '%%Y-%%m-%%d') LIKE %s
+               OR projectID LIKE %s
+            LIMIT 100
+        """
+        params = (keyword_like,) * 6
+
+    try:
+        cursor.execute(sql, params)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+def getAllTasksForSearch(task_ids: list[str]) -> list[tuple]:
+    conn = getConnection()
+    cursor = conn.cursor()
+
+    if not task_ids:
+        return []
+
+    placeholders = ', '.join(['%s'] * len(task_ids))
+    sql = f"SELECT * FROM task WHERE taskID IN ({placeholders})"
+
+    cursor.execute(sql, tuple(task_ids))
+    tasks = cursor.fetchall()
+
     cursor.close()
     conn.close()
-    
-    return results
+    return tasks
 
 # --- TaskMember (Assignment) --- #
 
@@ -222,7 +271,7 @@ def getTasksByProjectID(projectID: str) -> list[dict]:
     Returns a list of dictionaries, where each dictionary represents a task.
     """
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor = conn.cursor(dictionary=True)
     sql = "SELECT taskID, taskName, currentStatus, dueDate FROM task WHERE projectID = %s ORDER BY taskID"
     try:
         cursor.execute(sql, (projectID,))
