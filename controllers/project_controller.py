@@ -1,6 +1,5 @@
 from config.db_config import getConnection
 from datetime import datetime
-import pymysql.cursors #########################################3
 
 
 # Create
@@ -135,7 +134,7 @@ def searchProjects(keyword: str, search_by: str) -> list[dict]:
         return []
         
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor = conn.cursor(dictionary=True)
 
     if not keyword.strip():
         cursor.execute("SELECT projectID FROM project")
@@ -144,14 +143,11 @@ def searchProjects(keyword: str, search_by: str) -> list[dict]:
     keyword_like = f"%{keyword}%"
     
     # Use parameterized queries to prevent SQL injection
-    if search_by == "ProjectID":
+    if search_by == "Project ID":
         sql = "SELECT projectID FROM project WHERE projectID LIKE %s LIMIT 100"
         params = (keyword_like,)
     elif search_by == "Project Name":
         sql = "SELECT projectID FROM project WHERE projectName LIKE %s LIMIT 100"
-        params = (keyword_like,)
-    elif search_by == "Description":
-        sql = "SELECT projectID FROM project WHERE shortDescrip LIKE %s LIMIT 100"
         params = (keyword_like,)
     elif search_by == "Start Date":
         sql = "SELECT projectID FROM project WHERE DATE_FORMAT(startDate, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
@@ -163,8 +159,7 @@ def searchProjects(keyword: str, search_by: str) -> list[dict]:
         sql = """
             SELECT projectID FROM project 
             WHERE projectID LIKE %s 
-               OR projectName LIKE %s 
-               OR shortDescrip LIKE %s 
+               OR projectName LIKE %s  
                OR DATE_FORMAT(startDate, '%%Y-%%m-%%d') LIKE %s
                OR DATE_FORMAT(endDate, '%%Y-%%m-%%d') LIKE %s
             LIMIT 100
