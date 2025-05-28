@@ -64,7 +64,6 @@ class AddTaskForm(QDialog):
         if status == 'Select status':
             status = 'Unassigned'
         
-
         if not task_id or not name or not project_name:
             QMessageBox.warning(self, "Input Error", "Task ID, Name, and Project ID cannot be empty.")
             return
@@ -84,10 +83,17 @@ class AddTaskForm(QDialog):
     
         # Handle case where date accomplished is default/unset value
         default_date = QDateTime(2000, 1, 1, 0, 0)
+
+        if accomplished != 'No date set':
+            QMessageBox.warning(self, "Validation Error", "Cannot set accomplished date because there are currently no members assigned.")
+            self.ui.task_dateAccomplished_info.setDateTime(default_date)
+
         if self.ui.task_dateAccomplished_info.dateTime() == default_date:
             accomplished = None
         else:
             accomplished = datetime.strptime(accomplished, "%d/%m/%Y %I:%M %p")
+
+        
 
         addTask({
             "taskID": task_id,
@@ -237,13 +243,13 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
             QMessageBox.warning(self, "Validation Error", error)
             return
 
-        if status == "Completed":
+        if status == "Completed" or status == "Pending" or status == "In Progress":
             assigned_members = getMembersForTask(task_id)
             if not assigned_members or len(assigned_members) == 0:
                 QMessageBox.warning(
                     self,
                     "Invalid Status",
-                    "You cannot set this task to 'Completed' because there are no members assigned to it."
+                    "No members in this task. You cannot change task status."
                 )
                 return
             
@@ -253,9 +259,18 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
                 QMessageBox.warning(self, "Invalid Status", "You cannot set this task to 'Unassigned' because there are members assigned to it.")
                 return
             
-        #if accomplished_datetime is not None:
-           # updateTaskStatus(task_id, "Completed")
-
+        if status == "Select status":
+            assigned_members = getMembersForTask(task_id)
+            if len(assigned_members) > 0:
+                QMessageBox.warning(self, "Validation Error", "Task has members. Task status cannot be NULL.")
+                return
+            else:
+                status = "Unassigned"
+            
+        assigned_members = getMembersForTask(task_id)
+        if accomplished_datetime != 'No data set' and len(assigned_members) > 0:
+            status = "Completed"
+            
         updated_data = {
             "taskID": task_id,
             "taskName": name,
