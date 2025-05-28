@@ -1,3 +1,5 @@
+import pymysql.cursors
+import pymysql
 from config.db_config import getConnection
 import pymysql.cursors #########################################3
 
