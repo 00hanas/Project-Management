@@ -1,5 +1,4 @@
 from config.db_config import getConnection
-import pymysql.cursors #########################################3
 
 
 # --- CRUD for Task ---
@@ -109,19 +108,16 @@ def searchTasks(keyword: str, search_by: str) -> list[dict]:
         return []
         
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
     
     keyword_like = f"%{keyword}%"
     
     # Use parameterized queries to prevent SQL injection
-    if search_by == "TaskID":
+    if search_by == "Task ID":
         sql = "SELECT taskID FROM task WHERE taskID LIKE %s LIMIT 100"
         params = (keyword_like,)
     elif search_by == "Task Name":
         sql = "SELECT taskID FROM task WHERE taskName LIKE %s LIMIT 100"
-        params = (keyword_like,)
-    elif search_by == "Description":
-        sql = "SELECT taskID FROM task WHERE shortDescrip LIKE %s LIMIT 100"
         params = (keyword_like,)
     elif search_by == "Status":
         sql = "SELECT taskID FROM task WHERE currentStatus LIKE %s LIMIT 100"
@@ -129,17 +125,20 @@ def searchTasks(keyword: str, search_by: str) -> list[dict]:
     elif search_by == "Due Date":
         sql = "SELECT taskID FROM task WHERE DATE_FORMAT(dueDate, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
         params = (keyword_like,)
-    elif search_by == "Project ID":
+    elif search_by == "Date Accomplished":
+        sql = "SELECT taskID FROM task WHERE DATE_FORMAT(dateAccomplished, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "Project":
         sql = "SELECT taskID FROM task WHERE projectID LIKE %s LIMIT 100"
         params = (keyword_like,)
     else:
         sql = """
             SELECT taskID FROM task 
             WHERE taskID LIKE %s 
-               OR taskName LIKE %s 
-               OR shortDescrip LIKE %s 
+               OR taskName LIKE %s  
                OR currentStatus LIKE %s
                OR DATE_FORMAT(dueDate, '%%Y-%%m-%%d') LIKE %s
+               OR DATE_FORMAT(dateAccomplished, '%%Y-%%m-%%d') LIKE %s
                OR projectID LIKE %s
             LIMIT 100
         """
@@ -274,7 +273,7 @@ def getTasksByProjectID(projectID: str) -> list[dict]:
     Returns a list of dictionaries, where each dictionary represents a task.
     """
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor = conn.cursor(dictionary=True)
     sql = "SELECT taskID, taskName, currentStatus, dueDate FROM task WHERE projectID = %s ORDER BY taskID"
     try:
         cursor.execute(sql, (projectID,))
