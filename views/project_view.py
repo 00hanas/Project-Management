@@ -53,6 +53,9 @@ class AddProjectForm(QDialog):
         })
 
         self.main_window.refresh_container('project')
+        self.main_window.refresh_container('task')
+        self.main_window.refresh_container('home')
+        self.main_window.refreshTable()
 
         QMessageBox.information(self, "Success", "Project saved successfully.")
         self.close()
@@ -141,6 +144,9 @@ class EditProjectForm(QDialog):
 
             # Refresh container
             self.main_window.refresh_container('project')
+            self.main_window.refresh_container('task')
+            self.main_window.refresh_container('home')
+            self.main_window.refreshTable()
 
             # Update the details pane with the saved project data
             self.main_window.update_project_details(updated_data)
@@ -251,7 +257,11 @@ class ProjectExpandDialog(QDialog):
             try:
                 deleteProject(project_id)
                 QMessageBox.information(self, "Success", f"Project '{project_name}' has been deleted.")
-                self.main_window.refresh_container('project') # Refresh the main list
+                self.main_window.refresh_container('project')
+                self.main_window.refresh_container('task')
+                self.main_window.refresh_container('home')
+                self.main_window.refreshTable()
+                
                 self.accept() # Close this dialog
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to delete project: {str(e)}")

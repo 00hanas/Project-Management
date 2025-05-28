@@ -73,6 +73,9 @@ class AddMemberForm(QDialog):
                 
 
         self.main_window.refreshTable()
+        self.main_window.refresh_container('task')
+        self.main_window.refresh_container('project')
+        self.main_window.refresh_container('home')
 
         QMessageBox.information(self, "Success", "Member saved successfully.")
         self.close()

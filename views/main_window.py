@@ -50,10 +50,6 @@ class MainApp(QMainWindow):
         self.ui.addtask_button.clicked.connect(lambda: AddTaskForm(self).exec())
         self.ui.addmember_button.clicked.connect(lambda: AddMemberForm(self).exec())
 
-        # Handling expand buttons
-        # self.ui.project_expand_button.clicked.connect(self.showProjectExpand) # placeholder for a function that opens a detailed project view for the selected project
-        # self.ui.task_expand_button.clicked.connect(self.showTaskExpand)  # placeholder for a function that opens a detailed task view for the selected task
-
         # Handling calendar controls
         self.calendar = self.ui.home_calendar
         self.date_tooltip_map = {}
@@ -122,8 +118,7 @@ class MainApp(QMainWindow):
         # Sort Members Table by column header click
         self.ui.members_table.horizontalHeader().sectionClicked.connect(self.sortTableByColumn)
 
-        # Connect task container updates
-        # self.connect_task_cards()
+        # Setup project connections
         self.setup_project_connections()
 
         # Setup task connections
@@ -249,6 +244,9 @@ class MainApp(QMainWindow):
             from controllers.member_controller import deleteMemberbyID
             deleteMemberbyID(member_id)
             self.refreshTable()
+            self.refresh_container('home')
+            self.refresh_container('task')
+            self.refresh_container('project')
 
     def highlightEvents(self):
 
@@ -417,11 +415,11 @@ class MainApp(QMainWindow):
         table.clearSelection()
         table.setFocus()
         table.setStyleSheet("""
-QTableWidget::item:selected {
-background-color: #01c28e;
-color: white;
-}
-""")
+            QTableWidget::item:selected {
+            background-color: #01c28e;
+            color: white;
+            }
+            """)
 
         for row in range(table.rowCount()):
             item = table.item(row, 0)  # Assuming member_id is in column 0
@@ -540,6 +538,7 @@ color: white;
             # Pass the MainApp instance (self) as the main_window_instance
             expand_dialog = ProjectExpandDialog(self.selected_project, main_window_instance=self)
             expand_dialog.exec()
+            self.refreshTable()
             # After the dialog closes, the main window's project list might need an update
             # if a delete happened, which is handled by the dialog itself calling refresh_container.
             # If an update happened via EditProjectForm, that form also calls refresh_container.
@@ -557,6 +556,7 @@ color: white;
             print(f"Opening task expand dialog for task: {self.selected_task['taskID']}")
             expand_dialog = TaskExpandDialog(self.selected_task, main_window_instance=self)
             expand_dialog.exec()
+            self.refreshTable()
             # Refreshing and clearing details pane is handled by TaskExpandDialog's delete/update methods
         except Exception as e:
             print(f"Error handling task expand: {e}")
@@ -644,6 +644,24 @@ color: white;
                 print(f"After refresh - Widget count in horizontalLayout_14: {layout.count()}")
                 print(f"After refresh - Widget at index 0: {layout.itemAt(0).widget() if layout.count() > 0 else 'None'}")
                 print("Task container refreshed")
+            
+            elif container_type == 'home':
+                layout = self.ui. verticalLayout_9
+                print(f"Before deletion - Widget count in verticalLayout_9: {layout.count()}")
+                print(f"Before deletion - Widget at index 0: {layout.itemAt(0).widget() if layout.count() > 0 else 'None'}")
+                
+                # Explicitly remove and delete all items in the layout
+                while layout.count():
+                    item = layout.takeAt(0)
+                    widget = item.widget()
+                    if widget:
+                        widget.deleteLater()
+                QtWidgets.QApplication.processEvents() # Process events to ensure deletion
+                print("All old widgets removed from layout")
+                
+                new_container = loadProjects(self.ui.view_projects)
+                layout.addWidget(new_container)
+                                 
 
 
         except Exception as e:

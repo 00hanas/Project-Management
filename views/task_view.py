@@ -202,6 +202,9 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
             updateTask(self.originalID, updated_data)
             QMessageBox.information(self, "Success", "Task updated successfully.")
             self.main_window.refresh_container('task')
+            self.main_window.refresh_container('project')
+            self.main_window.refresh_container('home')
+            self.main_window.refreshTable()
             self.main_window.update_task_details(getTaskByID(task_id)) # Update details pane
             self.accept() # Close dialog
         except Exception as e:
@@ -312,6 +315,10 @@ class TaskExpandDialog(QDialog):
                 deleteTask(task_id) # Use the deleteTask controller function
                 QMessageBox.information(self, "Success", f"Task '{task_name}' has been deleted.")
                 self.main_window.refresh_container('task') # Refresh the main task list
+                self.main_window.refresh_container('project') # Refresh the main project 
+                self.main_window.refresh_container('home') # Refresh the main member list
+                self.main_window.refreshTable()
+                
                 self.main_window.clear_task_details_pane() # Clear details pane
                 self.accept() # Close this dialog
             except Exception as e:
