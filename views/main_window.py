@@ -120,7 +120,7 @@ class MainApp(QMainWindow):
         self.currently_showing_all_projects = True  # Start by showing all projects
         self.project_search_timer = QTimer(self)
         self.project_search_timer.setSingleShot(True)
-        self.project_search_timer.setInterval(100)  # 300ms delay after typing stops
+        self.project_search_timer.setInterval(200)  # 300ms delay after typing stops
         self.project_search_timer.timeout.connect(self.performSearchforProjects)
 
         self.ui.projects_search.textChanged.connect(self.handleProjectSearchChanged)
@@ -342,6 +342,8 @@ class MainApp(QMainWindow):
         """Perform the project search with current parameters"""
         keyword = self.ui.projects_search.text().strip()
         search_by = self.ui.projects_searchby.currentText()
+
+        self.ui.projects_search.setFocus() 
         
         worker = ProjectSearchWorker(keyword, search_by)
         worker.signals.finished.connect(self.updateProjectWidgets)
