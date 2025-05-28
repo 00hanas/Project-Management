@@ -46,7 +46,7 @@ class TaskCardWidget(QWidget):
             }
             QLabel {
                 background-color: transparent;
-                color: #2A2A2A;
+                color: #FFFFFF;
                 border-radius: 0px;
                 margin: 0px;
                 margin-left: 2px;
@@ -57,9 +57,9 @@ class TaskCardWidget(QWidget):
         
         toprow_layout = QHBoxLayout()
         TaskIDBase = QLabel("Task ID:")
-        TaskIDBase.setStyleSheet("color: #2A2A2A; font-weight: bold;")
+        TaskIDBase.setStyleSheet("color: #FFFFFF; font-weight: bold;")
         TaskIDLabel = QLabel(f"{task_data['taskID']}")
-        TaskIDLabel.setStyleSheet("color: #2A2A2A; font-weight: normal;")
+        TaskIDLabel.setStyleSheet("color: #FFFFFF; font-weight: normal;")
         toprow_layout.addWidget(TaskIDBase)
         toprow_layout.addStretch()
         toprow_layout.addWidget(TaskIDLabel)

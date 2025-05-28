@@ -1,4 +1,5 @@
 from config.db_config import getConnection
+import pymysql.cursors
 
 #Create
 def addMember(member:tuple) -> None:
