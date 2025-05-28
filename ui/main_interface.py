@@ -9,7 +9,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QGraphicsDropShadowEffect
 from PyQt6.QtGui import QColor
-from models.project import loadProjects
+from models.project import loadProjects, loadOnGoingProjects
 from models.task import loadTasks
 from utils.clickableLabel import ClickableLabel
 
@@ -758,7 +758,7 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.view_projects_label.setStyleSheet("font-size: 15pt; color: #7f00ff; margin-top: 10px;")
         self.verticalLayout_9.addWidget(self.view_projects_label)
         
-        self.verticalLayout_9.addWidget(loadProjects(self.view_projects))
+        self.verticalLayout_9.addWidget(loadOnGoingProjects(self.view_projects))
         
         self.gridLayout_2.addWidget(self.view_projects, 2, 0, 1, 1)
         self.stackedWidget.addWidget(self.home_page)
@@ -838,7 +838,7 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         # Horizontal layout for the projects container
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout(self.projects_container)
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        self.horizontalLayout_7.addWidget(loadProjects(self.projects_container))
+        self.horizontalLayout_7.addWidget(loadProjects(self.projects_container)) #projects' page
         
         # Add the projects container to the grid layout
         self.gridLayout_5.addWidget(self.projects_container, 1, 0, 1, 1)
