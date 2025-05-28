@@ -1,6 +1,7 @@
+import pymysql.cursors
+import pymysql
 from config.db_config import getConnection
 from datetime import datetime
-
 
 # Create
 def addProject(project: dict) -> None:
@@ -134,7 +135,7 @@ def searchProjects(keyword: str, search_by: str) -> list[dict]:
         return []
         
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
 
     if not keyword.strip():
         cursor.execute("SELECT projectID FROM project")
