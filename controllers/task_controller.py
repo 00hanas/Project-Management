@@ -31,27 +31,51 @@ def updateTask(originalID: str, updatedTask: dict) -> None:
     conn = getConnection()
     cursor = conn.cursor()
     
-    sql = """
-        UPDATE task
-        SET taskID = %s, taskName = %s, shortDescrip = %s, currentStatus = %s, dueDate = %s, dateAccomplished = %s, projectID = %s
-        WHERE taskID = %s
-    """
-    
-    values = (
-        updatedTask["taskID"],
-        updatedTask["taskName"],
-        updatedTask.get("shortDescrip"),
-        updatedTask["currentStatus"],
-        updatedTask.get("dueDate"),
-        updatedTask.get("dateAccomplished"),
-        updatedTask["projectID"],
-        originalID
-    )
-    
-    cursor.execute(sql, values)
-    conn.commit()
-    cursor.close()
-    conn.close()
+    try:
+        # Update task info
+        sql = """
+            UPDATE task
+            SET taskID = %s, taskName = %s, shortDescrip = %s,
+                currentStatus = %s, dueDate = %s, dateAccomplished = %s, projectID = %s
+            WHERE taskID = %s
+        """
+        values = (
+            updatedTask["taskID"],
+            updatedTask["taskName"],
+            updatedTask.get("shortDescrip"),
+            updatedTask["currentStatus"],
+            updatedTask.get("dueDate"),
+            updatedTask.get("dateAccomplished"),
+            updatedTask["projectID"],
+            originalID
+        )
+        cursor.execute(sql, values)
+
+        # Update project endDate if dateAccomplished changed and is the latest
+        if updatedTask.get("dateAccomplished"):
+            project_id = updatedTask["projectID"]
+            cursor.execute("""
+                SELECT MAX(dateAccomplished)
+                FROM task
+                WHERE projectID = %s AND dateAccomplished IS NOT NULL
+            """, (project_id,))
+            latest_completion = cursor.fetchone()[0]
+
+            if latest_completion:
+                cursor.execute("""
+                    UPDATE project
+                    SET endDate = %s
+                    WHERE projectID = %s
+                """, (latest_completion, project_id))
+
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+
 
 def deleteTask(taskID: str) -> None:
     conn = getConnection()
@@ -237,23 +261,97 @@ def updateTaskStatus(taskID: str, status: str) -> None:
     conn = getConnection()
     cursor = conn.cursor()
     
-    sql = "UPDATE task SET currentStatus = %s WHERE taskID = %s"
-    
-    cursor.execute(sql, (status, taskID))
-    conn.commit()
-    cursor.close()
-    conn.close()
+    try:
+        # First update the task status
+        sql = "UPDATE task SET currentStatus = %s WHERE taskID = %s"
+        cursor.execute(sql, (status, taskID))
+        
+        # If status is being set to "Completed", we need to check if all tasks in the project are completed
+        if status == "Completed":
+            # Get the project ID for this task
+            cursor.execute("SELECT projectID FROM task WHERE taskID = %s", (taskID,))
+            result = cursor.fetchone()
+            if result:
+                project_id = result[0]
+                
+                # Check if there are any incomplete tasks in this project
+                cursor.execute("""
+                    SELECT COUNT(*) FROM task 
+                    WHERE projectID = %s AND (currentStatus != 'Completed' OR currentStatus IS NULL)
+                """, (project_id,))
+                incomplete_tasks = cursor.fetchone()[0]
+                
+                if incomplete_tasks == 0:
+                    # All tasks are completed, get the most recent completion date
+                    cursor.execute("""
+                        SELECT MAX(dateAccomplished) 
+                        FROM task 
+                        WHERE projectID = %s AND dateAccomplished IS NOT NULL
+                    """, (project_id,))
+                    latest_completion = cursor.fetchone()[0]
+                    
+                    if latest_completion:
+                        # Update project end date to the most recent completion date
+                        cursor.execute("""
+                            UPDATE project 
+                            SET endDate = %s 
+                            WHERE projectID = %s
+                        """, (latest_completion, project_id))
+        
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
 
 def setTaskAccomplished(taskID: str, dateAccomplished) -> None:
     conn = getConnection()
     cursor = conn.cursor()
     
-    sql = "UPDATE task SET dateAccomplished = %s, currentStatus = 'Completed' WHERE taskID = %s"
-    
-    cursor.execute(sql, (dateAccomplished, taskID))
-    conn.commit()
-    cursor.close()
-    conn.close()
+    try:
+        # First update the task status and date accomplished
+        sql = "UPDATE task SET dateAccomplished = %s, currentStatus = 'Completed' WHERE taskID = %s"
+        cursor.execute(sql, (dateAccomplished, taskID))
+        
+        # Get the project ID for this task
+        cursor.execute("SELECT projectID FROM task WHERE taskID = %s", (taskID,))
+        result = cursor.fetchone()
+        if result:
+            project_id = result[0]
+            
+            # Check if there are any incomplete tasks in this project
+            cursor.execute("""
+                SELECT COUNT(*) FROM task 
+                WHERE projectID = %s AND (currentStatus != 'Completed' OR currentStatus IS NULL)
+            """, (project_id,))
+            incomplete_tasks = cursor.fetchone()[0]
+            
+            if incomplete_tasks == 0:
+                # All tasks are completed, get the most recent completion date
+                cursor.execute("""
+                    SELECT MAX(dateAccomplished) 
+                    FROM task 
+                    WHERE projectID = %s AND dateAccomplished IS NOT NULL
+                """, (project_id,))
+                latest_completion = cursor.fetchone()[0]
+                
+                if latest_completion:
+                    # Update project end date to the most recent completion date
+                    cursor.execute("""
+                        UPDATE project 
+                        SET endDate = %s 
+                        WHERE projectID = %s
+                    """, (latest_completion, project_id))
+        
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
 
 def getOverdueTasks(current_datetime) -> list[dict]:
     conn = getConnection()

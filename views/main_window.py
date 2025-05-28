@@ -456,10 +456,12 @@ class MainApp(QMainWindow):
         self.ui.members_table.sortItems(column, current_order)
 
     def refreshTable(self):
-        from models.member import loadMember
+        from models.member import loadMember, MAX_ROW_HEIGHT
         # Store the current row height
-        current_row_height = self.ui.members_table.rowHeight(0) if self.ui.members_table.rowCount() > 0 else self.default_row_height
-        
+        current_row_height = min(
+            self.ui.members_table.rowHeight(0) if self.ui.members_table.rowCount() > 0 else self.default_row_height,
+            MAX_ROW_HEIGHT
+        )        
         loadMember(self.ui.members_table)
         self.expanded_row = None
         self.original_items = {}
