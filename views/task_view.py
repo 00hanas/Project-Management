@@ -60,6 +60,9 @@ class AddTaskForm(QDialog):
         project_name = self.ui.task_project_info.currentText().strip()
         
         members = getMembersForTask(task_id)
+
+        if status == 'Select status':
+            status = 'Unassigned'
         
 
         if not task_id or not name or not project_name:
