@@ -62,8 +62,13 @@ class AddTaskForm(QDialog):
             return
         
         due = datetime.strptime(due, "%d/%m/%Y %I:%M %p")
-
-        accomplished = datetime.strptime(accomplished, "%d/%m/%Y %I:%M %p")
+    
+        # Handle case where date accomplished is default/unset value
+        default_date = QDateTime(2000, 1, 1, 0, 0)
+        if self.ui.task_dateAccomplished_info.dateTime() == default_date:
+            accomplished = None
+        else:
+            accomplished = datetime.strptime(accomplished, "%d/%m/%Y %I:%M %p")
 
         addTask({
             "taskID": task_id,
@@ -119,10 +124,10 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
             if due_date:
                 if isinstance(due_date, str):
                     try:
-                        due_date_dt = datetime.strptime(due_date, '%Y-%m-%d %H:%M:%S')
+                        due_date_dt = datetime.strptime(due_date, '%d-%m-%Y %I:%M:%p')
                     except ValueError: # Try another common format if the first fails
                         try:
-                            due_date_dt = datetime.strptime(due_date, '%Y-%m-%d')
+                            due_date_dt = datetime.strptime(due_date, '%d-%m-%Y')
                         except ValueError:
                              due_date_dt = QDateTime(2000,1,1,0,0).toPyDateTime() # Fallback
                 elif isinstance(due_date, datetime):
@@ -132,23 +137,36 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
                 self.ui.task_dueDate_info.setDateTime(QDateTime(due_date_dt))
 
             accomplished_date = data.get("dateAccomplished")
+            
+            # Define the default "unset" date
+            default_qdatetime = QDateTime(2000, 1, 1, 0, 0)
+            default_datetime = default_qdatetime.toPyDateTime()
+
+            # --- STEP 1: Parse input and set to UI widget ---
             if accomplished_date:
                 if isinstance(accomplished_date, str):
                     try:
-                        accomplished_date_dt = datetime.strptime(accomplished_date, '%Y-%m-%d %H:%M:%S')
+                        accomplished_date_dt = datetime.strptime(accomplished_date, '%d-%m-%Y %I:%M:%p')
                     except ValueError:
-                         try:
-                            accomplished_date_dt = datetime.strptime(accomplished_date, '%Y-%m-%d')
-                         except ValueError:
-                            accomplished_date_dt = QDateTime(2000,1,1,0,0).toPyDateTime() # Fallback
+                        try:
+                            accomplished_date_dt = datetime.strptime(accomplished_date, '%d-%m-%Y')
+                        except ValueError:
+                            accomplished_date_dt = default_datetime
                 elif isinstance(accomplished_date, datetime):
                     accomplished_date_dt = accomplished_date
-                else: # Fallback
-                    accomplished_date_dt = QDateTime(2000,1,1,0,0).toPyDateTime()
-                self.ui.task_dateAccomplished_info.setDateTime(QDateTime(accomplished_date_dt))
-            else: # If no accomplished date, set to a default or disable
-                self.ui.task_dateAccomplished_info.setDateTime(QDateTime(2000,1,1,0,0))
+                else:
+                    accomplished_date_dt = default_datetime
+            else:
+                accomplished_date_dt = default_datetime
 
+            # Set the parsed date into the UI
+            self.ui.task_dateAccomplished_info.setDateTime(QDateTime(accomplished_date_dt))
+
+            # --- STEP 2: Get final value to save to the database ---
+            selected_datetime = self.ui.task_dateAccomplished_info.dateTime().toPyDateTime()
+
+            # Return None if it's the default "null" date
+            accomplished = None if selected_datetime == default_datetime else selected_datetime
 
             # Set project in combobox
             project_id_to_select = data.get("projectID")

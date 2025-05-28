@@ -23,6 +23,24 @@ class AddProjectForm(QDialog):
         self.ui.project_clear_button.clicked.connect(self.clearProject)
         self.ui.project_cancel_button.clicked.connect(self.cancelProject)
 
+    def validate_dates(self):
+        """Validate that end date is not before start date, allowing empty or default dates"""
+        start_date = self.ui.project_startDate_info.dateTime()
+        end_date = self.ui.project_endDate_info.dateTime()
+        
+        # Check if end date is default/unset value (January 1, 2000 12:00 AM)
+        default_date = QDateTime(2000, 1, 1, 0, 0)
+        if end_date == default_date:
+            self.ui.project_endDate_info.setToolTip("")
+            return True
+        
+        if end_date < start_date:
+            self.ui.project_endDate_info.setToolTip("End date cannot be before start date")
+            return False
+        else:
+            self.ui.project_endDate_info.setToolTip("")
+            return True
+
     def saveProject(self):
         project_id = self.ui.project_id_info.text().strip()
         name = self.ui.project_name_info.text().strip()
@@ -33,16 +51,25 @@ class AddProjectForm(QDialog):
         if not project_id or not name:
             QMessageBox.warning(self, "Input Error", "Project ID and Name cannot be empty.")
             return
-
+        
+        # Validate dates before proceeding
+        if not self.validate_dates():
+            QMessageBox.warning(self, "Date Error", "End date cannot be before start date")
+            return
+        
         error = uniqueProject(project_id)
         if error:
             QMessageBox.warning(self, "Validation Error", error)
             return
 
-        # Ensure correct format for parsing dates from QDateTimeEdit
-        start = datetime.strptime(start, "%m/%d/%Y %I:%M %p")
+        start = datetime.strptime(start, "%d/%m/%Y %I:%M %p")
 
-        end = datetime.strptime(end, "%m/%d/%Y %I:%M %p")
+        # Handle case where end date is default/unset value
+        default_date = QDateTime(2000, 1, 1, 0, 0)
+        if self.ui.project_endDate_info.dateTime() == default_date:
+            end = None
+        else:
+            end = datetime.strptime(end, "%d/%m/%Y %I:%M %p")
 
         addProject({
             "projectID": project_id,
@@ -128,7 +155,13 @@ class EditProjectForm(QDialog):
 
         # Ensure correct format for parsing dates from QDateTimeEdit
         start = datetime.strptime(start, "%d/%m/%Y %I:%M %p") # Corrected format string
-        end = datetime.strptime(end, "%d/%m/%Y %I:%M %p") # Corrected format string
+        
+        # Handle case where end date is default/unset value
+        default_date = QDateTime(2000, 1, 1, 0, 0)
+        if self.ui.project_endDate_info.dateTime() == default_date:
+            end = None
+        else:
+            end = datetime.strptime(end, "%d/%m/%Y %I:%M %p")
 
 
         try:

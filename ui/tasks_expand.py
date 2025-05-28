@@ -24,7 +24,7 @@ class Ui_tasks_expand(object):
 "    border-radius: 8px;\n"
 "}\n"
 "\n"
-"QLabel    {\n"
+"QLabel \n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-size: 15px;\n"
 "    color: #000000;\n"
@@ -33,7 +33,8 @@ class Ui_tasks_expand(object):
 "}\n"
 "\n"
 "#task_id, #task_project, #task_status, #task_dueDate, #task_dateAccomplished, #task_shortDescrip, #task_members {\n"
-"    font-weight: 500;\n"
+"    font-family: \"Poppins\", sans-serif;\n"
+"    font-weight: bold;\n"
 "    font-size: 9pt;\n"
 "    color: #92979d;\n"
 "}\n"
@@ -41,7 +42,7 @@ class Ui_tasks_expand(object):
 "QTextEdit, QListWidget {\n"
 "    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: normal;\n"
-"    font-size: 9pt;\n"
+"    font-size: 10pt;\n"
 "    color: #000000;\n"
 "    border: none;\n"
 "}\n"
@@ -76,8 +77,10 @@ class Ui_tasks_expand(object):
 "    color: #fe9137;\n"
 "}\n"
 "\n"
-"#task_id_info, #task_dueDate_info, #task_dateAccomplished_info, #task_project_info, #task_status_info{\n"
+"#task_id_info, #task_dueDate_info, #task_dateAccomplished_info, #task_project_info, #task_status_info, #task_dateAccomplished_info, #task_shortDescrip_info, #task_members_info{\n"
+"    font-family: \"Poppins\", sans-serif;\n"
 "    font-weight: normal;\n"
+"    font-size: 10pt;\n"
 "    color: #000000;\n"
 "}")
         self.gridLayout = QtWidgets.QGridLayout(tasks_expand)
@@ -120,13 +123,13 @@ class Ui_tasks_expand(object):
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.task_update_button = QtWidgets.QPushButton(parent=self.task_updateDelete)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/icons/edit.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("icons/edit.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_update_button.setIcon(icon)
         self.task_update_button.setObjectName("task_update_button")
         self.verticalLayout_2.addWidget(self.task_update_button)
         self.task_delete_button = QtWidgets.QPushButton(parent=self.task_updateDelete)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icons/icons/trash-2.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon1.addPixmap(QtGui.QPixmap("icons/trash-2.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_delete_button.setIcon(icon1)
         self.task_delete_button.setObjectName("task_delete_button")
         self.verticalLayout_2.addWidget(self.task_delete_button)
@@ -160,7 +163,7 @@ class Ui_tasks_expand(object):
         self.task_id_icon.setMaximumSize(QtCore.QSize(20, 20))
         self.task_id_icon.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/icons/icons/key_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon2.addPixmap(QtGui.QPixmap("icons/key_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_id_icon.setIcon(icon2)
         self.task_id_icon.setObjectName("task_id_icon")
         self.horizontalLayout.addWidget(self.task_id_icon)
@@ -196,7 +199,7 @@ class Ui_tasks_expand(object):
         self.task_project_icon.setMaximumSize(QtCore.QSize(20, 20))
         self.task_project_icon.setText("")
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":/icons/icons/folder_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon3.addPixmap(QtGui.QPixmap("icons/folder_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_project_icon.setIcon(icon3)
         self.task_project_icon.setObjectName("task_project_icon")
         self.horizontalLayout_2.addWidget(self.task_project_icon)
@@ -232,7 +235,7 @@ class Ui_tasks_expand(object):
         self.task_status_icon.setMaximumSize(QtCore.QSize(20, 20))
         self.task_status_icon.setText("")
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(":/icons/icons/circle_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon4.addPixmap(QtGui.QPixmap("icons/circle_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_status_icon.setIcon(icon4)
         self.task_status_icon.setObjectName("task_status_icon")
         self.horizontalLayout_3.addWidget(self.task_status_icon)
@@ -268,7 +271,7 @@ class Ui_tasks_expand(object):
         self.task_dueDate_icon.setMaximumSize(QtCore.QSize(20, 20))
         self.task_dueDate_icon.setText("")
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap(":/icons/icons/calendar_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon5.addPixmap(QtGui.QPixmap("icons/calendar_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_dueDate_icon.setIcon(icon5)
         self.task_dueDate_icon.setObjectName("task_dueDate_icon")
         self.horizontalLayout_4.addWidget(self.task_dueDate_icon)
@@ -339,7 +342,7 @@ class Ui_tasks_expand(object):
         self.task_shortDescrip_icon.setMaximumSize(QtCore.QSize(20, 20))
         self.task_shortDescrip_icon.setText("")
         icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(":/icons/icons/edit-3_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon6.addPixmap(QtGui.QPixmap("icons/edit-3_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_shortDescrip_icon.setIcon(icon6)
         self.task_shortDescrip_icon.setObjectName("task_shortDescrip_icon")
         self.horizontalLayout_11.addWidget(self.task_shortDescrip_icon)
@@ -379,7 +382,7 @@ class Ui_tasks_expand(object):
         self.task_members_icon.setMaximumSize(QtCore.QSize(20, 20))
         self.task_members_icon.setText("")
         icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap(":/icons/icons/users_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon7.addPixmap(QtGui.QPixmap("icons/users_gray.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.task_members_icon.setIcon(icon7)
         self.task_members_icon.setObjectName("task_members_icon")
         self.horizontalLayout_14.addWidget(self.task_members_icon)
@@ -407,7 +410,7 @@ class Ui_tasks_expand(object):
         self.verticalLayout_3.addWidget(self.task_members_frame)
         self.gridLayout.addWidget(self.tasks_expand_frame, 0, 0, 1, 1)
 
-        frames = [self.tasks_expand_frame, self.frame_3]
+        frames = [self.tasks_expand_frame]
         for frame in frames:
             shadow = QGraphicsDropShadowEffect(frame)
             shadow.setBlurRadius(20)

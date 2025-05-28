@@ -4,6 +4,32 @@ from PyQt6.QtGui import QIcon, QCursor
 from controllers.project_controller import getTotalTasks, getCompletedTasks, getMembersForProject
 from datetime import datetime
 
+def safe_format_date(date_val, fmt="%B %d"):
+    if isinstance(date_val, datetime):
+        return date_val.strftime(fmt)
+    if isinstance(date_val, str):
+        # Try to parse common formats
+        for f in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d", "%m/%d/%Y %I:%M %p"):
+            try:
+                return datetime.strptime(date_val, f).strftime(fmt)
+            except Exception:
+                continue
+        return date_val  # Return as-is if parsing fails
+    return str(date_val)
+
+def safe_format_date(date_val, fmt="%B %d"):
+    if isinstance(date_val, datetime):
+        return date_val.strftime(fmt)
+    if isinstance(date_val, str):
+        # Try to parse common formats
+        for f in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d", "%m/%d/%Y %I:%M %p"):
+            try:
+                return datetime.strptime(date_val, f).strftime(fmt)
+            except Exception:
+                continue
+        return date_val  # Return as-is if parsing fails
+    return str(date_val)
+
 
 class ProjectCardWidget(QWidget):
     clicked = pyqtSignal(dict)  # Signal is already defined
@@ -186,22 +212,7 @@ class ProjectCardWidget(QWidget):
 
         project_end_date_str = project_data['endDate']  # or whatever your variable is
 
-        # Ensure project_end_date_str is a datetime object before formatting
-        if isinstance(project_end_date_str, str):
-             try:
-                 # Attempt to parse from the format it might be stored in
-                 project_end_date_dt = datetime.strptime(project_end_date_str, '%Y-%m-%d %H:%M:%S')
-             except ValueError:
-                 # Handle cases where the string format might be different
-                 print(f"Warning: Could not parse date string: {project_end_date_str}")
-                 formatted_date = str(project_end_date_str) # Use original string if parsing fails
-             else:
-                 formatted_date = project_end_date_dt.strftime("%B %d")
-        elif isinstance(project_end_date_str, datetime):
-             formatted_date = project_end_date_str.strftime("%B %d")
-        else:
-             formatted_date = str(project_end_date_str) # Fallback for unexpected types
-
+        formatted_date = safe_format_date(project_end_date_str)
 
         # Set this to your label
         ProjectEndDateLabel.setText(formatted_date)
