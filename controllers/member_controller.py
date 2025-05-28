@@ -87,7 +87,7 @@ def getAllMembers() -> list[tuple]:
 #Function to load existing data into the edit form
 def getMemberByID(memberID: str) -> dict | None:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     sql = "SELECT * FROM members WHERE memberID = %s"
     cursor.execute(sql, (memberID,))
     member = cursor.fetchone()
@@ -167,7 +167,7 @@ def getProjectsTasksandDateByMemberID(memberID: str) -> dict:
     p.projectID, 
     p.projectName,
     t.taskName,
-    date_format(tm.dateAssigned, '%M %e, %Y, %l:%i%p') AS formattedDate
+    date_format(tm.dateAssigned, '%%M %%e, %%Y, %%l:%%i%%p') AS formattedDate
 FROM 
     project p
 INNER JOIN 
@@ -286,4 +286,3 @@ def clearTaskMember(memberID: str) -> None:
     
     cursor.close()
     conn.close()
-
