@@ -317,3 +317,13 @@ def sortTasks(sort_by: str, ascending: bool = True) -> list[dict]:
     conn.close()
     
     return tasks
+
+# In task_controller.py
+def getTasksByProject(project_id):
+    conn = getConnection()
+    cursor = conn.cursor()
+
+    query = "SELECT * FROM task WHERE projectID = %s"
+    cursor.execute(query, (project_id))
+    result = cursor.fetchall()
+    return [dict(zip([column[0] for column in cursor.description], row)) for row in result]
