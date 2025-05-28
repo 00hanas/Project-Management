@@ -1,6 +1,5 @@
 from config.db_config import getConnection
 from datetime import datetime
-import pymysql.cursors #########################################3
 
 
 # Create
@@ -135,7 +134,7 @@ def searchProjects(keyword: str, search_by: str) -> list[dict]:
         return []
         
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor = conn.cursor(dictionary=True)
 
     if not keyword.strip():
         cursor.execute("SELECT projectID FROM project")
@@ -160,7 +159,7 @@ def searchProjects(keyword: str, search_by: str) -> list[dict]:
         sql = """
             SELECT projectID FROM project 
             WHERE projectID LIKE %s 
-               OR projectName LIKE %s 
+               OR projectName LIKE %s  
                OR DATE_FORMAT(startDate, '%%Y-%%m-%%d') LIKE %s
                OR DATE_FORMAT(endDate, '%%Y-%%m-%%d') LIKE %s
             LIMIT 100

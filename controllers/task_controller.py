@@ -1,5 +1,4 @@
 from config.db_config import getConnection
-import pymysql.cursors #########################################3
 
 
 # --- CRUD for Task ---
@@ -109,7 +108,7 @@ def searchTasks(keyword: str, search_by: str) -> list[dict]:
         return []
         
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
     
     keyword_like = f"%{keyword}%"
     
@@ -135,8 +134,8 @@ def searchTasks(keyword: str, search_by: str) -> list[dict]:
     else:
         sql = """
             SELECT taskID FROM task 
-            WHERE taskID LIKE %s
-               OR taskName LIKE %s 
+            WHERE taskID LIKE %s 
+               OR taskName LIKE %s  
                OR currentStatus LIKE %s
                OR DATE_FORMAT(dueDate, '%%Y-%%m-%%d') LIKE %s
                OR DATE_FORMAT(dateAccomplished, '%%Y-%%m-%%d') LIKE %s
@@ -274,7 +273,7 @@ def getTasksByProjectID(projectID: str) -> list[dict]:
     Returns a list of dictionaries, where each dictionary represents a task.
     """
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor = conn.cursor(dictionary=True)
     sql = "SELECT taskID, taskName, currentStatus, dueDate FROM task WHERE projectID = %s ORDER BY taskID"
     try:
         cursor.execute(sql, (projectID,))
