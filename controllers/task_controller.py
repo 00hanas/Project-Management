@@ -65,7 +65,7 @@ def deleteTask(taskID: str) -> None:
 
 def getAllTasks() -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     sql = "SELECT * FROM task"
     
@@ -78,7 +78,7 @@ def getAllTasks() -> list[dict]:
 
 def getTaskByID(taskID: str) -> dict | None:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     sql = "SELECT * FROM task WHERE taskID = %s"
     
@@ -194,7 +194,7 @@ def removeMemberFromTask(taskID: str, memberID: str):
 
 def getMembersForTask(taskID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     
     sql = """
@@ -212,7 +212,7 @@ def getMembersForTask(taskID: str) -> list[dict]:
 
 def getTasksForMember(memberID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     sql = """
         SELECT t.* FROM task t
@@ -253,7 +253,7 @@ def setTaskAccomplished(taskID: str, dateAccomplished) -> None:
 
 def getOverdueTasks(current_datetime) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     sql = """
         SELECT * FROM task
@@ -288,7 +288,7 @@ def getTasksByProjectID(projectID: str) -> list[dict]:
 
 def sortTasks(sort_by: str, ascending: bool = True) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     # Map UI sort options to database columns
     sort_mapping = {

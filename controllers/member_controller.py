@@ -1,4 +1,5 @@
 from config.db_config import getConnection
+import pymysql.cursors
 
 #Create
 def addMember(member:tuple) -> None:
@@ -166,7 +167,7 @@ def getProjectsTasksandDateByMemberID(memberID: str) -> dict:
     p.projectID, 
     p.projectName,
     t.taskName,
-    date_format(tm.dateAssigned, '%M %e, %Y, %l:%i%p') AS formattedDate
+    date_format(tm.dateAssigned, '%%M %%e, %%Y, %%l:%%i%%p') AS formattedDate
 FROM 
     project p
 INNER JOIN 
