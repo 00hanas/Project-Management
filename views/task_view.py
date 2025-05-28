@@ -31,6 +31,19 @@ class AddTaskForm(QDialog):
         self.ui.task_clear_button.clicked.connect(self.clearTask)
         self.ui.task_cancel_button.clicked.connect(self.cancelTask)
 
+        self.ui.task_status_info.currentTextChanged.connect(self.handleStatusChange)
+
+    def handleStatusChange(self, status):
+        if status == "Completed":
+            current_datetime = QDateTime.currentDateTime()
+            self.ui.task_dateAccomplished_info.setDateTime(current_datetime)
+            
+        if status != "Completed":
+            current_date = self.ui.task_dateAccomplished_info.dateTime()
+            default_date = QDateTime(2000, 1, 1, 0, 0)
+            # if current_date == QDateTime.currentDateTime():
+            self.ui.task_dateAccomplished_info.setDateTime(default_date)
+
     def populateProjectsComboBox(self):
         projects = getAllProjects()
         for project in projects:
@@ -45,6 +58,9 @@ class AddTaskForm(QDialog):
         due = self.ui.task_dueDate_info.text().strip()           
         accomplished = self.ui.task_dateAccomplished_info.text().strip()  
         project_name = self.ui.task_project_info.currentText().strip()
+        
+        members = getMembersForTask(task_id)
+        
 
         if not task_id or not name or not project_name:
             QMessageBox.warning(self, "Input Error", "Task ID, Name, and Project ID cannot be empty.")
@@ -120,6 +136,9 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
             self.ui.task_shortDescrip_info.setPlainText(data.get("shortDescrip", ""))
             self.ui.task_status_info.setCurrentText(data.get("currentStatus", "Unassigned"))
 
+            # Add this connection for status change
+            self.ui.task_status_info.currentTextChanged.connect(self.handleStatusChange)
+
             due_date = data.get("dueDate")
             if due_date:
                 if isinstance(due_date, str):
@@ -142,7 +161,6 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
             default_qdatetime = QDateTime(2000, 1, 1, 0, 0)
             default_datetime = default_qdatetime.toPyDateTime()
 
-            # --- STEP 1: Parse input and set to UI widget ---
             if accomplished_date:
                 if isinstance(accomplished_date, str):
                     try:
@@ -159,16 +177,12 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
             else:
                 accomplished_date_dt = default_datetime
 
-            # Set the parsed date into the UI
             self.ui.task_dateAccomplished_info.setDateTime(QDateTime(accomplished_date_dt))
 
-            # --- STEP 2: Get final value to save to the database ---
             selected_datetime = self.ui.task_dateAccomplished_info.dateTime().toPyDateTime()
 
-            # Return None if it's the default "null" date
-            accomplished = None if selected_datetime == default_datetime else selected_datetime
+            accomplished_date = None if selected_datetime == default_datetime else selected_datetime
 
-            # Set project in combobox
             project_id_to_select = data.get("projectID")
             for i in range(self.ui.task_project_info.count()):
                 if self.ui.task_project_info.itemData(i) == project_id_to_select:
@@ -180,22 +194,32 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
         self.ui.task_clear_button.clicked.connect(self.clearTaskFields) # Assuming you want clear for edit too
         self.ui.task_cancel_button.clicked.connect(self.close)
 
+    def handleStatusChange(self, status):
+        """Automatically set date accomplished when status is set to Completed"""
+        if status == "Completed":
+            current_datetime = QDateTime.currentDateTime()
+            self.ui.task_dateAccomplished_info.setDateTime(current_datetime)
+            
+        if status != "Completed":
+            current_date = self.ui.task_dateAccomplished_info.dateTime()
+            default_date = QDateTime(2000, 1, 1, 0, 0)
+            # if current_date == QDateTime.currentDateTime():
+            self.ui.task_dateAccomplished_info.setDateTime(default_date)
+
     def updateExistingTask(self):
         task_id = self.ui.task_id_info.text().strip()
         name = self.ui.task_name_info.text().strip()
         desc = self.ui.task_shortDescrip_info.toPlainText().strip()
         status = self.ui.task_status_info.currentText().strip()
-        
+
         due_qdatetime = self.ui.task_dueDate_info.dateTime()
         due_datetime = due_qdatetime.toPyDateTime()
 
         accomplished_qdatetime = self.ui.task_dateAccomplished_info.dateTime()
-        accomplished_datetime = accomplished_qdatetime.toPyDateTime() if accomplished_qdatetime > QDateTime(2000,1,1,0,1) else None
-
+        accomplished_datetime = accomplished_qdatetime.toPyDateTime() if accomplished_qdatetime > QDateTime(2000, 1, 1, 0, 1) else None
 
         project_index = self.ui.task_project_info.currentIndex()
-        project_id = self.ui.task_project_info.itemData(project_index) if project_index >=0 else None
-
+        project_id = self.ui.task_project_info.itemData(project_index) if project_index >= 0 else None
 
         if not task_id or not name or not project_id:
             QMessageBox.warning(self, "Input Error", "Task ID, Name, and Project cannot be empty.")
@@ -205,6 +229,16 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
         if error:
             QMessageBox.warning(self, "Validation Error", error)
             return
+
+        if status == "Completed":
+            assigned_members = getMembersForTask(task_id)
+            if not assigned_members or len(assigned_members) == 0:
+                QMessageBox.warning(
+                    self,
+                    "Invalid Status",
+                    "You cannot set this task to 'Completed' because there are no members assigned to it."
+                )
+                return
 
         updated_data = {
             "taskID": task_id,
@@ -223,10 +257,11 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
             self.main_window.refresh_container('project')
             self.main_window.refresh_container('home')
             self.main_window.refreshTable()
-            self.main_window.update_task_details(getTaskByID(task_id)) # Update details pane
-            self.accept() # Close dialog
+            self.main_window.update_task_details(getTaskByID(task_id))
+            self.accept()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to update task: {str(e)}")
+
 
     def clearTaskFields(self): # Renamed for clarity
         # Potentially reset to original data or just clear
