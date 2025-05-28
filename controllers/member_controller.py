@@ -1,4 +1,3 @@
-
 from config.db_config import getConnection
 
 #Create
