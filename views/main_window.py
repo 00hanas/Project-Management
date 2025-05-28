@@ -456,13 +456,17 @@ class MainApp(QMainWindow):
         self.ui.members_table.sortItems(column, current_order)
 
     def refreshTable(self):
-        from models.member import loadMember # Adjust import if needed
+        from models.member import loadMember
+        # Store the current row height
+        current_row_height = self.ui.members_table.rowHeight(0) if self.ui.members_table.rowCount() > 0 else self.default_row_height
+        
         loadMember(self.ui.members_table)
         self.expanded_row = None
         self.original_items = {}
 
+        # Restore the row height
         for row in range(self.ui.members_table.rowCount()):
-            self.ui.members_table.setRowHeight(row, self.default_row_height)
+            self.ui.members_table.setRowHeight(row, current_row_height)
 
     def performHomeSearch(self):
         keyword = self.ui.home_search.text()
