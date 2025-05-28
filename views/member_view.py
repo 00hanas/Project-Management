@@ -185,6 +185,9 @@ class EditMemberForm(QDialog):
                     new_project_ids.add(project_id)
 
         self.main_window.refreshTable()  
+        self.main_window.refresh_container('task')
+        self.main_window.refresh_container('project')
+        self.main_window.refresh_container('home')
     
         QMessageBox.information(self, "Success", "Member updated successfully.")
         self.close()

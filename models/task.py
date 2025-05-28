@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (
 from PyQt6 import QtWidgets
 from PyQt6.QtGui import QColor
 from PyQt6.QtCore import Qt
-from controllers.task_controller import getAllTasks
+from controllers.task_controller import getAllTasks, getMembersForTask
 from widgets.TaskCardWidget import TaskCardWidget
 
 
@@ -84,6 +84,16 @@ def loadTasks(parent=None) -> QWidget:
         else:
             for index, task in enumerate(tasks):
                 try:
+                    # Get the number of members for the task
+                    taskID = task['taskID']
+                    NoOFMembers = len(getMembersForTask(taskID))
+                    
+                    # Set the current status based on the number of members
+                    if NoOFMembers == 0:
+                        task['currentStatus'] = 'Unassigned'
+                    elif task.get('dateAccomplished') is None:
+                        task['currentStatus'] = 'Pending'
+                        
                     task_widget = TaskCardWidget(task)
                     
                     # Connect the click signal to the parent's update_task_details method

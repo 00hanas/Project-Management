@@ -1,3 +1,5 @@
+import pymysql.cursors
+import pymysql
 from config.db_config import getConnection
 from datetime import datetime
 
@@ -95,7 +97,7 @@ def getCompletedTasks(projectID: str) -> int:
 # Get by ID
 def getProjectByID(projectID: str) -> dict | None:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     sql = "SELECT * FROM project WHERE projectID = %s"
     
@@ -130,7 +132,7 @@ def projectExists(projectID: str) -> bool:
 
 def searchProjects(keyword: str, search_by: str) -> list[tuple]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
 
     keyword_like = f"%{keyword}%"
     
@@ -221,7 +223,7 @@ def removeMemberFromProject(projectID: str, memberID: str) -> None:
 # Get members for a specific project
 def getMembersForProject(projectID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
 
     sql = """
         SELECT m.* FROM members m
@@ -239,7 +241,7 @@ def getMembersForProject(projectID: str) -> list[dict]:
 # Get projects for a specific member
 def getProjectsForMember(memberID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(dictionary=True) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     sql = """
         SELECT p.* FROM project p
