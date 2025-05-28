@@ -125,7 +125,10 @@ def searchTasks(keyword: str, search_by: str) -> list[dict]:
     elif search_by == "Due Date":
         sql = "SELECT taskID FROM task WHERE DATE_FORMAT(dueDate, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
         params = (keyword_like,)
-    elif search_by == "Project ID":
+    elif search_by == "Date Accomplished":
+        sql = "SELECT taskID FROM task WHERE DATE_FORMAT(dateAccomplished, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "Project":
         sql = "SELECT taskID FROM task WHERE projectID LIKE %s LIMIT 100"
         params = (keyword_like,)
     else:
@@ -135,6 +138,7 @@ def searchTasks(keyword: str, search_by: str) -> list[dict]:
                OR taskName LIKE %s  
                OR currentStatus LIKE %s
                OR DATE_FORMAT(dueDate, '%%Y-%%m-%%d') LIKE %s
+               OR DATE_FORMAT(dateAccomplished, '%%Y-%%m-%%d') LIKE %s
                OR projectID LIKE %s
             LIMIT 100
         """
