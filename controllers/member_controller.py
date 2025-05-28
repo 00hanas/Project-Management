@@ -89,7 +89,7 @@ def getAllMembers() -> list[tuple]:
 #Function to load existing data into the edit form
 def getMemberByID(memberID: str) -> dict | None:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     sql = "SELECT * FROM members WHERE memberID = %s"
     cursor.execute(sql, (memberID,))
     member = cursor.fetchone()
