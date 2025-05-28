@@ -166,7 +166,7 @@ def getProjectsTasksandDateByMemberID(memberID: str) -> dict:
     p.projectID, 
     p.projectName,
     t.taskName,
-    date_format(tm.dateAssigned, '%%M %%e, %%Y, %%l:%%i%%p') AS formattedDate
+    date_format(tm.dateAssigned, '%M %e, %Y, %l:%i%p') AS formattedDate
 FROM 
     project p
 INNER JOIN 
