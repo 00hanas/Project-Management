@@ -71,6 +71,7 @@ def loadProjects(parent=None, projects_data=None) -> QWidget:
     grid.setAlignment(Qt.AlignmentFlag.AlignTop)
     grid.setContentsMargins(1, 0, 1, 0)
     grid.setVerticalSpacing(0)
+    content.setLayout(grid) 
 
     # Get projects data - either from parameter or database
     if projects_data is None:
@@ -80,6 +81,7 @@ def loadProjects(parent=None, projects_data=None) -> QWidget:
 
     columns = 3
     headers = ["projectID", "projectName", "shortDescrip", "startDate", "endDate"]
+    
         
     # Handle both tuple and dict formats
     for index, project in enumerate(projects):
@@ -94,7 +96,6 @@ def loadProjects(parent=None, projects_data=None) -> QWidget:
         col = index % columns
         grid.addWidget(project_widget, row, col)
 
-    # Calculate height
     card_height = 150  
     rows = (len(projects) + columns - 1) // columns
     content.setFixedHeight(rows * card_height)

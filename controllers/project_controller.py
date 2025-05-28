@@ -1,5 +1,5 @@
-import pymysql.cursors #########################################3
 from config.db_config import getConnection
+from datetime import datetime
 
 # Create
 def addProject(project: dict) -> None:
@@ -95,7 +95,7 @@ def getCompletedTasks(projectID: str) -> int:
 # Get by ID
 def getProjectByID(projectID: str) -> dict | None:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
     
     sql = "SELECT * FROM project WHERE projectID = %s"
     
@@ -128,19 +128,78 @@ def projectExists(projectID: str) -> bool:
     
     return exists
 
-def searchProjects(keyword: str) -> list[dict]:
+def searchProjects(keyword: str, search_by: str) -> list[dict]:
+    if not keyword.strip():
+        return []
+        
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True)
+
+    if not keyword.strip():
+        cursor.execute("SELECT projectID FROM project")
+        return cursor.fetchall()
     
-    sql = "SELECT * FROM project WHERE projectName LIKE %s OR shortDescrip LIKE %s"
+    keyword_like = f"%{keyword}%"
     
-    like = f"%{keyword}%"
-    cursor.execute(sql, (like, like))
-    results = cursor.fetchall()
+    # Use parameterized queries to prevent SQL injection
+    if search_by == "ProjectID":
+        sql = "SELECT projectID FROM project WHERE projectID LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "Project Name":
+        sql = "SELECT projectID FROM project WHERE projectName LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "Description":
+        sql = "SELECT projectID FROM project WHERE shortDescrip LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "Start Date":
+        sql = "SELECT projectID FROM project WHERE DATE_FORMAT(startDate, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "End Date":
+        sql = "SELECT projectID FROM project WHERE DATE_FORMAT(endDate, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    else:
+        sql = """
+            SELECT projectID FROM project 
+            WHERE projectID LIKE %s 
+               OR projectName LIKE %s 
+               OR shortDescrip LIKE %s 
+               OR DATE_FORMAT(startDate, '%%Y-%%m-%%d') LIKE %s
+               OR DATE_FORMAT(endDate, '%%Y-%%m-%%d') LIKE %s
+            LIMIT 100
+        """
+        params = (keyword_like,) * 5
+
+    try:
+        cursor.execute(sql, params)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+def parse_date(date_str):
+    for fmt in ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d'):
+        try:
+            return datetime.strptime(date_str, fmt)
+        except ValueError:
+            continue
+    return date_str 
+
+def getAllProjectsForSearch(project_ids: list[str]) -> list[tuple]:
+    conn = getConnection()
+    cursor = conn.cursor()
+
+    if not project_ids:
+        return []
+
+    placeholders = ', '.join(['%s'] * len(project_ids))
+    sql = f"SELECT * FROM project WHERE projectID IN ({placeholders})"
+
+    cursor.execute(sql, (project_ids))
+    projects = cursor.fetchall()
+
     cursor.close()
     conn.close()
-    
-    return results
+    return projects
 
 def assignMemberToProject(projectID: str, memberID: str) -> None:
     conn = getConnection()
@@ -167,7 +226,7 @@ def removeMemberFromProject(projectID: str, memberID: str) -> None:
 # Get members for a specific project
 def getMembersForProject(projectID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
 
     sql = """
         SELECT m.* FROM members m
@@ -185,7 +244,7 @@ def getMembersForProject(projectID: str) -> list[dict]:
 # Get projects for a specific member
 def getProjectsForMember(memberID: str) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
+    cursor = conn.cursor(dictionary=True) #########################################################
     
     sql = """
         SELECT p.* FROM project p
