@@ -52,8 +52,6 @@ class AddProjectForm(QDialog):
             QMessageBox.warning(self, "Input Error", "Project ID and Name cannot be empty.")
             return
         
-        
-        
         # Validate dates before proceeding
         if not self.validate_dates():
             QMessageBox.warning(self, "Date Error", "End date cannot be before start date")

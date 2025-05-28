@@ -91,29 +91,18 @@ def loadTasks(parent=None, tasks_data=None) -> QWidget:
         else:
             for index, task in enumerate(tasks):
                 try:
-                    # Get the number of members for the task
                     taskID = task['taskID']
-                    current_status = task['currentStatus']
-                    members = getMembersForTask(taskID)
-                    has_members = len(members) > 0
-                    accomplished = task.get('dateAccomplished')
-
-                    new_status = None
-
-                    # Auto-set to Unassigned if there are no members and not already completed
-                    if not has_members and current_status != 'Completed':
-                        new_status = 'Unassigned'
-
-                    # Auto-set to Completed if there's an accomplished date but status is not 'Completed'
-                    # elif has_members and accomplished is not None and current_status != 'Completed':
-                    #     new_status = 'Completed'
-
-                    # Otherwise, leave status as-is (including "In Progress" or "Pending")
-                    if new_status and current_status != new_status:
-                        updateTaskStatus(taskID, new_status)
-                        task['currentStatus'] = new_status
-                
+                    NoOFMembers = len(getMembersForTask(taskID))
                     
+                    # Set the current status based on the number of members
+                    if NoOFMembers < 1:
+                        updateTaskStatus(taskID, 'Unassigned')
+                        task['currentStatus'] = 'Unassigned'
+
+                    if NoOFMembers > 0 and task['currentStatus'] == 'Unassigned':
+                        updateTaskStatus(taskID, 'Pending')
+                        task['currentStatus'] = 'Pending'
+
                     # Create a TaskCardWidget instance
                     task_widget = TaskCardWidget(task)
                     

@@ -17,7 +17,7 @@ from widgets.TaskCardWidget import TaskCardWidget
 from widgets.ProjectCardWidget import ProjectCardWidget
 from utils.searchworker_homesearch import SearchWorker
 from utils.ProjectSearchWorker import ProjectSearchWorker
-from models.project import loadProjects
+from models.project import loadProjects, loadOnGoingProjects
 from models.task import loadTasks
 from PyQt6 import QtWidgets 
 from utils.TaskSearchWorker import TaskSearchWorker
@@ -780,7 +780,7 @@ class MainApp(QMainWindow):
                 print("Task container refreshed")
             
             elif container_type == 'home':
-                layout = self.ui. verticalLayout_9
+                layout = self.ui.vLayout #two widget: qlabel, qwidget -> container
                 print(f"Before deletion - Widget count in verticalLayout_9: {layout.count()}")
                 print(f"Before deletion - Widget at index 0: {layout.itemAt(0).widget() if layout.count() > 0 else 'None'}")
                 
@@ -793,7 +793,7 @@ class MainApp(QMainWindow):
                 QtWidgets.QApplication.processEvents() # Process events to ensure deletion
                 print("All old widgets removed from layout")
                 
-                new_container = loadProjects(self.ui.view_projects)
+                new_container = loadOnGoingProjects(self.ui.view_projects)
                 layout.addWidget(new_container)
                                  
 

@@ -118,9 +118,9 @@ def loadOnGoingProjects(parent=None, projects_data=None) -> QWidget:
     
     # Main container (same as before)
     container = QWidget(parent)
-    container.setObjectName("ProjectVContainer")
+    container.setObjectName("ProjectHomeContainer")
     container.setStyleSheet("""
-        #ProjectVContainer {
+        #ProjectHomeContainer {
             background-color: transparent;
             border-radius: 0px;
             margin: 0px;
@@ -228,4 +228,4 @@ def loadOnGoingProjects(parent=None, projects_data=None) -> QWidget:
     layout.setContentsMargins(0, 0, 0, 0)
     layout.addWidget(scroll)
     container.setLayout(layout)
-    return container
+    return container    

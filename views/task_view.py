@@ -96,7 +96,11 @@ class AddTaskForm(QDialog):
             "projectID": project_id
         })
 
-        # insert here statement to load task widgets #
+        # insert here statement to load task widgets 
+        self.main_window.refresh_container('task')
+        self.main_window.refresh_container('project')
+        self.main_window.refresh_container('home')
+        self.main_window.refreshTable()
 
         QMessageBox.information(self, "Success", "Task saved successfully.")
         self.close()
@@ -239,6 +243,15 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
                     "You cannot set this task to 'Completed' because there are no members assigned to it."
                 )
                 return
+            
+        if status == "Unassigned":
+            assigned_members = getMembersForTask(task_id)
+            if assigned_members or len(assigned_members) > 0:
+                QMessageBox.warning(self, "Invalid Status", "You cannot set this task to 'Unassigned' because there are members assigned to it.")
+                return
+            
+        #if accomplished_datetime is not None:
+           # updateTaskStatus(task_id, "Completed")
 
         updated_data = {
             "taskID": task_id,

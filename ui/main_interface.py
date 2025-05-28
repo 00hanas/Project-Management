@@ -756,10 +756,14 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth {
         self.view_projects_label.setMaximumSize(QtCore.QSize(237, 16777215))
         self.view_projects_label.setObjectName("view_projects_label")
         self.view_projects_label.setStyleSheet("font-size: 15pt; color: #7f00ff; margin-top: 10px;")
+
         self.verticalLayout_9.addWidget(self.view_projects_label)
-        
-        self.verticalLayout_9.addWidget(loadOnGoingProjects(self.view_projects))
-        
+
+        self.ongoing_projects_layout = QtWidgets.QWidget(parent=self.view_projects)
+        self.verticalLayout_9.addWidget(self.ongoing_projects_layout)
+        self.vLayout = QtWidgets.QVBoxLayout(self.ongoing_projects_layout)
+        self.vLayout.addWidget(loadOnGoingProjects(self.ongoing_projects_layout))
+
         self.gridLayout_2.addWidget(self.view_projects, 2, 0, 1, 1)
         self.stackedWidget.addWidget(self.home_page)
         
