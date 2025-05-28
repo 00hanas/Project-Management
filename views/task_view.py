@@ -31,6 +31,19 @@ class AddTaskForm(QDialog):
         self.ui.task_clear_button.clicked.connect(self.clearTask)
         self.ui.task_cancel_button.clicked.connect(self.cancelTask)
 
+        self.ui.task_status_info.currentTextChanged.connect(self.handleStatusChange)
+
+    def handleStatusChange(self, status):
+        if status == "Completed":
+            current_datetime = QDateTime.currentDateTime()
+            self.ui.task_dateAccomplished_info.setDateTime(current_datetime)
+            
+        if status != "Completed":
+            current_date = self.ui.task_dateAccomplished_info.dateTime()
+            default_date = QDateTime(2000, 1, 1, 0, 0)
+            # if current_date == QDateTime.currentDateTime():
+            self.ui.task_dateAccomplished_info.setDateTime(default_date)
+
     def populateProjectsComboBox(self):
         projects = getAllProjects()
         for project in projects:
@@ -123,6 +136,9 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
             self.ui.task_shortDescrip_info.setPlainText(data.get("shortDescrip", ""))
             self.ui.task_status_info.setCurrentText(data.get("currentStatus", "Unassigned"))
 
+            # Add this connection for status change
+            self.ui.task_status_info.currentTextChanged.connect(self.handleStatusChange)
+
             due_date = data.get("dueDate")
             if due_date:
                 if isinstance(due_date, str):
@@ -145,7 +161,6 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
             default_qdatetime = QDateTime(2000, 1, 1, 0, 0)
             default_datetime = default_qdatetime.toPyDateTime()
 
-            # --- STEP 1: Parse input and set to UI widget ---
             if accomplished_date:
                 if isinstance(accomplished_date, str):
                     try:
@@ -162,16 +177,12 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
             else:
                 accomplished_date_dt = default_datetime
 
-            # Set the parsed date into the UI
             self.ui.task_dateAccomplished_info.setDateTime(QDateTime(accomplished_date_dt))
 
-            # --- STEP 2: Get final value to save to the database ---
             selected_datetime = self.ui.task_dateAccomplished_info.dateTime().toPyDateTime()
 
-            # Return None if it's the default "null" date
-            accomplished = None if selected_datetime == default_datetime else selected_datetime
+            accomplished_date = None if selected_datetime == default_datetime else selected_datetime
 
-            # Set project in combobox
             project_id_to_select = data.get("projectID")
             for i in range(self.ui.task_project_info.count()):
                 if self.ui.task_project_info.itemData(i) == project_id_to_select:
@@ -182,6 +193,18 @@ class EditTaskForm(QDialog): # Ensure EditTaskForm is defined
         self.ui.task_save_button.clicked.connect(self.updateExistingTask)
         self.ui.task_clear_button.clicked.connect(self.clearTaskFields) # Assuming you want clear for edit too
         self.ui.task_cancel_button.clicked.connect(self.close)
+
+    def handleStatusChange(self, status):
+        """Automatically set date accomplished when status is set to Completed"""
+        if status == "Completed":
+            current_datetime = QDateTime.currentDateTime()
+            self.ui.task_dateAccomplished_info.setDateTime(current_datetime)
+            
+        if status != "Completed":
+            current_date = self.ui.task_dateAccomplished_info.dateTime()
+            default_date = QDateTime(2000, 1, 1, 0, 0)
+            # if current_date == QDateTime.currentDateTime():
+            self.ui.task_dateAccomplished_info.setDateTime(default_date)
 
     def updateExistingTask(self):
         task_id = self.ui.task_id_info.text().strip()

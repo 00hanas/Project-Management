@@ -1,6 +1,6 @@
-import pymysql.cursors
-import pymysql
 from config.db_config import getConnection
+import pymysql.cursors
+
 
 # --- CRUD for Task ---
 
@@ -109,19 +109,16 @@ def searchTasks(keyword: str, search_by: str) -> list[dict]:
         return []
         
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     keyword_like = f"%{keyword}%"
     
     # Use parameterized queries to prevent SQL injection
-    if search_by == "TaskID":
+    if search_by == "Task ID":
         sql = "SELECT taskID FROM task WHERE taskID LIKE %s LIMIT 100"
         params = (keyword_like,)
     elif search_by == "Task Name":
         sql = "SELECT taskID FROM task WHERE taskName LIKE %s LIMIT 100"
-        params = (keyword_like,)
-    elif search_by == "Description":
-        sql = "SELECT taskID FROM task WHERE shortDescrip LIKE %s LIMIT 100"
         params = (keyword_like,)
     elif search_by == "Status":
         sql = "SELECT taskID FROM task WHERE currentStatus LIKE %s LIMIT 100"
@@ -129,17 +126,20 @@ def searchTasks(keyword: str, search_by: str) -> list[dict]:
     elif search_by == "Due Date":
         sql = "SELECT taskID FROM task WHERE DATE_FORMAT(dueDate, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
         params = (keyword_like,)
-    elif search_by == "Project ID":
+    elif search_by == "Date Accomplished":
+        sql = "SELECT taskID FROM task WHERE DATE_FORMAT(dateAccomplished, '%%Y-%%m-%%d') LIKE %s LIMIT 100"
+        params = (keyword_like,)
+    elif search_by == "Project":
         sql = "SELECT taskID FROM task WHERE projectID LIKE %s LIMIT 100"
         params = (keyword_like,)
     else:
         sql = """
             SELECT taskID FROM task 
             WHERE taskID LIKE %s 
-               OR taskName LIKE %s 
-               OR shortDescrip LIKE %s 
+               OR taskName LIKE %s  
                OR currentStatus LIKE %s
                OR DATE_FORMAT(dueDate, '%%Y-%%m-%%d') LIKE %s
+               OR DATE_FORMAT(dateAccomplished, '%%Y-%%m-%%d') LIKE %s
                OR projectID LIKE %s
             LIMIT 100
         """
@@ -158,6 +158,9 @@ def getAllTasksForSearch(task_ids: list[str]) -> list[tuple]:
 
     if not task_ids:
         return []
+    
+    if isinstance(task_ids[0], dict):
+        task_ids = [task['taskID'] for task in task_ids]
 
     placeholders = ', '.join(['%s'] * len(task_ids))
     sql = f"SELECT * FROM task WHERE taskID IN ({placeholders})"
@@ -289,7 +292,7 @@ def getTasksByProjectID(projectID: str) -> list[dict]:
 
 def sortTasks(sort_by: str, ascending: bool = True) -> list[dict]:
     conn = getConnection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor = conn.cursor(pymysql.cursors.DictCursor) #########################################################
     
     # Map UI sort options to database columns
     sort_mapping = {

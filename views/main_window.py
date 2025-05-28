@@ -120,7 +120,7 @@ class MainApp(QMainWindow):
         self.currently_showing_all_projects = True  # Start by showing all projects
         self.project_search_timer = QTimer(self)
         self.project_search_timer.setSingleShot(True)
-        self.project_search_timer.setInterval(100)  # 300ms delay after typing stops
+        self.project_search_timer.setInterval(200)  # 300ms delay after typing stops
         self.project_search_timer.timeout.connect(self.performSearchforProjects)
 
         self.ui.projects_search.textChanged.connect(self.handleProjectSearchChanged)
@@ -342,6 +342,8 @@ class MainApp(QMainWindow):
         """Perform the project search with current parameters"""
         keyword = self.ui.projects_search.text().strip()
         search_by = self.ui.projects_searchby.currentText()
+
+        self.ui.projects_search.setFocus() 
         
         worker = ProjectSearchWorker(keyword, search_by)
         worker.signals.finished.connect(self.updateProjectWidgets)
@@ -454,13 +456,17 @@ class MainApp(QMainWindow):
         self.ui.members_table.sortItems(column, current_order)
 
     def refreshTable(self):
-        from models.member import loadMember # Adjust import if needed
+        from models.member import loadMember
+        # Store the current row height
+        current_row_height = self.ui.members_table.rowHeight(0) if self.ui.members_table.rowCount() > 0 else self.default_row_height
+        
         loadMember(self.ui.members_table)
         self.expanded_row = None
         self.original_items = {}
 
+        # Restore the row height
         for row in range(self.ui.members_table.rowCount()):
-            self.ui.members_table.setRowHeight(row, self.default_row_height)
+            self.ui.members_table.setRowHeight(row, current_row_height)
 
     def performHomeSearch(self):
         keyword = self.ui.home_search.text()
