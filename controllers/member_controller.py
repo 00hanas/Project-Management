@@ -130,7 +130,7 @@ def searchMembers(keyword: str, search_by: str) -> list[str]:
         LEFT JOIN task t ON tm.taskID = t.taskID
     """
 
-    if search_by == "MemberID":
+    if search_by == "Member ID":
         sql = sql_base + " WHERE m.memberID LIKE %s"
         cursor.execute(sql, (keyword_like,))
     elif search_by == "Name":
@@ -167,7 +167,7 @@ def getProjectsTasksandDateByMemberID(memberID: str) -> dict:
     p.projectID, 
     p.projectName,
     t.taskName,
-    date_format(tm.dateAssigned, '%M %e, %Y, %l:%i%p') AS formattedDate
+    date_format(tm.dateAssigned, '%%M %%e, %%Y, %%l:%%i%%p') AS formattedDate
 FROM 
     project p
 INNER JOIN 
